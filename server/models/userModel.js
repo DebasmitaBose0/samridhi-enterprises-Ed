@@ -91,6 +91,7 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    subscriptions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Subscription" }],
     role: {
       type: String,
       enum: ["ADMIN", "MANAGER", "USER"],

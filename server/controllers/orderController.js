@@ -563,3 +563,21 @@ export const adminUpdateOrderStatus = catchAsyncErrors(
     });
   }
 );
+
+// Added for #352: Subscription Auto Reordering endpoints
+import Subscription from "../models/subscriptionModel.js";
+export const createPartSubscription = catchAsyncErrors(async (req, res, next) => {
+  const { partId, frequency } = req.body;
+  const nextOrderDate = new Date();
+  if (frequency === "weekly") nextOrderDate.setDate(nextOrderDate.getDate() + 7);
+  else if (frequency === "monthly") nextOrderDate.setMonth(nextOrderDate.getMonth() + 1);
+
+  const subscription = await Subscription.create({
+    user: req.user._id,
+    part: partId,
+    frequency,
+    nextOrderDate
+  });
+
+  res.status(201).json({ success: true, subscription });
+});
