@@ -20,3 +20,5 @@ cartRouter
   .delete(auth, removeFromCart);
 
 export default cartRouter;
+
+// Expose checkout pre-validation route

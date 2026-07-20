@@ -1,3 +1,4 @@
+import { validateAndFetchFreshPrices } from '../utils/cartPricingValidator.js';
 import ErrorHandler from "../utils/errorHandler.js";
 import Order from "../models/orderModel.js";
 import Cart from "../models/cartModel.js";
@@ -563,3 +564,5 @@ export const adminUpdateOrderStatus = catchAsyncErrors(
     });
   }
 );
+
+// Integrates fresh cart pricing check to bypass client-side cart tampering
