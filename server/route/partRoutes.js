@@ -2,6 +2,7 @@ import express from "express";
 import rateLimit from "express-rate-limit";
 import upload from "../middleware/multer.js";
 import {
+  getFacetedSearch,
   addPart,
   getAllParts,
   getPartById,
@@ -50,6 +51,7 @@ const partRouter = express.Router();
 
 partRouter.post("/add", upload.array("images", 5), auth, admin, addPart);
 partRouter.get("/get", browseLimiter, getAllParts);
+partRouter.get("/search/faceted", browseLimiter, getFacetedSearch);
 partRouter.get("/get/:id", browseLimiter, getPartById);
 partRouter.get("/get/:id/similar", browseLimiter, getSimilarParts);
 partRouter.get(
