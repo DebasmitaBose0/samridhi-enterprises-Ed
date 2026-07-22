@@ -43,7 +43,7 @@ export const addPart = catchAsyncErrors(async (req, res, next) => {
 
 // Get all parts
 export const getAllParts = catchAsyncErrors(async (req, res) => {
-  const { vehicleId } = req.query;
+  const { vehicleId, page, limit } = req.query;
 
   const filter = { isDeleted: false };
 
@@ -51,18 +51,35 @@ export const getAllParts = catchAsyncErrors(async (req, res) => {
     filter.vehicleCompatibility = vehicleId;
   }
 
-  const parts = await Part.find(filter).populate(
-    "vehicleCompatibility",
-    "name"
-  );
+  const total = await Part.countDocuments(filter);
+
+  const isPaginated = page !== undefined || limit !== undefined;
+  const pageNum = parseInt(page, 10) > 0 ? parseInt(page, 10) : 1;
+  const limitNum = limit !== undefined ? Math.max(1, parseInt(limit, 10) || 10) : (isPaginated ? 10 : (total || 10));
+  const skip = (pageNum - 1) * limitNum;
+
+  const parts = await Part.find(filter)
+    .populate("vehicleCompatibility", "name")
+    .skip(skip)
+    .limit(limitNum);
+
+  const totalPages = Math.ceil(total / limitNum) || 1;
+  const hasNextPage = pageNum < totalPages;
+  const hasPreviousPage = pageNum > 1;
 
   res.status(200).json({
-
     success: true,
     count: parts.length,
+    total,
+    page: pageNum,
+    limit: limitNum,
+    totalPages,
+    hasNextPage,
+    hasPreviousPage,
     parts,
   });
 });
+
 
 // Get single part
 export const getPartById = catchAsyncErrors(async (req, res, next) => {
@@ -164,6 +181,12 @@ export const createOrUpdateReview = catchAsyncErrors(async (req, res, next) => {
 
   if (!part) return next(new ErrorHandler("Part not found", 404));
 
+  const hasPurchased = await Order.exists({
+    user: req.user._id,
+    "items.part": part._id,
+    orderStatus: "Delivered",
+  });
+  const verifiedPurchase = Boolean(hasPurchased);
 
   const existingReviewIndex = part.reviews.findIndex(
     (r) => r.user.toString() === req.user._id.toString()
@@ -172,8 +195,15 @@ export const createOrUpdateReview = catchAsyncErrors(async (req, res, next) => {
   if (existingReviewIndex !== -1) {
     part.reviews[existingReviewIndex].comment = comment;
     part.reviews[existingReviewIndex].rating = Number(rating);
+    part.reviews[existingReviewIndex].verifiedPurchase = verifiedPurchase;
   } else {
-    part.reviews.push({ user: req.user._id, name: req.user.name, rating: Number(rating), comment });
+    part.reviews.push({
+      user: req.user._id,
+      name: req.user.name,
+      rating: Number(rating),
+      comment,
+      verifiedPurchase,
+    });
   }
 
   part.numOfReviews = part.reviews.length;
@@ -621,4 +651,22 @@ export const deleteReview = catchAsyncErrors(async (req, res, next) => {
 
   await part.save();
 res.status(200).json({ success: true, message: "Review removed", part });
+});
+
+// Added for #349: Add stock to specific warehouse
+import Warehouse from "../models/warehouseModel.js";
+export const addWarehouseStock = catchAsyncErrors(async (req, res, next) => {
+  const { warehouseId, stockQuantity } = req.body;
+  const part = await Part.findById(req.params.id);
+  if (!part) return next(new ErrorHandler("Part not found", 404));
+
+  const stockEntry = part.warehouseStocks.find(ws => ws.warehouse.toString() === warehouseId);
+  if (stockEntry) {
+    stockEntry.stockQuantity += stockQuantity;
+  } else {
+    part.warehouseStocks.push({ warehouse: warehouseId, stockQuantity });
+  }
+
+  await part.save();
+  res.status(200).json({ success: true, part });
 });
