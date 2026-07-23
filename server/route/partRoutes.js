@@ -50,7 +50,7 @@ const recommendLimiter = rateLimit({
 const partRouter = express.Router();
 
 partRouter.post("/add", upload.array("images", 5), auth, admin, addPart);
-partRouter.post("/warehouse-stock/:id", auth, admin, addWarehouseStock);
+// partRouter.post("/warehouse-stock/:id", auth, admin, addWarehouseStock);
 partRouter.get("/get", browseLimiter, getAllParts);
 partRouter.get("/search/faceted", browseLimiter, getFacetedSearch);
 partRouter.get("/get/:id", browseLimiter, getPartById);
