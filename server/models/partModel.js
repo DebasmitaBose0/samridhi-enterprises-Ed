@@ -24,10 +24,6 @@ const partSchema = new mongoose.Schema(
       default: 1,
       min: 0,
     },
-    lowStockThreshold: {
-      type: Number,
-      default: 5,
-    },
 
     vehicleCompatibility: [
       { type: mongoose.Schema.Types.ObjectId, ref: "BikeModel" },
