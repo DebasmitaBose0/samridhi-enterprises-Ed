@@ -107,15 +107,31 @@ const AdminOrders = () => {
   // Advance an order through its fulfilment lifecycle. The backend enforces the
   // payment-verified rule (Processing/Shipped/Delivered require a successful
   // payment); we surface any rejection message it returns.
-  const handleStatusChange = (id, orderStatus) => {
-    dispatch(adminUpdateOrderStatus({ id, orderStatus })).then((res) => {
+  const handleStatusChange = (id, orderStatus, carrier, trackingNumber) => {
+    dispatch(adminUpdateOrderStatus({ id, orderStatus, carrier, trackingNumber })).then((res) => {
       if (adminUpdateOrderStatus.fulfilled.match(res)) {
-        toast.success(`Order status updated to ${orderStatus}`);
+        toast.success(`Order status/shipment updated`);
         dispatch(adminGetAllOrders(filter || undefined));
       } else if (adminUpdateOrderStatus.rejected.match(res)) {
         toast.error(res.payload || "Failed to update order status");
       }
     });
+  };
+
+  const handleDownloadInvoice = async (orderId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(`/api/orders/admin/${orderId}/invoice`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) throw new Error("Failed to fetch invoice");
+      const htmlStr = await response.text();
+      const win = window.open("", "_blank");
+      win.document.write(htmlStr);
+      win.document.close();
+    } catch (err) {
+      toast.error("Failed to download invoice");
+    }
   };
 
   if (loading && (!adminOrders || adminOrders.length === 0)) return <Loader />;
@@ -277,6 +293,13 @@ const AdminOrders = () => {
                       </div>
                     )}
 
+                    <button
+                      onClick={() => handleDownloadInvoice(order._id)}
+                      className="w-full py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-semibold text-xs transition border border-indigo-200"
+                    >
+                      📄 Download Invoice
+                    </button>
+
                     {/* Fulfilment status control — available once the order is
                         no longer awaiting payment verification and not in a
                         terminal state. Lets the admin advance the lifecycle
@@ -285,14 +308,14 @@ const AdminOrders = () => {
                     {order.orderStatus !== "Pending Verification" &&
                       order.orderStatus !== "Delivered" &&
                       order.orderStatus !== "Cancelled" && (
-                        <div className="border-t border-gray-100 pt-3 mt-1">
-                          <label className="block text-xs font-medium text-gray-500 mb-1.5">
-                            Update fulfilment status
+                        <div className="border-t border-gray-100 pt-3 mt-1 space-y-2">
+                          <label className="block text-xs font-medium text-gray-500 mb-1">
+                            Update fulfilment status & tracking
                           </label>
                           <select
                             value={order.orderStatus}
                             onChange={(e) =>
-                              handleStatusChange(order._id, e.target.value)
+                              handleStatusChange(order._id, e.target.value, order.carrier, order.trackingNumber)
                             }
                             className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                           >
@@ -302,6 +325,24 @@ const AdminOrders = () => {
                               </option>
                             ))}
                           </select>
+                          <input
+                            type="text"
+                            placeholder="Carrier (e.g. Blue Dart)"
+                            defaultValue={order.carrier || ""}
+                            onBlur={(e) =>
+                              handleStatusChange(order._id, order.orderStatus, e.target.value, order.trackingNumber)
+                            }
+                            className="w-full px-3 py-1.5 rounded-xl border border-gray-200 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Tracking Number"
+                            defaultValue={order.trackingNumber || ""}
+                            onBlur={(e) =>
+                              handleStatusChange(order._id, order.orderStatus, order.carrier, e.target.value)
+                            }
+                            className="w-full px-3 py-1.5 rounded-xl border border-gray-200 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-400"
+                          />
                         </div>
                       )}
                   </div>
