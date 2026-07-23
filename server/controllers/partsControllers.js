@@ -653,20 +653,11 @@ export const deleteReview = catchAsyncErrors(async (req, res, next) => {
 res.status(200).json({ success: true, message: "Review removed", part });
 });
 
-// Added for #349: Add stock to specific warehouse
-import Warehouse from "../models/warehouseModel.js";
-export const addWarehouseStock = catchAsyncErrors(async (req, res, next) => {
-  const { warehouseId, stockQuantity } = req.body;
-  const part = await Part.findById(req.params.id);
-  if (!part) return next(new ErrorHandler("Part not found", 404));
-
-  const stockEntry = part.warehouseStocks.find(ws => ws.warehouse.toString() === warehouseId);
-  if (stockEntry) {
-    stockEntry.stockQuantity += stockQuantity;
-  } else {
-    part.warehouseStocks.push({ warehouse: warehouseId, stockQuantity });
-  }
-
-  await part.save();
-  res.status(200).json({ success: true, part });
+// Added for #341: Get low stock parts for administrators
+export const getLowStockParts = catchAsyncErrors(async (req, res, next) => {
+  const parts = await Part.find({ 
+    isDeleted: false,
+    $expr: { $lte: ["$stock", { $ifNull: ["$lowStockThreshold", 5] }] } 
+  });
+  res.status(200).json({ success: true, count: parts.length, parts });
 });
