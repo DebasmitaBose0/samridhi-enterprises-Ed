@@ -601,4 +601,15 @@ export const adminUpdateOrderStatus = catchAsyncErrors(
   }
 );
 
-// Integrates fresh cart pricing check to bypass client-side cart tampering
+// Added for #343: Update refund status for cancelled paid orders
+export const updateRefundStatus = catchAsyncErrors(async (req, res, next) => {
+  const order = await Order.findById(req.params.id);
+  if (!order) return next(new ErrorHandler("Order not found", 404));
+
+  const { refundStatus, refundTransactionId } = req.body;
+  if (refundStatus) order.refundStatus = refundStatus;
+  if (refundTransactionId) order.refundTransactionId = refundTransactionId;
+
+  await order.save();
+  res.status(200).json({ success: true, order });
+});
