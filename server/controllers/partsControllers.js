@@ -653,20 +653,11 @@ export const deleteReview = catchAsyncErrors(async (req, res, next) => {
 res.status(200).json({ success: true, message: "Review removed", part });
 });
 
-// Added for #349: Add stock to specific warehouse
-import Warehouse from "../models/warehouseModel.js";
-export const addWarehouseStock = catchAsyncErrors(async (req, res, next) => {
-  const { warehouseId, stockQuantity } = req.body;
-  const part = await Part.findById(req.params.id);
-  if (!part) return next(new ErrorHandler("Part not found", 404));
-
-  const stockEntry = part.warehouseStocks.find(ws => ws.warehouse.toString() === warehouseId);
-  if (stockEntry) {
-    stockEntry.stockQuantity += stockQuantity;
-  } else {
-    part.warehouseStocks.push({ warehouse: warehouseId, stockQuantity });
-  }
-
-  await part.save();
-  res.status(200).json({ success: true, part });
+// Added for #351: Faceted Search aggregation
+import { buildSearchAggregation } from "../utils/searchQueryBuilder.js";
+export const getFacetedSearch = catchAsyncErrors(async (req, res, next) => {
+  const { q, category, minPrice, maxPrice } = req.query;
+  const pipeline = buildSearchAggregation(q, { category, minPrice, maxPrice });
+  const result = await Part.aggregate(pipeline);
+  res.status(200).json({ success: true, searchData: result[0] });
 });
