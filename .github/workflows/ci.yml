@@ -1,8 +1,61 @@
-﻿name: CI
-on: [push, pull_request]
+name: CI
+
+on:
+  push:
+    branches: [main, elusoc]
+  pull_request:
+    branches: [main, elusoc]
+
 jobs:
-  build:
+  backend-test:
+    name: Backend Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: echo CI
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install server dependencies
+        run: |
+          cd server
+          npm ci
+
+      - name: Run verification scripts
+        run: |
+          cd server
+          npm test
+
+  frontend-build:
+    name: Frontend Build & Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install client dependencies
+        run: |
+          cd client
+          npm ci
+
+      - name: Run ESLint
+        run: |
+          cd client
+          npm run lint
+
+      - name: Build client application
+        run: |
+          cd client
+          npm run build
