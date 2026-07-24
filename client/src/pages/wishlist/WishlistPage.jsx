@@ -1,23 +1,26 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { Heart, ShoppingCart, Trash2 } from "lucide-react";
+import { motion } from 'framer-motion';
+import { Heart, ShoppingCart, Trash2 } from 'lucide-react';
 import {
   fetchWishlist,
   removeFromWishlist,
   clearWishlistError,
-} from "../../store/wishlist/wishlistSlice";
-import { addToCart } from "../../store/cart/cartSlice";
-import Loader from "../../extras/Loader";
+} from '../../store/wishlist/wishlistSlice';
+import { addToCart } from '../../store/cart/cartSlice';
+import Loader from '../../extras/Loader';
 
 const stockBadge = (stock) => {
-  if (stock > 15) return { label: "In Stock", cls: "bg-green-100 text-green-800" };
-  if (stock >= 5) return { label: "Low Stock", cls: "bg-yellow-100 text-yellow-800" };
-  if (stock > 0) return { label: "Few Left", cls: "bg-orange-100 text-orange-800" };
-  return { label: "Out of Stock", cls: "bg-red-100 text-red-800" };
+  if (stock > 15)
+    return { label: 'In Stock', cls: 'bg-green-100 text-green-800' };
+  if (stock >= 5)
+    return { label: 'Low Stock', cls: 'bg-yellow-100 text-yellow-800' };
+  if (stock > 0)
+    return { label: 'Few Left', cls: 'bg-orange-100 text-orange-800' };
+  return { label: 'Out of Stock', cls: 'bg-red-100 text-red-800' };
 };
 
 const WishlistPage = () => {
@@ -39,7 +42,7 @@ const WishlistPage = () => {
   const handleRemove = (partId) => {
     dispatch(removeFromWishlist(partId))
       .unwrap()
-      .then(() => toast.success("Removed from wishlist"))
+      .then(() => toast.success('Removed from wishlist'))
       .catch(() => {});
   };
 
@@ -47,8 +50,8 @@ const WishlistPage = () => {
     if (!part || part.stock <= 0) return;
     dispatch(addToCart({ partId: part._id, quantity: 1 }))
       .unwrap()
-      .then(() => toast.success("Added to cart"))
-      .catch((msg) => toast.error(msg || "Could not add to cart"));
+      .then(() => toast.success('Added to cart'))
+      .catch((msg) => toast.error(msg || 'Could not add to cart'));
   };
 
   if (loading && items.length === 0) return <Loader />;
@@ -76,7 +79,13 @@ const WishlistPage = () => {
               Explore Popular Categories
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              {["Lighting Products", "Filters & Horn", "Gaskets", "Rear View Mirror", "Switches / Locks"].map((cat) => (
+              {[
+                'Lighting Products',
+                'Filters & Horn',
+                'Gaskets',
+                'Rear View Mirror',
+                'Switches / Locks',
+              ].map((cat) => (
                 <Link
                   key={cat}
                   to={`/products?search=${encodeURIComponent(cat)}`}
@@ -99,7 +108,7 @@ const WishlistPage = () => {
           My Wishlist
         </h1>
         <p className="text-gray-500 mb-10">
-          {items.length} {items.length === 1 ? "item" : "items"} saved
+          {items.length} {items.length === 1 ? 'item' : 'items'} saved
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -113,7 +122,9 @@ const WishlistPage = () => {
               >
                 <Link to={`/products/${part._id}`} className="block">
                   <img
-                    src={part.images?.[0]?.url || "https://via.placeholder.com/150"}
+                    src={
+                      part.images?.[0]?.url || 'https://via.placeholder.com/150'
+                    }
                     alt={part.name}
                     loading="lazy"
                     className="w-full h-48 object-cover bg-gray-50"
@@ -143,7 +154,7 @@ const WishlistPage = () => {
                       onClick={() => handleAddToCart(part)}
                       disabled={part.stock <= 0}
                       className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold text-sm shadow hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                      title={part.stock <= 0 ? "Out of stock" : "Add to cart"}
+                      title={part.stock <= 0 ? 'Out of stock' : 'Add to cart'}
                     >
                       <ShoppingCart className="w-4 h-4" /> Add to Cart
                     </button>

@@ -1,8 +1,8 @@
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import {
   Users,
   UserCheck,
@@ -12,59 +12,65 @@ import {
   Search,
   ChevronLeft,
   ChevronRight,
-} from "lucide-react";
-import { toast } from "react-toastify";
-import { getAllUsers, updateUserRole } from "@/store/auth-slice/user";
-import Loader from "../../extras/Loader";
-import EmptyState from "../../components/EmptyState";
+} from 'lucide-react';
+import { toast } from 'react-toastify';
+import { getAllUsers, updateUserRole } from '@/store/auth-slice/user';
+import Loader from '../../extras/Loader';
+import EmptyState from '../../components/EmptyState';
 
 // Status → colour-coded pill. The User model allows: Active, Warning, Suspended.
 const statusPill = (status) => {
   switch (status) {
-    case "Active":
-      return "bg-green-100 text-green-800 border border-green-200";
-    case "Warning":
-      return "bg-amber-100 text-amber-800 border border-amber-200";
-    case "Suspended":
-      return "bg-red-100 text-red-800 border border-red-200";
+    case 'Active':
+      return 'bg-green-100 text-green-800 border border-green-200';
+    case 'Warning':
+      return 'bg-amber-100 text-amber-800 border border-amber-200';
+    case 'Suspended':
+      return 'bg-red-100 text-red-800 border border-red-200';
     default:
-      return "bg-gray-100 text-gray-700 border border-gray-200";
+      return 'bg-gray-100 text-gray-700 border border-gray-200';
   }
 };
 
 // Role → colour-coded pill.
 const rolePill = (role) => {
   switch (role) {
-    case "ADMIN":
-      return "bg-purple-100 text-purple-800 border border-purple-200";
-    case "MANAGER":
-      return "bg-blue-100 text-blue-800 border border-blue-200";
+    case 'ADMIN':
+      return 'bg-purple-100 text-purple-800 border border-purple-200';
+    case 'MANAGER':
+      return 'bg-blue-100 text-blue-800 border border-blue-200';
     default:
-      return "bg-gray-100 text-gray-700 border border-gray-200";
+      return 'bg-gray-100 text-gray-700 border border-gray-200';
   }
 };
 
 const formatDate = (d) =>
   d
-    ? new Date(d).toLocaleDateString("en-IN", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
+    ? new Date(d).toLocaleDateString('en-IN', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
       })
-    : "—";
+    : '—';
 
 const PAGE_SIZES = [10, 25, 50];
 
 const CustomerPage = () => {
   const dispatch = useDispatch();
-  const { users, totalUsers, totalPages, loading, error, user: currentUser } =
-    useSelector((state) => state.auth);
+  const {
+    users,
+    totalUsers,
+    totalPages,
+    loading,
+    error,
+    user: currentUser,
+  } = useSelector((state) => state.auth);
 
   // Tracks which user's role is currently being saved, to disable just that row.
   const [savingRoleFor, setSavingRoleFor] = useState(null);
 
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
@@ -95,9 +101,9 @@ const CustomerPage = () => {
   // Whether the logged-in admin can edit roles. The backend restricts the
   // role-update endpoint to ADMIN only (managers get 403), so we mirror that in
   // the UI and only render the editable dropdown for an ADMIN.
-  const canEditRoles = currentUser?.role === "ADMIN";
+  const canEditRoles = currentUser?.role === 'ADMIN';
 
-  const ROLE_OPTIONS = ["USER", "MANAGER", "ADMIN"];
+  const ROLE_OPTIONS = ['USER', 'MANAGER', 'ADMIN'];
 
   const handleRoleChange = async (targetUser, newRole) => {
     if (newRole === targetUser.role) return;
@@ -107,9 +113,9 @@ const CustomerPage = () => {
     if (
       currentUser &&
       targetUser._id === currentUser._id &&
-      newRole !== "ADMIN"
+      newRole !== 'ADMIN'
     ) {
-      toast.error("You cannot change your own admin role.");
+      toast.error('You cannot change your own admin role.');
       return;
     }
 
@@ -123,38 +129,38 @@ const CustomerPage = () => {
       toast.success(`${targetUser.name}'s role updated to ${newRole}`);
     } else {
       toast.error(
-        res.payload?.message || res.payload?.error || "Failed to update role"
+        res.payload?.message || res.payload?.error || 'Failed to update role'
       );
     }
   };
-  const activeCount = list.filter((u) => u.status === "Active").length;
-  const warningCount = list.filter((u) => u.status === "Warning").length;
-  const suspendedCount = list.filter((u) => u.status === "Suspended").length;
+  const activeCount = list.filter((u) => u.status === 'Active').length;
+  const warningCount = list.filter((u) => u.status === 'Warning').length;
+  const suspendedCount = list.filter((u) => u.status === 'Suspended').length;
 
   const cards = [
     {
-      title: "Total Customers",
+      title: 'Total Customers',
       value: totalUsers ?? 0,
       icon: <Users className="w-7 h-7 text-white" />,
-      color: "bg-blue-500",
+      color: 'bg-blue-500',
     },
     {
-      title: "Active",
+      title: 'Active',
       value: activeCount,
       icon: <UserCheck className="w-7 h-7 text-white" />,
-      color: "bg-emerald-500",
+      color: 'bg-emerald-500',
     },
     {
-      title: "Warning",
+      title: 'Warning',
       value: warningCount,
       icon: <ShieldAlert className="w-7 h-7 text-white" />,
-      color: "bg-amber-500",
+      color: 'bg-amber-500',
     },
     {
-      title: "Suspended",
+      title: 'Suspended',
       value: suspendedCount,
       icon: <UserX className="w-7 h-7 text-white" />,
-      color: "bg-red-500",
+      color: 'bg-red-500',
     },
   ];
 
@@ -193,7 +199,7 @@ const CustomerPage = () => {
               <div className="bg-white/20 p-2 rounded-full">{card.icon}</div>
             </div>
             <div className="text-3xl font-bold">
-              {loading && list.length === 0 ? "…" : card.value}
+              {loading && list.length === 0 ? '…' : card.value}
             </div>
           </motion.div>
         ))}
@@ -233,11 +239,11 @@ const CustomerPage = () => {
       {/* Result count */}
       <p className="mt-4 text-sm text-gray-600">
         {totalUsers === 0
-          ? "No customers found"
+          ? 'No customers found'
           : `Showing ${(page - 1) * limit + 1}–${Math.min(
               page * limit,
               totalUsers
-            )} of ${totalUsers} customer${totalUsers !== 1 ? "s" : ""}`}
+            )} of ${totalUsers} customer${totalUsers !== 1 ? 's' : ''}`}
       </p>
 
       {/* Customer table */}
@@ -279,7 +285,7 @@ const CustomerPage = () => {
                       />
                     ) : (
                       <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold shrink-0">
-                        {(user.name || "?")[0].toUpperCase()}
+                        {(user.name || '?')[0].toUpperCase()}
                       </div>
                     )}
                     <span className="text-sm font-medium text-gray-900">
@@ -329,7 +335,7 @@ const CustomerPage = () => {
                       user.status
                     )}`}
                   >
-                    {user.status || "Active"}
+                    {user.status || 'Active'}
                   </span>
                 </td>
               </tr>
@@ -341,7 +347,11 @@ const CustomerPage = () => {
           <EmptyState
             icon="Inbox"
             title="No customers found"
-            message={searchTerm ? `No customers match "${searchTerm}". Try a different search term.` : "No customers have registered yet."}
+            message={
+              searchTerm
+                ? `No customers match "${searchTerm}". Try a different search term.`
+                : 'No customers have registered yet.'
+            }
           />
         )}
       </div>
@@ -366,11 +376,11 @@ const CustomerPage = () => {
                 onClick={() => setPage(n)}
                 className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
                   n === page
-                    ? "bg-blue-500 text-white border-blue-500 font-semibold"
-                    : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                    ? 'bg-blue-500 text-white border-blue-500 font-semibold'
+                    : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                 }`}
                 aria-label={`Page ${n}`}
-                aria-current={n === page ? "page" : undefined}
+                aria-current={n === page ? 'page' : undefined}
               >
                 {n}
               </button>

@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const auditLogSchema = new mongoose.Schema(
   {
     actorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     actorRole: {
@@ -31,5 +31,4 @@ const auditLogSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("AuditLog", auditLogSchema);
-
+export default mongoose.model('AuditLog', auditLogSchema);

@@ -1,13 +1,13 @@
-import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import crypto from "crypto";
+import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 
 const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Please enter your name"],
+      required: [true, 'Please enter your name'],
     },
     email: {
       type: String,
@@ -16,11 +16,11 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, "Please Enter Your Password"],
+      required: [true, 'Please Enter Your Password'],
     },
     avatar: {
       type: String,
-      default: "",
+      default: '',
     },
     mobile: {
       type: String,
@@ -52,19 +52,19 @@ const userSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["Active", "Warning", "Suspended"],
-      default: "Active",
+      enum: ['Active', 'Warning', 'Suspended'],
+      default: 'Active',
     },
     addressDetails: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "address",
+        ref: 'address',
       },
     ],
     orderHistory: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "Order",
+        ref: 'Order',
       },
     ],
     forgot_password_otp: {
@@ -94,8 +94,8 @@ const userSchema = new mongoose.Schema(
     permissions: [{ type: String }],
     role: {
       type: String,
-      enum: ["ADMIN", "MANAGER", "USER"],
-      default: "USER",
+      enum: ['ADMIN', 'MANAGER', 'USER'],
+      default: 'USER',
     },
 
     // Soft delete / audit trail support
@@ -114,17 +114,16 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-
 // Hash password before saving (on .save() calls)
-userSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
+userSchema.pre('save', async function () {
+  if (!this.isModified('password')) return;
 
   this.password = await bcrypt.hash(this.password, 12);
 });
 
 // Safety net: hash password if updated via findOneAndUpdate / findByIdAndUpdate.
 // This prevents future changes that bypass .save() from persisting plaintext passwords.
-userSchema.pre("findOneAndUpdate", async function () {
+userSchema.pre('findOneAndUpdate', async function () {
   const update = this.getUpdate();
   if (!update || !update.password) return;
 
@@ -150,18 +149,18 @@ userSchema.methods.comparePassword = async function (password) {
 };
 
 userSchema.methods.getResetPasswordToken = function () {
-  const resetToken = crypto.randomBytes(20).toString("hex");
+  const resetToken = crypto.randomBytes(20).toString('hex');
 
   this.resetPasswordToken = crypto
-    .createHash("sha256")
+    .createHash('sha256')
     .update(resetToken)
-    .digest("hex");
+    .digest('hex');
 
   this.resetPasswordExpire = Date.now() + 15 * 60 * 1000;
 
   return resetToken;
 };
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model('User', userSchema);
 
 export default User;

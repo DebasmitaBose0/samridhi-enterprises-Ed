@@ -1,16 +1,16 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "@/api";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '@/api';
 
-const API_URL = "/api/brand";
+const API_URL = '/api/brand';
 
 // Add Brand
 export const addBrand = createAsyncThunk(
-  "brand/add",
+  'brand/add',
   async (formData, { rejectWithValue }) => {
     try {
       const config = {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       };
       const response = await axiosInstance.post(
@@ -27,7 +27,7 @@ export const addBrand = createAsyncThunk(
 
 // Fetch All Brands
 export const fetchBrands = createAsyncThunk(
-  "brand/fetchAll",
+  'brand/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`${API_URL}/get`);
@@ -40,12 +40,12 @@ export const fetchBrands = createAsyncThunk(
 
 // Update Brand
 export const updateBrand = createAsyncThunk(
-  "brand/update",
+  'brand/update',
   async ({ id, formData }, { rejectWithValue }) => {
     try {
       const config = {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       };
       const response = await axiosInstance.put(
@@ -62,12 +62,10 @@ export const updateBrand = createAsyncThunk(
 
 // Delete Brand
 export const deleteBrand = createAsyncThunk(
-  "brand/delete",
+  'brand/delete',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(
-        `${API_URL}/delete/${id}`
-      );
+      const response = await axiosInstance.delete(`${API_URL}/delete/${id}`);
       return { id, ...response.data };
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -76,7 +74,7 @@ export const deleteBrand = createAsyncThunk(
 );
 
 const brandSlice = createSlice({
-  name: "brand",
+  name: 'brand',
   initialState: {
     brands: [],
     loading: false,

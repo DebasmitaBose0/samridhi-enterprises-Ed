@@ -1,21 +1,21 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const orderSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     // Snapshot of the cart at the time of ordering, so the order is unaffected
     // by later changes to (or deletion of) the underlying parts.
     items: [
       {
-        part: { type: mongoose.Schema.Types.ObjectId, ref: "Part" },
+        part: { type: mongoose.Schema.Types.ObjectId, ref: 'Part' },
         name: { type: String, required: true },
         price: { type: Number, required: true, min: 0 }, // unit price
         quantity: { type: Number, required: true, min: 1 },
-        image: { type: String, default: "" },
+        image: { type: String, default: '' },
       },
     ],
     shippingAddress: {
@@ -23,12 +23,16 @@ const orderSchema = new mongoose.Schema(
       phone: { type: String, required: true },
       addressLine: { type: String, required: true },
       city: { type: String, required: true },
-      state: { type: String, default: "" },
+      state: { type: String, default: '' },
       pincode: { type: String, required: true },
     },
     itemsTotal: { type: Number, required: true, min: 0 },
-    couponCode: { type: String, default: "" },
-    refundStatus: { type: String, enum: ['Not Refunded', 'Pending', 'Refunded', 'Failed'], default: 'Not Refunded' },
+    couponCode: { type: String, default: '' },
+    refundStatus: {
+      type: String,
+      enum: ['Not Refunded', 'Pending', 'Refunded', 'Failed'],
+      default: 'Not Refunded',
+    },
     refundTransactionId: { type: String, default: '' },
     discount: { type: Number, default: 0, min: 0 },
     // grandTotal = itemsTotal − discount. Not required so that admin
@@ -37,37 +41,37 @@ const orderSchema = new mongoose.Schema(
     grandTotal: { type: Number, default: 0, min: 0 },
     paymentMethod: {
       type: String,
-      enum: ["COD", "Online"],
+      enum: ['COD', 'Online'],
       required: true,
     },
     paymentStatus: {
       type: String,
-      enum: ["Pending", "Pending Verification", "Success", "Failed"],
-      default: "Pending",
+      enum: ['Pending', 'Pending Verification', 'Success', 'Failed'],
+      default: 'Pending',
     },
     orderStatus: {
       type: String,
       enum: [
-        "Pending Verification",
-        "Confirmed",
-        "Processing",
-        "Shipped",
-        "Delivered",
-        "Cancelled",
+        'Pending Verification',
+        'Confirmed',
+        'Processing',
+        'Shipped',
+        'Delivered',
+        'Cancelled',
       ],
-      default: "Confirmed",
+      default: 'Confirmed',
     },
     // Customer-uploaded UPI payment proof (Online payments only).
     paymentScreenshot: {
-      public_id: { type: String, default: "" },
-      url: { type: String, default: "" },
+      public_id: { type: String, default: '' },
+      url: { type: String, default: '' },
     },
-    upiReference: { type: String, default: "" },
+    upiReference: { type: String, default: '' },
     verifiedAt: { type: Date, default: null },
-    rejectionReason: { type: String, default: "" },
+    rejectionReason: { type: String, default: '' },
     stockRestored: { type: Boolean, default: false },
-    carrier: { type: String, default: "" },
-    trackingNumber: { type: String, default: "" },
+    carrier: { type: String, default: '' },
+    trackingNumber: { type: String, default: '' },
     statusHistory: [
       {
         status: { type: String, required: true },
@@ -83,4 +87,4 @@ const orderSchema = new mongoose.Schema(
 orderSchema.index({ user: 1, createdAt: -1 });
 orderSchema.index({ orderStatus: 1, createdAt: -1 });
 
-export default mongoose.model("Order", orderSchema);
+export default mongoose.model('Order', orderSchema);

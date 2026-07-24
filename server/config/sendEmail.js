@@ -1,20 +1,21 @@
-import axios from "axios";
-import dotenv from "dotenv";
+import axios from 'axios';
+import dotenv from 'dotenv';
 dotenv.config();
 
 const sendEmail = async ({ sendTo, subject, html }) => {
   try {
-    if (process.env.BREVO_API_KEY === "dummy") {
+    if (process.env.BREVO_API_KEY === 'dummy') {
       console.log("⚠️ Bypassing email send because BREVO_API_KEY is 'dummy'.");
       return true;
     }
 
     const response = await axios.post(
-      "https://api.brevo.com/v3/smtp/email",
+      'https://api.brevo.com/v3/smtp/email',
       {
         sender: {
-          email: process.env.BREVO_SENDER_EMAIL || "noreply@samridhienterprises.com",
-          name: process.env.BREVO_SENDER_NAME || "Samridhi Enterprises",
+          email:
+            process.env.BREVO_SENDER_EMAIL || 'noreply@samridhienterprises.com',
+          name: process.env.BREVO_SENDER_NAME || 'Samridhi Enterprises',
         },
         to: [{ email: sendTo }],
         subject: subject,
@@ -22,17 +23,17 @@ const sendEmail = async ({ sendTo, subject, html }) => {
       },
       {
         headers: {
-          "api-key": process.env.BREVO_API_KEY,
-          "Content-Type": "application/json",
+          'api-key': process.env.BREVO_API_KEY,
+          'Content-Type': 'application/json',
         },
       }
     );
 
-    console.log("✅ Email sent successfully:", response.data);
+    console.log('✅ Email sent successfully:', response.data);
     return true;
   } catch (error) {
     console.error(
-      "❌ Error sending email:",
+      '❌ Error sending email:',
       error.response?.data || error.message
     );
 

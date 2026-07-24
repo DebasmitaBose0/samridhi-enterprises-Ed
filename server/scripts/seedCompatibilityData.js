@@ -24,33 +24,33 @@
  * or run a one-off update setting yearStart/yearEnd to null and engineType to "".
  */
 
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import BikeModel from "../models/bikeModel.js";
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import BikeModel from '../models/bikeModel.js';
 
 dotenv.config();
 
 // Illustrative sample compatibility values, cycled across models so that the
 // Year and Engine filters visibly split the catalogue during testing.
 const SAMPLES = [
-  { yearStart: 2015, yearEnd: 2020, engineType: "150cc" },
-  { yearStart: 2018, yearEnd: 2024, engineType: "110cc" },
-  { yearStart: 2010, yearEnd: 2016, engineType: "100cc" },
-  { yearStart: 2020, yearEnd: 2025, engineType: "125cc" },
+  { yearStart: 2015, yearEnd: 2020, engineType: '150cc' },
+  { yearStart: 2018, yearEnd: 2024, engineType: '110cc' },
+  { yearStart: 2010, yearEnd: 2016, engineType: '100cc' },
+  { yearStart: 2020, yearEnd: 2025, engineType: '125cc' },
 ];
 
 async function run() {
   if (!process.env.MONGODB_URL) {
-    console.error("MONGODB_URL is not set. Aborting.");
+    console.error('MONGODB_URL is not set. Aborting.');
     process.exit(1);
   }
 
   await mongoose.connect(process.env.MONGODB_URL);
-  console.log("Connected to database.");
+  console.log('Connected to database.');
 
   const models = await BikeModel.find();
   if (models.length === 0) {
-    console.log("No bike models found. Nothing to seed.");
+    console.log('No bike models found. Nothing to seed.');
     await mongoose.disconnect();
     return;
   }
@@ -88,11 +88,11 @@ async function run() {
   );
 
   await mongoose.disconnect();
-  console.log("Disconnected.");
+  console.log('Disconnected.');
 }
 
 run().catch(async (err) => {
-  console.error("Seed failed:", err);
+  console.error('Seed failed:', err);
   await mongoose.disconnect();
   process.exit(1);
 });

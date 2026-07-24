@@ -4,7 +4,6 @@ about: Improvements or additions to documentation
 title: '[DOC] '
 labels: documentation
 assignees: ''
-
 ---
 
 **Description**

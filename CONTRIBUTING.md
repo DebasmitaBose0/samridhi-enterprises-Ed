@@ -46,6 +46,7 @@ git checkout -b feature/your-feature-name
 ```
 
 Always branch off `elusoc`, not `main`. Use descriptive branch names:
+
 - `feature/add-search-filter`
 - `bugfix/cart-quantity-error`
 - `docs/improve-readme`
@@ -78,6 +79,7 @@ git push origin feature/your-feature-name
 Then go to your fork on GitHub and click **Compare & pull request**. Make sure the base branch is set to `SRV30/samridhi-enterprises:elusoc`.
 
 In your PR:
+
 - Write a clear title and description.
 - Reference the issue it closes: `Closes #N`.
 - Describe what you changed and why.
@@ -91,6 +93,7 @@ A Project Admin will review your PR. If changes are requested, push new commits 
 ## 🛠️ Local Setup Instructions
 
 ### Prerequisites
+
 - Node.js (v18 or higher)
 - MongoDB (Local or Atlas)
 - Git
@@ -98,12 +101,14 @@ A Project Admin will review your PR. If changes are requested, push new commits 
 ### Steps
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/SRV30/samridhi-enterprises.git
    cd samridhi-enterprises
    ```
 
 2. **Setup Backend:**
+
    ```bash
    cd server
    npm install
@@ -127,13 +132,13 @@ See [README.md](./README.md) for detailed guides on MongoDB Atlas, Cloudinary, a
 
 ## 🌿 Branch Strategy
 
-| Branch | Purpose |
-|---|---|
-| `main` | Production-ready code |
-| `elusoc` | Target branch for all ELUSOC 2026 contributions |
-| `feature/...` | New features |
-| `bugfix/...` | Bug fixes |
-| `docs/...` | Documentation changes |
+| Branch        | Purpose                                         |
+| ------------- | ----------------------------------------------- |
+| `main`        | Production-ready code                           |
+| `elusoc`      | Target branch for all ELUSOC 2026 contributions |
+| `feature/...` | New features                                    |
+| `bugfix/...`  | Bug fixes                                       |
+| `docs/...`    | Documentation changes                           |
 
 > ⚠️ **All ELUSOC contributions must target the `elusoc` branch, not `main`.**
 
@@ -154,16 +159,17 @@ See [README.md](./README.md) for detailed guides on MongoDB Atlas, Cloudinary, a
 
 We follow Conventional Commits:
 
-| Prefix | When to use |
-|---|---|
-| `feat:` | New feature |
-| `fix:` | Bug fix |
-| `docs:` | Documentation changes |
-| `style:` | Formatting only (no logic change) |
+| Prefix      | When to use                                     |
+| ----------- | ----------------------------------------------- |
+| `feat:`     | New feature                                     |
+| `fix:`      | Bug fix                                         |
+| `docs:`     | Documentation changes                           |
+| `style:`    | Formatting only (no logic change)               |
 | `refactor:` | Code change that is neither a fix nor a feature |
-| `chore:` | Build process, dependency updates |
+| `chore:`    | Build process, dependency updates               |
 
 **Examples:**
+
 ```
 feat: add search functionality to product page
 fix: resolve cart quantity not updating on remove

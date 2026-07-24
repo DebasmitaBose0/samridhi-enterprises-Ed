@@ -1,7 +1,7 @@
 name: Bug Report
 description: File a structured report to help us find and fix bugs
-title: "[BUG] "
-labels: ["bug"]
+title: '[BUG] '
+labels: ['bug']
 body:
   - type: markdown
     attributes:

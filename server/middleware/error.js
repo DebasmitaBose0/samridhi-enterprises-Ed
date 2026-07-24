@@ -1,21 +1,30 @@
-import ErrorHandler from "../utils/errorHandler.js";
+import ErrorHandler from '../utils/errorHandler.js';
 const sanitizeError = (err) => {
   // Create a copy to avoid mutating the original error object
   const cleanErr = { ...err };
   // List of sensitive keys to remove
-  const sensitiveKeys = ['password', 'token', 'refreshToken', 'secret', 'authorization'];
-  
-  sensitiveKeys.forEach(key => delete cleanErr[key]);
+  const sensitiveKeys = [
+    'password',
+    'token',
+    'refreshToken',
+    'secret',
+    'authorization',
+  ];
+
+  sensitiveKeys.forEach((key) => delete cleanErr[key]);
   return cleanErr;
 };
 
 const errorMiddleware = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
-  err.message = err.message || "Internal Server Error";
+  err.message = err.message || 'Internal Server Error';
 
-  console.error(`[${req.method} ${req.originalUrl}]`, sanitizeError(err.stack || err));
+  console.error(
+    `[${req.method} ${req.originalUrl}]`,
+    sanitizeError(err.stack || err)
+  );
   // Wrong Mongodb Id error
-  if (err.name === "CastError") {
+  if (err.name === 'CastError') {
     const message = `Resource not found. Invalid: ${err.path}`;
     err = new ErrorHandler(message, 400);
   }
@@ -27,21 +36,21 @@ const errorMiddleware = (err, req, res, next) => {
   }
 
   // Mongoose validation error
-  if (err.name === "ValidationError") {
+  if (err.name === 'ValidationError') {
     const message = Object.values(err.errors)
       .map((e) => e.message)
-      .join(", ");
+      .join(', ');
     err = new ErrorHandler(message, 400);
   }
 
   // Wrong JWT error
-  if (err.name === "JsonWebTokenError") {
+  if (err.name === 'JsonWebTokenError') {
     const message = `Json Web Token is invalid, Try again `;
     err = new ErrorHandler(message, 400);
   }
 
   // JWT EXPIRE error
-  if (err.name === "TokenExpiredError") {
+  if (err.name === 'TokenExpiredError') {
     const message = `Json Web Token is Expired, Try again `;
     err = new ErrorHandler(message, 400);
   }

@@ -1,7 +1,7 @@
 const requestLogger = (req, res, next) => {
   const start = Date.now();
 
-  res.on("finish", () => {
+  res.on('finish', () => {
     const duration = Date.now() - start;
     const log = {
       timestamp: new Date().toISOString(),
@@ -9,15 +9,15 @@ const requestLogger = (req, res, next) => {
       url: req.originalUrl,
       statusCode: res.statusCode,
       responseTimeMs: duration,
-      contentLength: res.get("content-length") || 0,
-      userAgent: req.get("user-agent") || "",
+      contentLength: res.get('content-length') || 0,
+      userAgent: req.get('user-agent') || '',
     };
 
     if (res.statusCode >= 400) {
       log.error = true;
     }
 
-    if (process.env.NODE_ENV !== "test") {
+    if (process.env.NODE_ENV !== 'test') {
       console.log(JSON.stringify(log));
     }
   });

@@ -3,18 +3,18 @@
 // tickets are flagged prominently with an "Action required" banner so urgent
 // issues stand out in the admin's inbox.
 const generateAdminNewTicketEmail = (ticket, customer) => {
-  const isHighPriority = ticket.priority === "High";
+  const isHighPriority = ticket.priority === 'High';
 
   // The opening message is the first entry in the thread.
   const openingMessage =
-    (ticket.messages && ticket.messages[0] && ticket.messages[0].body) || "";
+    (ticket.messages && ticket.messages[0] && ticket.messages[0].body) || '';
 
   // Basic HTML-escape so a customer's message can't inject markup into the email.
   const escapeHtml = (str) =>
     String(str)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
 
   return `
   <div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;padding:20px;color:#333;">
@@ -27,15 +27,15 @@ const generateAdminNewTicketEmail = (ticket, customer) => {
             <strong style="color:#b91c1c;">Action required:</strong>
             <span style="color:#991b1b;"> This ticket is marked High priority. Please review and respond as soon as possible.</span>
           </div>`
-        : ""
+        : ''
     }
 
     <table style="width:100%;border-collapse:collapse;margin-top:8px;">
       <tr>
         <td style="padding:4px 8px;color:#666;">Customer</td>
         <td style="padding:4px 8px;"><strong>${
-          customer?.name || "Customer"
-        }</strong> (${customer?.email || "no email"})</td>
+          customer?.name || 'Customer'
+        }</strong> (${customer?.email || 'no email'})</td>
       </tr>
       <tr>
         <td style="padding:4px 8px;color:#666;">Subject</td>
@@ -65,7 +65,7 @@ const generateAdminNewTicketEmail = (ticket, customer) => {
               openingMessage
             )}</div>
           </div>`
-        : ""
+        : ''
     }
 
     <p style="color:#888;font-size:12px;margin-top:18px;">You are receiving this because new-ticket notifications are enabled in admin settings.</p>

@@ -1,6 +1,6 @@
-import User from "../models/userModel.js";
-import PaymentSettings from "../models/paymentSettingsModel.js";
-import sendEmail from "../config/sendEmail.js";
+import User from '../models/userModel.js';
+import PaymentSettings from '../models/paymentSettingsModel.js';
+import sendEmail from '../config/sendEmail.js';
 
 // Reusable admin-notification helper.
 //
@@ -41,8 +41,8 @@ const notifyAdmins = async ({ preferenceKey, subject, html }) => {
     }
 
     const admins = await User.find({
-      role: { $in: ["ADMIN", "MANAGER"] },
-    }).select("email name");
+      role: { $in: ['ADMIN', 'MANAGER'] },
+    }).select('email name');
 
     if (!admins.length) return false;
 
@@ -55,7 +55,7 @@ const notifyAdmins = async ({ preferenceKey, subject, html }) => {
     }
     return sentAny;
   } catch (err) {
-    console.error("Admin notification failed:", err.message);
+    console.error('Admin notification failed:', err.message);
     return false;
   }
 };

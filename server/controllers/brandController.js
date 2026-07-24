@@ -1,23 +1,23 @@
-import Brand from "../models/brandModel.js";
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import ErrorHandler from "../utils/errorHandler.js";
-import { uploadImage, deleteImage } from "../utils/cloudinary.js";
+import Brand from '../models/brandModel.js';
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import ErrorHandler from '../utils/errorHandler.js';
+import { uploadImage, deleteImage } from '../utils/cloudinary.js';
 
 export const addBrand = catchAsyncErrors(async (req, res, next) => {
   const { name } = req.body;
 
   const existing = await Brand.findOne({ name });
   if (existing) {
-    return next(new ErrorHandler("Brand already exists", 400));
+    return next(new ErrorHandler('Brand already exists', 400));
   }
 
   if (!req.file) {
-    return next(new ErrorHandler("No image file provided", 400));
+    return next(new ErrorHandler('No image file provided', 400));
   }
 
   const upload = await uploadImage(req.file);
   if (!upload || !upload.url) {
-    return next(new ErrorHandler("Image upload failed", 500));
+    return next(new ErrorHandler('Image upload failed', 500));
   }
 
   const newBrand = await Brand.create({
@@ -32,7 +32,7 @@ export const addBrand = catchAsyncErrors(async (req, res, next) => {
 
   res.status(201).json({
     success: true,
-    message: "Brand created successfully",
+    message: 'Brand created successfully',
     brand: newBrand,
   });
 });
@@ -51,7 +51,7 @@ export const updateBrand = catchAsyncErrors(async (req, res, next) => {
   const brand = await Brand.findById(id);
 
   if (!brand) {
-    return next(new ErrorHandler("Brand not found", 404));
+    return next(new ErrorHandler('Brand not found', 404));
   }
 
   if (req.body.name) {
@@ -67,7 +67,7 @@ export const updateBrand = catchAsyncErrors(async (req, res, next) => {
 
     const upload = await uploadImage(req.file);
     if (!upload || !upload.url) {
-      return next(new ErrorHandler("Image upload failed", 500));
+      return next(new ErrorHandler('Image upload failed', 500));
     }
 
     brand.images = [
@@ -82,7 +82,7 @@ export const updateBrand = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Brand updated successfully",
+    message: 'Brand updated successfully',
     brand,
   });
 });
@@ -92,7 +92,7 @@ export const deleteBrand = catchAsyncErrors(async (req, res, next) => {
 
   const brand = await Brand.findById(id);
   if (!brand) {
-    return next(new ErrorHandler("Brand not found", 404));
+    return next(new ErrorHandler('Brand not found', 404));
   }
 
   if (brand.images.length > 0) {
@@ -105,6 +105,6 @@ export const deleteBrand = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Brand deleted successfully",
+    message: 'Brand deleted successfully',
   });
 });

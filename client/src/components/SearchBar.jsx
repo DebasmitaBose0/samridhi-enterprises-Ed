@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { Search, X, Clock, TrendingUp } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { Search, X, Clock, TrendingUp } from 'lucide-react';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import axiosInstance from "@/api";
-import useSearchHistory from "@/hooks/useSearchHistory";
+import { motion, AnimatePresence } from 'framer-motion';
+import axiosInstance from '@/api';
+import useSearchHistory from '@/hooks/useSearchHistory';
 
 const MAX_SUGGESTIONS = 8;
 const MAX_POPULAR = 6;
@@ -20,14 +20,14 @@ const MAX_POPULAR = 6;
  * the rest of the component.
  */
 const SearchBar = ({
-  variant = "desktop",
-  placeholder = "Search for products...",
+  variant = 'desktop',
+  placeholder = 'Search for products...',
 }) => {
   const navigate = useNavigate();
   const { parts } = useSelector((state) => state.parts);
   const { recent, addSearch, removeSearch, clearHistory } = useSearchHistory();
 
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const [localCatalog, setLocalCatalog] = useState([]);
@@ -44,7 +44,7 @@ const SearchBar = ({
     if (parts && parts.length > 0) return;
     fetchedRef.current = true;
     try {
-      const res = await axiosInstance.get("/api/parts/get");
+      const res = await axiosInstance.get('/api/parts/get');
       setLocalCatalog(res.data?.parts || []);
     } catch {
       // Suggestions gracefully fall back to recent searches only.
@@ -68,17 +68,17 @@ const SearchBar = ({
     return { names: [...names.values()], categories: [...categories.values()] };
   }, [catalog]);
 
- // Popular Searches: Top requested vehicle parts and accessories
+  // Popular Searches: Top requested vehicle parts and accessories
   const popular = useMemo(() => {
     return [
-      "Royal Enfield Brake",
-      "Pulsar Chain Kit",
-      "Hero Clutch Plate",
-      "Engine Oil",
-      "Disk Brake Pads"
+      'Royal Enfield Brake',
+      'Pulsar Chain Kit',
+      'Hero Clutch Plate',
+      'Engine Oil',
+      'Disk Brake Pads',
     ].slice(0, MAX_POPULAR);
   }, []);
-// Suggestions while typing: matching products (name/brand) first, then categories.
+  // Suggestions while typing: matching products (name/brand) first, then categories.
   const suggestions = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
@@ -90,7 +90,7 @@ const SearchBar = ({
           p?.brand?.toLowerCase().includes(q)
       )
       .slice(0, MAX_SUGGESTIONS)
-      .map((product) => ({ type: "product", value: product.name, product }));
+      .map((product) => ({ type: 'product', value: product.name, product }));
 
     const remaining = MAX_SUGGESTIONS - productMatches.length;
     const categoryMatches =
@@ -98,18 +98,18 @@ const SearchBar = ({
         ? index.categories
             .filter((c) => c.toLowerCase().includes(q))
             .slice(0, remaining)
-            .map((value) => ({ type: "category", value }))
+            .map((value) => ({ type: 'category', value }))
         : [];
 
     return [...productMatches, ...categoryMatches];
   }, [query, catalog, index.categories]);
-  
+
   // Flat list the dropdown currently shows (drives keyboard navigation).
   const items = useMemo(() => {
     if (query.trim()) return suggestions;
     return [
-      ...popular.map((value) => ({ type: "popular", value })),
-      ...recent.map((value) => ({ type: "recent", value })),
+      ...popular.map((value) => ({ type: 'popular', value })),
+      ...recent.map((value) => ({ type: 'recent', value })),
     ];
   }, [query, suggestions, popular, recent]);
 
@@ -125,12 +125,12 @@ const SearchBar = ({
         setOpen(false);
       }
     };
-    document.addEventListener("mousedown", onMouseDown);
-    return () => document.removeEventListener("mousedown", onMouseDown);
+    document.addEventListener('mousedown', onMouseDown);
+    return () => document.removeEventListener('mousedown', onMouseDown);
   }, []);
 
   const commit = (term) => {
-    const value = (term || "").trim();
+    const value = (term || '').trim();
     if (!value) return;
     addSearch(value);
     setQuery(value);
@@ -140,18 +140,19 @@ const SearchBar = ({
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "ArrowDown") {
+    if (e.key === 'ArrowDown') {
       e.preventDefault();
       if (!open) setOpen(true);
       setActiveIndex((i) => Math.min(i + 1, items.length - 1));
-    } else if (e.key === "ArrowUp") {
+    } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setActiveIndex((i) => Math.max(i - 1, -1));
-    } else if (e.key === "Enter") {
+    } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (activeIndex >= 0 && items[activeIndex]) commit(items[activeIndex].value);
+      if (activeIndex >= 0 && items[activeIndex])
+        commit(items[activeIndex].value);
       else commit(query);
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
       setOpen(false);
       setActiveIndex(-1);
     }
@@ -191,7 +192,7 @@ const SearchBar = ({
             aria-label="Clear search"
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => {
-              setQuery("");
+              setQuery('');
               setActiveIndex(-1);
             }}
             className="mr-2 text-gray-400 hover:text-gray-600"
@@ -237,8 +238,8 @@ const SearchBar = ({
                       onMouseEnter={() => setActiveIndex(i)}
                       className={`px-3 py-2 rounded-xl text-sm cursor-pointer flex items-center gap-2 ${
                         activeIndex === i
-                          ? "bg-blue-50 text-blue-700"
-                          : "text-gray-700 hover:bg-gray-50"
+                          ? 'bg-blue-50 text-blue-700'
+                          : 'text-gray-700 hover:bg-gray-50'
                       }`}
                     >
                       <TrendingUp className="w-4 h-4 text-blue-400 shrink-0" />
@@ -272,8 +273,8 @@ const SearchBar = ({
                         onMouseEnter={() => setActiveIndex(idx)}
                         className={`group px-3 py-2 rounded-xl text-sm flex items-center gap-2 ${
                           activeIndex === idx
-                            ? "bg-blue-50 text-blue-700"
-                            : "text-gray-700 hover:bg-gray-50"
+                            ? 'bg-blue-50 text-blue-700'
+                            : 'text-gray-700 hover:bg-gray-50'
                         }`}
                       >
                         <Clock className="w-4 h-4 text-gray-400 shrink-0" />
@@ -305,7 +306,7 @@ const SearchBar = ({
                 </>
               ) : items.length > 0 ? (
                 items.map((item, idx) => (
-            <li
+                  <li
                     key={`${item.type}-${item.value}`}
                     id={`${listboxId}-option-${idx}`}
                     role="option"
@@ -315,36 +316,45 @@ const SearchBar = ({
                     onMouseEnter={() => setActiveIndex(idx)}
                     className={`px-3 py-2 rounded-xl text-sm cursor-pointer flex items-center gap-3 ${
                       activeIndex === idx
-                        ? "bg-blue-50 text-blue-700"
-                        : "text-gray-700 hover:bg-gray-50"
+                        ? 'bg-blue-50 text-blue-700'
+                        : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    {item.type === "product" && item.product ? (
+                    {item.type === 'product' && item.product ? (
                       <>
                         {/* 1. Show Product Image or Placeholder */}
                         {item.product?.images?.[0] ? (
-                          <img 
-                            src={item.product.images[0]?.url || item.product.images[0]} 
-                            alt={item.value} 
-                            className="w-10 h-10 object-cover rounded-md shrink-0 border border-gray-100" 
+                          <img
+                            src={
+                              item.product.images[0]?.url ||
+                              item.product.images[0]
+                            }
+                            alt={item.value}
+                            className="w-10 h-10 object-cover rounded-md shrink-0 border border-gray-100"
                           />
                         ) : (
                           <div className="w-10 h-10 bg-gray-100 rounded-md flex items-center justify-center shrink-0">
                             <Search className="w-4 h-4 text-gray-400" />
                           </div>
                         )}
-                        
+
                         {/* 2. Show Product Name and Brand */}
                         <div className="flex flex-col flex-grow truncate">
-                          <span className="truncate font-medium">{item.value}</span>
+                          <span className="truncate font-medium">
+                            {item.value}
+                          </span>
                           {item.product?.brand && (
-                            <span className="text-xs opacity-75">{item.product.brand}</span>
+                            <span className="text-xs opacity-75">
+                              {item.product.brand}
+                            </span>
                           )}
                         </div>
 
                         {/* 3. Show Product Price */}
                         {item.product?.price && (
-                          <span className="font-semibold shrink-0">₹{item.product.price}</span>
+                          <span className="font-semibold shrink-0">
+                            ₹{item.product.price}
+                          </span>
                         )}
                       </>
                     ) : (
@@ -352,7 +362,7 @@ const SearchBar = ({
                         {/* Standard View for Categories & Popular Searches */}
                         <Search className="w-4 h-4 text-gray-400 shrink-0" />
                         <span className="truncate flex-grow">{item.value}</span>
-                        {item.type === "category" && (
+                        {item.type === 'category' && (
                           <span className="text-xs text-gray-400 shrink-0">
                             in Categories
                           </span>

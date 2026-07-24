@@ -1,16 +1,20 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "@/api";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '@/api';
 
-const API_URL = "/api/support";
+const API_URL = '/api/support';
 
 const authConfig = () => ({});
 
 // ── User: create ticket ──
 export const createTicket = createAsyncThunk(
-  "support/create",
+  'support/create',
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post(`${API_URL}/create`, payload, authConfig());
+      const res = await axiosInstance.post(
+        `${API_URL}/create`,
+        payload,
+        authConfig()
+      );
       return res.data.ticket;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -20,7 +24,7 @@ export const createTicket = createAsyncThunk(
 
 // ── User: my tickets ──
 export const getMyTickets = createAsyncThunk(
-  "support/getMy",
+  'support/getMy',
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get(`${API_URL}/my`, authConfig());
@@ -33,7 +37,7 @@ export const getMyTickets = createAsyncThunk(
 
 // ── User: single ticket ──
 export const getMyTicket = createAsyncThunk(
-  "support/getMyOne",
+  'support/getMyOne',
   async (id, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get(`${API_URL}/my/${id}`, authConfig());
@@ -46,7 +50,7 @@ export const getMyTicket = createAsyncThunk(
 
 // ── User: reply ──
 export const addMessage = createAsyncThunk(
-  "support/addMessage",
+  'support/addMessage',
   async ({ id, body }, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.post(
@@ -63,15 +67,15 @@ export const addMessage = createAsyncThunk(
 
 // ── Admin: all tickets (optional filters) ──
 export const adminGetTickets = createAsyncThunk(
-  "support/adminGet",
+  'support/adminGet',
   async (params, { rejectWithValue }) => {
     try {
       const search = new URLSearchParams();
-      if (params?.status) search.set("status", params.status);
-      if (params?.category) search.set("category", params.category);
+      if (params?.status) search.set('status', params.status);
+      if (params?.category) search.set('category', params.category);
       const qs = search.toString();
       const res = await axiosInstance.get(
-        `${API_URL}/admin/get${qs ? `?${qs}` : ""}`,
+        `${API_URL}/admin/get${qs ? `?${qs}` : ''}`,
         authConfig()
       );
       return res.data.tickets;
@@ -83,10 +87,13 @@ export const adminGetTickets = createAsyncThunk(
 
 // ── Admin: single ticket ──
 export const adminGetTicket = createAsyncThunk(
-  "support/adminGetOne",
+  'support/adminGetOne',
   async (id, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.get(`${API_URL}/admin/${id}`, authConfig());
+      const res = await axiosInstance.get(
+        `${API_URL}/admin/${id}`,
+        authConfig()
+      );
       return res.data.ticket;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -96,7 +103,7 @@ export const adminGetTicket = createAsyncThunk(
 
 // ── Admin: update status ──
 export const adminUpdateStatus = createAsyncThunk(
-  "support/adminStatus",
+  'support/adminStatus',
   async ({ id, status }, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.put(
@@ -113,7 +120,7 @@ export const adminUpdateStatus = createAsyncThunk(
 
 // ── Admin: reply ──
 export const adminReply = createAsyncThunk(
-  "support/adminReply",
+  'support/adminReply',
   async ({ id, body }, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.post(
@@ -129,7 +136,7 @@ export const adminReply = createAsyncThunk(
 );
 
 const supportSlice = createSlice({
-  name: "support",
+  name: 'support',
   initialState: {
     tickets: [],
     current: null,

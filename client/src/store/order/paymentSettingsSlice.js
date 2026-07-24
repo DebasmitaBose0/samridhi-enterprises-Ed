@@ -1,18 +1,18 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "@/api";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '@/api';
 
-const API_URL = "/api/payment-settings";
+const API_URL = '/api/payment-settings';
 
 const authConfig = (multipart = false) => {
   return {
     headers: {
-      ...(multipart ? { "Content-Type": "multipart/form-data" } : {}),
+      ...(multipart ? { 'Content-Type': 'multipart/form-data' } : {}),
     },
   };
 };
 
 export const getPaymentSettings = createAsyncThunk(
-  "paymentSettings/get",
+  'paymentSettings/get',
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`${API_URL}`, authConfig());
@@ -25,7 +25,7 @@ export const getPaymentSettings = createAsyncThunk(
 
 // Admin (multipart: optional qrImage)
 export const adminUpdatePaymentSettings = createAsyncThunk(
-  "paymentSettings/update",
+  'paymentSettings/update',
   async (formData, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.put(
@@ -41,9 +41,13 @@ export const adminUpdatePaymentSettings = createAsyncThunk(
 );
 
 const paymentSettingsSlice = createSlice({
-  name: "paymentSettings",
+  name: 'paymentSettings',
   initialState: {
-    settings: { upiId: "", qrImage: { public_id: "", url: "" }, notifyAdminsOnNewOrder: true },
+    settings: {
+      upiId: '',
+      qrImage: { public_id: '', url: '' },
+      notifyAdminsOnNewOrder: true,
+    },
     loading: false,
     error: null,
     success: false,

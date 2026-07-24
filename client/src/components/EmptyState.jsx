@@ -1,15 +1,18 @@
-import { Package, Inbox, SearchX } from "lucide-react";
-import PropTypes from "prop-types";
+import { Package, Inbox, SearchX } from 'lucide-react';
+import PropTypes from 'prop-types';
 
 const icons = { Package, Inbox, SearchX };
 
-const EmptyState = ({ icon = "Inbox", title, message, action }) => {
+const EmptyState = ({ icon = 'Inbox', title, message, action }) => {
   const Icon = icons[icon] || Inbox;
 
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
       <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-6">
-        <Icon className="w-10 h-10 text-gray-400 dark:text-gray-500" aria-hidden="true" />
+        <Icon
+          className="w-10 h-10 text-gray-400 dark:text-gray-500"
+          aria-hidden="true"
+        />
       </div>
       <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
         {title}
@@ -32,7 +35,7 @@ const EmptyState = ({ icon = "Inbox", title, message, action }) => {
 };
 
 EmptyState.propTypes = {
-  icon: PropTypes.oneOf(["Package", "Inbox", "SearchX"]),
+  icon: PropTypes.oneOf(['Package', 'Inbox', 'SearchX']),
   title: PropTypes.string.isRequired,
   message: PropTypes.string,
   action: PropTypes.shape({

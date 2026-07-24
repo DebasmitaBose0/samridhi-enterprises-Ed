@@ -1,13 +1,13 @@
-import ErrorHandler from "../utils/errorHandler.js";
-import Order from "../models/orderModel.js";
-import User from "../models/userModel.js";
-import Part from "../models/partModel.js";
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
+import ErrorHandler from '../utils/errorHandler.js';
+import Order from '../models/orderModel.js';
+import User from '../models/userModel.js';
+import Part from '../models/partModel.js';
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
 
 // Revenue is only counted for orders whose payment has actually succeeded, so
 // COD orders awaiting delivery and online orders pending verification do not
 // inflate the totals. Centralised here so every metric uses the same rule.
-const PAID_MATCH = { paymentStatus: "Success" };
+const PAID_MATCH = { paymentStatus: 'Success' };
 
 // Stock at or below this level is treated as "low" on the dashboard. Kept as a
 // named constant so the dashboard, inventory module, and alerts stay in sync.
@@ -34,7 +34,7 @@ export const adminGetDashboardAnalytics = catchAsyncErrors(
         {
           $group: {
             _id: null,
-            revenue: { $sum: "$itemsTotal" },
+            revenue: { $sum: '$itemsTotal' },
             paidOrders: { $sum: 1 },
           },
         },
@@ -42,10 +42,10 @@ export const adminGetDashboardAnalytics = catchAsyncErrors(
       // Every order regardless of payment state (operational volume).
       Order.countDocuments({}),
       // Customers = registered users with the default USER role.
-      User.countDocuments({ role: "USER" }),
+      User.countDocuments({ role: 'USER' }),
       // Order count grouped by lifecycle status, for the status breakdown.
       Order.aggregate([
-        { $group: { _id: "$orderStatus", count: { $sum: 1 } } },
+        { $group: { _id: '$orderStatus', count: { $sum: 1 } } },
       ]),
       // Parts running low (but not yet out).
       Part.countDocuments({ stock: { $gt: 0, $lte: LOW_STOCK_THRESHOLD } }),
@@ -86,13 +86,13 @@ export const adminGetDashboardAnalytics = catchAsyncErrors(
 export const adminGetInventoryOverview = catchAsyncErrors(
   async (req, res, next) => {
     const parts = await Part.find({})
-      .select("name price stock category")
+      .select('name price stock category')
       .sort({ stock: 1 });
 
     const inventory = parts.map((p) => {
-      let status = "In Stock";
-      if (p.stock <= 0) status = "Out of Stock";
-      else if (p.stock <= LOW_STOCK_THRESHOLD) status = "Low Stock";
+      let status = 'In Stock';
+      if (p.stock <= 0) status = 'Out of Stock';
+      else if (p.stock <= LOW_STOCK_THRESHOLD) status = 'Low Stock';
       return {
         _id: p._id,
         name: p.name,
@@ -143,14 +143,14 @@ export const adminGetSalesAnalytics = catchAsyncErrors(
           {
             $group: {
               _id: {
-                year: { $year: "$createdAt" },
-                month: { $month: "$createdAt" },
+                year: { $year: '$createdAt' },
+                month: { $month: '$createdAt' },
               },
-              revenue: { $sum: "$itemsTotal" },
+              revenue: { $sum: '$itemsTotal' },
               orders: { $sum: 1 },
             },
           },
-          { $sort: { "_id.year": 1, "_id.month": 1 } },
+          { $sort: { '_id.year': 1, '_id.month': 1 } },
         ]),
 
         // 2. Top selling products — unwind each paid order's line items and
@@ -158,14 +158,14 @@ export const adminGetSalesAnalytics = catchAsyncErrors(
         //    the UI can show both volume and value. Limited to the top 8.
         Order.aggregate([
           { $match: PAID_MATCH },
-          { $unwind: "$items" },
+          { $unwind: '$items' },
           {
             $group: {
-              _id: "$items.part",
-              name: { $first: "$items.name" },
-              unitsSold: { $sum: "$items.quantity" },
+              _id: '$items.part',
+              name: { $first: '$items.name' },
+              unitsSold: { $sum: '$items.quantity' },
               revenue: {
-                $sum: { $multiply: ["$items.price", "$items.quantity"] },
+                $sum: { $multiply: ['$items.price', '$items.quantity'] },
               },
             },
           },
@@ -177,18 +177,18 @@ export const adminGetSalesAnalytics = catchAsyncErrors(
         //    the same window, so sign-ups can be compared against sales.
         User.aggregate([
           {
-            $match: { role: "USER", createdAt: { $gte: windowStart } },
+            $match: { role: 'USER', createdAt: { $gte: windowStart } },
           },
           {
             $group: {
               _id: {
-                year: { $year: "$createdAt" },
-                month: { $month: "$createdAt" },
+                year: { $year: '$createdAt' },
+                month: { $month: '$createdAt' },
               },
               newCustomers: { $sum: 1 },
             },
           },
-          { $sort: { "_id.year": 1, "_id.month": 1 } },
+          { $sort: { '_id.year': 1, '_id.month': 1 } },
         ]),
 
         // 4. Recent orders — the ten most recent regardless of payment state,
@@ -197,9 +197,9 @@ export const adminGetSalesAnalytics = catchAsyncErrors(
         Order.find({})
           .sort({ createdAt: -1 })
           .limit(10)
-          .populate("user", "name email")
+          .populate('user', 'name email')
           .select(
-            "itemsTotal paymentStatus orderStatus paymentMethod createdAt shippingAddress.fullName user"
+            'itemsTotal paymentStatus orderStatus paymentMethod createdAt shippingAddress.fullName user'
           ),
       ]);
 
@@ -214,9 +214,9 @@ export const adminGetSalesAnalytics = catchAsyncErrors(
     }
 
     const monthLabel = (year, month) =>
-      new Date(year, month - 1, 1).toLocaleDateString("en-IN", {
-        month: "short",
-        year: "2-digit",
+      new Date(year, month - 1, 1).toLocaleDateString('en-IN', {
+        month: 'short',
+        year: '2-digit',
       });
 
     const salesByKey = monthlySalesAgg.reduce((acc, row) => {
@@ -248,15 +248,15 @@ export const adminGetSalesAnalytics = catchAsyncErrors(
 
     const topProducts = topProductsAgg.map((p) => ({
       _id: p._id,
-      name: p.name || "Unknown product",
+      name: p.name || 'Unknown product',
       unitsSold: p.unitsSold,
       revenue: p.revenue,
     }));
 
     const recent = recentOrders.map((o) => ({
       _id: o._id,
-      customerName: o.user?.name || o.shippingAddress?.fullName || "Guest",
-      customerEmail: o.user?.email || "",
+      customerName: o.user?.name || o.shippingAddress?.fullName || 'Guest',
+      customerEmail: o.user?.email || '',
       itemsTotal: o.itemsTotal,
       paymentMethod: o.paymentMethod,
       paymentStatus: o.paymentStatus,

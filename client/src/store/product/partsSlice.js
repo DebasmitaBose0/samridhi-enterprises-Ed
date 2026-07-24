@@ -1,18 +1,22 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "@/api";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '@/api';
 
-const API_URL = "/api/parts";
+const API_URL = '/api/parts';
 
 export const addPart = createAsyncThunk(
-  "part/add",
+  'part/add',
   async (formData, { rejectWithValue }) => {
     try {
       const config = {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       };
-      const response = await axiosInstance.post(`${API_URL}/add`, formData, config);
+      const response = await axiosInstance.post(
+        `${API_URL}/add`,
+        formData,
+        config
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -21,7 +25,7 @@ export const addPart = createAsyncThunk(
 );
 
 export const fetchParts = createAsyncThunk(
-  "part/fetchAll",
+  'part/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`${API_URL}/get`);
@@ -33,7 +37,7 @@ export const fetchParts = createAsyncThunk(
 );
 
 export const fetchPartById = createAsyncThunk(
-  "part/fetchById",
+  'part/fetchById',
   async (id, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`${API_URL}/get/${id}`);
@@ -45,7 +49,7 @@ export const fetchPartById = createAsyncThunk(
 );
 
 export const fetchSimilarParts = createAsyncThunk(
-  "part/fetchSimilar",
+  'part/fetchSimilar',
   async (id, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`${API_URL}/get/${id}/similar`);
@@ -57,7 +61,7 @@ export const fetchSimilarParts = createAsyncThunk(
 );
 
 export const fetchFrequentlyBoughtTogether = createAsyncThunk(
-  "part/fetchFrequentlyBoughtTogether",
+  'part/fetchFrequentlyBoughtTogether',
   async (id, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
@@ -71,7 +75,7 @@ export const fetchFrequentlyBoughtTogether = createAsyncThunk(
 );
 
 export const fetchRecommendedForYou = createAsyncThunk(
-  "part/fetchRecommendedForYou",
+  'part/fetchRecommendedForYou',
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
@@ -87,7 +91,7 @@ export const fetchRecommendedForYou = createAsyncThunk(
 // Fire-and-forget: record that a set of recommended products was shown.
 // Failures are swallowed — analytics tracking must never disrupt the UI.
 export const trackRecommendationImpressions = createAsyncThunk(
-  "part/trackRecommendationImpressions",
+  'part/trackRecommendationImpressions',
   async (productIds, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(
@@ -103,7 +107,7 @@ export const trackRecommendationImpressions = createAsyncThunk(
 
 // Fire-and-forget: record that a recommended product was clicked.
 export const trackRecommendationClick = createAsyncThunk(
-  "part/trackRecommendationClick",
+  'part/trackRecommendationClick',
   async (productId, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(
@@ -120,7 +124,7 @@ export const trackRecommendationClick = createAsyncThunk(
 // Admin — fetch recommendation & engagement analytics (most viewed, most
 // recommended, CTR).
 export const adminGetRecommendationAnalytics = createAsyncThunk(
-  "part/adminGetRecommendationAnalytics",
+  'part/adminGetRecommendationAnalytics',
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
@@ -134,15 +138,19 @@ export const adminGetRecommendationAnalytics = createAsyncThunk(
 );
 
 export const updatePart = createAsyncThunk(
-  "part/update",
+  'part/update',
   async ({ id, formData }, { rejectWithValue }) => {
     try {
       const config = {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       };
-      const response = await axiosInstance.put(`${API_URL}/update/${id}`, formData, config);
+      const response = await axiosInstance.put(
+        `${API_URL}/update/${id}`,
+        formData,
+        config
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -151,7 +159,7 @@ export const updatePart = createAsyncThunk(
 );
 
 export const deletePart = createAsyncThunk(
-  "part/delete",
+  'part/delete',
   async (id, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.delete(`${API_URL}/delete/${id}`);
@@ -163,13 +171,13 @@ export const deletePart = createAsyncThunk(
 );
 
 export const createOrUpdateReview = createAsyncThunk(
-  "part/createOrUpdateReview",
+  'part/createOrUpdateReview',
   async ({ partId, rating, comment }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.post(
-        `${API_URL}/review/${partId}`,
-        { rating, comment }
-      );
+      const response = await axiosInstance.post(`${API_URL}/review/${partId}`, {
+        rating,
+        comment,
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -178,10 +186,12 @@ export const createOrUpdateReview = createAsyncThunk(
 );
 
 export const deleteReview = createAsyncThunk(
-  "part/deleteReview",
+  'part/deleteReview',
   async (partId, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(`${API_URL}/review/${partId}`);
+      const response = await axiosInstance.delete(
+        `${API_URL}/review/${partId}`
+      );
       return { partId, ...response.data };
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -190,7 +200,7 @@ export const deleteReview = createAsyncThunk(
 );
 
 const partSlice = createSlice({
-  name: "part",
+  name: 'part',
   initialState: {
     parts: [],
     part: null,
@@ -315,7 +325,9 @@ const partSlice = createSlice({
       })
       .addCase(updatePart.fulfilled, (state, action) => {
         state.loading = false;
-        const index = state.parts.findIndex((p) => p._id === action.payload.part._id);
+        const index = state.parts.findIndex(
+          (p) => p._id === action.payload.part._id
+        );
         if (index !== -1) {
           state.parts[index] = action.payload.part;
         }
@@ -347,7 +359,11 @@ const partSlice = createSlice({
       .addCase(createOrUpdateReview.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        if (state.part && state.part._id === action.meta.arg.partId && action.payload?.part) {
+        if (
+          state.part &&
+          state.part._id === action.meta.arg.partId &&
+          action.payload?.part
+        ) {
           state.part = {
             ...state.part,
             reviews: action.payload.part.reviews,
@@ -368,7 +384,11 @@ const partSlice = createSlice({
       .addCase(deleteReview.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        if (state.part && state.part._id === action.payload?.partId && action.payload?.part) {
+        if (
+          state.part &&
+          state.part._id === action.payload?.partId &&
+          action.payload?.part
+        ) {
           state.part = {
             ...state.part,
             reviews: action.payload.part.reviews,

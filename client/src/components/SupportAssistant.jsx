@@ -1,9 +1,9 @@
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { MessageCircle, X, RotateCcw } from "lucide-react";
-import supportFlows from "../config/supportFlows";
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { MessageCircle, X, RotateCcw } from 'lucide-react';
+import supportFlows from '../config/supportFlows';
 
 // Rule-based support assistant widget.
 //
@@ -20,13 +20,13 @@ import supportFlows from "../config/supportFlows";
 //   - "restart" returns to root; "link" navigates (internal route or external
 //     mailto:/tel:) ; "next" walks to another node.
 
-const ASSISTANT = "assistant";
-const USER = "user";
+const ASSISTANT = 'assistant';
+const USER = 'user';
 
 const SupportAssistant = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [currentId, setCurrentId] = useState("root");
+  const [currentId, setCurrentId] = useState('root');
   const [messages, setMessages] = useState([]);
   const scrollRef = useRef(null);
 
@@ -47,7 +47,7 @@ const SupportAssistant = () => {
   }, [messages, open]);
 
   const restart = () => {
-    setCurrentId("root");
+    setCurrentId('root');
     setMessages([{ from: ASSISTANT, text: supportFlows.root.message }]);
   };
 
@@ -55,10 +55,10 @@ const SupportAssistant = () => {
     // Record the user's choice in the transcript.
     const next = [...messages, { from: USER, text: option.label }];
 
-    if (option.action === "restart") {
+    if (option.action === 'restart') {
       setMessages(next);
       // Small reset so the user sees their tap before returning to root.
-      setCurrentId("root");
+      setCurrentId('root');
       setMessages([
         ...next,
         { from: ASSISTANT, text: supportFlows.root.message },
@@ -66,15 +66,15 @@ const SupportAssistant = () => {
       return;
     }
 
-    if (option.action === "link" && option.href) {
+    if (option.action === 'link' && option.href) {
       setMessages(next);
-      if (option.href.startsWith("/")) {
+      if (option.href.startsWith('/')) {
         // Internal route — use the router and close the widget.
         navigate(option.href);
         setOpen(false);
       } else {
         // External (mailto:/tel:) — open via the browser.
-        window.open(option.href, "_self");
+        window.open(option.href, '_self');
       }
       return;
     }
@@ -94,13 +94,17 @@ const SupportAssistant = () => {
         onClick={() => setOpen((v) => !v)}
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.4, type: "spring", stiffness: 260, damping: 20 }}
+        transition={{ delay: 0.4, type: 'spring', stiffness: 260, damping: 20 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        aria-label={open ? "Close support assistant" : "Open support assistant"}
+        aria-label={open ? 'Close support assistant' : 'Open support assistant'}
         className="fixed bottom-20 right-5 sm:bottom-24 sm:right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg shadow-blue-500/30 transition hover:shadow-xl"
       >
-        {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+        {open ? (
+          <X className="h-6 w-6" />
+        ) : (
+          <MessageCircle className="h-6 w-6" />
+        )}
       </motion.button>
 
       <AnimatePresence>
@@ -150,14 +154,14 @@ const SupportAssistant = () => {
                 <div
                   key={i}
                   className={`flex ${
-                    m.from === USER ? "justify-end" : "justify-start"
+                    m.from === USER ? 'justify-end' : 'justify-start'
                   }`}
                 >
                   <div
                     className={`max-w-[80%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed ${
                       m.from === USER
-                        ? "rounded-br-sm bg-blue-600 text-white"
-                        : "rounded-bl-sm bg-white text-gray-700 shadow-sm"
+                        ? 'rounded-br-sm bg-blue-600 text-white'
+                        : 'rounded-bl-sm bg-white text-gray-700 shadow-sm'
                     }`}
                   >
                     {m.text}

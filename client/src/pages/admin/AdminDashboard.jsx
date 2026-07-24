@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { motion } from 'framer-motion';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   IndianRupee,
   ShoppingCart,
@@ -17,33 +17,35 @@ import {
   UsersRound,
   Tag,
   LifeBuoy,
-} from "lucide-react";
-import { Link } from "react-router-dom";
-import {
-  adminGetDashboardAnalytics,
-} from "@/store/order/orderSlice";
-import AdminAnalytics from "./AdminAnalytics";
+} from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { adminGetDashboardAnalytics } from '@/store/order/orderSlice';
+import AdminAnalytics from './AdminAnalytics';
 
 // Indian-rupee formatter shared by the revenue card.
 const formatINR = (n) =>
-  new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
+  new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
     maximumFractionDigits: 0,
   }).format(n || 0);
 
 // Quick links to the other admin modules. Existing product-management pages are
 // linked here so the dashboard is the single entry point for all admin work.
 const quickLinks = [
-  { to: "/admin/orders", label: "Manage Orders", icon: ClipboardList },
-  { to: "/admin/brands", label: "Bike Brands", icon: Building2 },
-  { to: "/admin/bikes", label: "Bike Models", icon: Car },
-  { to: "/admin/parts", label: "Bike Parts", icon: Wrench },
-  { to: "/admin/inventory", label: "Inventory", icon: PackageSearch },
-  { to: "/admin/customers", label: "Customers", icon: UsersRound },
-  { to: "/admin/coupons", label: "Coupons", icon: Tag },
-  { to: "/admin/support", label: "Support Tickets", icon: LifeBuoy },
-  { to: "/admin/payment-settings", label: "Payment Settings", icon: CreditCard },
+  { to: '/admin/orders', label: 'Manage Orders', icon: ClipboardList },
+  { to: '/admin/brands', label: 'Bike Brands', icon: Building2 },
+  { to: '/admin/bikes', label: 'Bike Models', icon: Car },
+  { to: '/admin/parts', label: 'Bike Parts', icon: Wrench },
+  { to: '/admin/inventory', label: 'Inventory', icon: PackageSearch },
+  { to: '/admin/customers', label: 'Customers', icon: UsersRound },
+  { to: '/admin/coupons', label: 'Coupons', icon: Tag },
+  { to: '/admin/support', label: 'Support Tickets', icon: LifeBuoy },
+  {
+    to: '/admin/payment-settings',
+    label: 'Payment Settings',
+    icon: CreditCard,
+  },
 ];
 
 const AdminDashboard = () => {
@@ -59,28 +61,28 @@ const AdminDashboard = () => {
   // layout stays stable instead of flashing undefined.
   const cards = [
     {
-      title: "Total Revenue",
+      title: 'Total Revenue',
       value: formatINR(analytics?.totalRevenue),
       icon: <IndianRupee className="w-8 h-8 text-white" />,
-      color: "bg-emerald-500",
+      color: 'bg-emerald-500',
     },
     {
-      title: "Total Orders",
+      title: 'Total Orders',
       value: analytics?.totalOrders ?? 0,
       icon: <ShoppingCart className="w-8 h-8 text-white" />,
-      color: "bg-blue-500",
+      color: 'bg-blue-500',
     },
     {
-      title: "Total Customers",
+      title: 'Total Customers',
       value: analytics?.totalCustomers ?? 0,
       icon: <Users className="w-8 h-8 text-white" />,
-      color: "bg-purple-500",
+      color: 'bg-purple-500',
     },
     {
-      title: "Low Stock Items",
+      title: 'Low Stock Items',
       value: analytics?.lowStockCount ?? 0,
       icon: <AlertTriangle className="w-8 h-8 text-white" />,
-      color: "bg-amber-500",
+      color: 'bg-amber-500',
     },
   ];
 
@@ -115,7 +117,7 @@ const AdminDashboard = () => {
               <div className="bg-white/20 p-2 rounded-full">{card.icon}</div>
             </div>
             <div className="text-3xl font-bold">
-              {loading && !analytics ? "…" : card.value}
+              {loading && !analytics ? '…' : card.value}
             </div>
           </motion.div>
         ))}
@@ -133,7 +135,7 @@ const AdminDashboard = () => {
                 key={status}
                 className="px-4 py-2 rounded-full bg-white shadow text-sm font-medium text-gray-700 border border-gray-200"
               >
-                {status}:{" "}
+                {status}:{' '}
                 <span className="font-bold text-blue-900">{count}</span>
               </span>
             ))}
@@ -147,7 +149,7 @@ const AdminDashboard = () => {
           <AlertTriangle className="w-5 h-5 shrink-0" />
           <span className="text-sm font-medium">
             {analytics.outOfStockCount} product
-            {analytics.outOfStockCount === 1 ? " is" : "s are"} out of stock and
+            {analytics.outOfStockCount === 1 ? ' is' : 's are'} out of stock and
             need restocking.
           </span>
         </div>
@@ -155,9 +157,7 @@ const AdminDashboard = () => {
 
       {/* Quick navigation to all admin modules */}
       <div className="mt-10">
-        <h3 className="text-lg font-semibold text-gray-700 mb-4">
-          Management
-        </h3>
+        <h3 className="text-lg font-semibold text-gray-700 mb-4">Management</h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
           {/* eslint-disable-next-line no-unused-vars */}
           {quickLinks.map(({ to, label, icon: Icon }) => (

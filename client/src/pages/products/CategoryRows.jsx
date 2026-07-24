@@ -1,48 +1,48 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchParts } from "../../store/product/partsSlice";
-import { toast } from "react-toastify";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchParts } from '../../store/product/partsSlice';
+import { toast } from 'react-toastify';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const categories = [
-  "Abs",
-  "Belt Drive",
-  "Bearing Kit",
-  "BSVI Products",
-  "Brake Switch",
-  "CDEI",
-  "C.D.I",
-  "Consumable Filters",
-  "Drum / Drum Plate / Coupling Hub / Wheel Rim",
-  "Electronic Relay",
-  "Filters & Horn",
-  "Footrest Bracket",
-  "Other Products (Cylinder Kit / Fuse Blade)",
-  "Flasher / Buzzer",
-  "Floor Set / Speedo Gear",
-  "Fuel Items",
-  "Lever & Yoke",
-  "Varroc Oil / Grease",
-  "Handle Bar Switch / Handle Bar Weigth",
-  "Ignition Coil",
-  "Insulator For Carburetor",
-  "Lighting Products",
-  "Magneto Assembly & Spares",
-  "Modular Switch",
-  "Oring",
-  "Other (Oil Pump Gear / Clutch Roller / Plug Cap)",
-  "Oil Seal Kit",
-  "Gaskets",
-  "Rear View Mirror",
-  "Regulator Rectifier (R.R.)",
-  "Rubber Items",
-  "Relay",
-  "Switches / Locks",
-  "Starter Moter & Spares",
-  "Speedo Gear",
-  "TPSR / Swing Arm Assly",
+  'Abs',
+  'Belt Drive',
+  'Bearing Kit',
+  'BSVI Products',
+  'Brake Switch',
+  'CDEI',
+  'C.D.I',
+  'Consumable Filters',
+  'Drum / Drum Plate / Coupling Hub / Wheel Rim',
+  'Electronic Relay',
+  'Filters & Horn',
+  'Footrest Bracket',
+  'Other Products (Cylinder Kit / Fuse Blade)',
+  'Flasher / Buzzer',
+  'Floor Set / Speedo Gear',
+  'Fuel Items',
+  'Lever & Yoke',
+  'Varroc Oil / Grease',
+  'Handle Bar Switch / Handle Bar Weigth',
+  'Ignition Coil',
+  'Insulator For Carburetor',
+  'Lighting Products',
+  'Magneto Assembly & Spares',
+  'Modular Switch',
+  'Oring',
+  'Other (Oil Pump Gear / Clutch Roller / Plug Cap)',
+  'Oil Seal Kit',
+  'Gaskets',
+  'Rear View Mirror',
+  'Regulator Rectifier (R.R.)',
+  'Rubber Items',
+  'Relay',
+  'Switches / Locks',
+  'Starter Moter & Spares',
+  'Speedo Gear',
+  'TPSR / Swing Arm Assly',
 ];
 
 const CategoryRows = () => {
@@ -97,7 +97,7 @@ const CategoryRows = () => {
       y: 0,
       transition: {
         duration: 0.6,
-        ease: "easeOut",
+        ease: 'easeOut',
       },
     },
   };
@@ -109,7 +109,7 @@ const CategoryRows = () => {
       x: 0,
       transition: {
         duration: 0.4,
-        ease: "easeOut",
+        ease: 'easeOut',
       },
     },
     hover: {
@@ -117,7 +117,7 @@ const CategoryRows = () => {
       scale: 1.02,
       transition: {
         duration: 0.3,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
   };
@@ -127,15 +127,15 @@ const CategoryRows = () => {
       scale: 1.1,
       transition: {
         duration: 0.3,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
   };
 
   const stockConfig = {
-    high: { bg: "bg-emerald-500", text: "text-white", label: "In Stock" },
-    medium: { bg: "bg-amber-500", text: "text-white", label: "Low Stock" },
-    low: { bg: "bg-red-500", text: "text-white", label: "Out of Stock" },
+    high: { bg: 'bg-emerald-500', text: 'text-white', label: 'In Stock' },
+    medium: { bg: 'bg-amber-500', text: 'text-white', label: 'Low Stock' },
+    low: { bg: 'bg-red-500', text: 'text-white', label: 'Out of Stock' },
   };
 
   const getStockStatus = (stock) => {
@@ -300,7 +300,7 @@ const CategoryRows = () => {
                                           <motion.img
                                             src={
                                               part.images[0]?.url ||
-                                              "https://via.placeholder.com/300x200?text=Product+Image"
+                                              'https://via.placeholder.com/300x200?text=Product+Image'
                                             }
                                             alt={part.name}
                                             initial={{ opacity: 0, scale: 1.1 }}
@@ -386,7 +386,7 @@ const CategoryRows = () => {
                                                   ? part.vehicleCompatibility
                                                       .slice(0, 1)
                                                       .map((v) => v.name || v)
-                                                      .join(", ") +
+                                                      .join(', ') +
                                                     (part.vehicleCompatibility
                                                       .length > 1
                                                       ? ` +${
@@ -394,8 +394,8 @@ const CategoryRows = () => {
                                                             .vehicleCompatibility
                                                             .length - 1
                                                         } more`
-                                                      : "")
-                                                  : "Universal"}
+                                                      : '')
+                                                  : 'Universal'}
                                               </span>
                                             </div>
                                           </div>

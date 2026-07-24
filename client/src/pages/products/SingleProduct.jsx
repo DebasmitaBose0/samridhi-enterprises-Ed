@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { getCustomerStockStatus, getStockBadge } from "@/utils/stockStatus";
+import React, { useEffect, useState } from 'react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { getCustomerStockStatus, getStockBadge } from '@/utils/stockStatus';
 import {
   fetchPartById,
   fetchSimilarParts,
@@ -13,28 +13,40 @@ import {
   deleteReview,
   clearPartError,
   clearPartSuccess,
-} from "../../store/product/partsSlice";
-import { addToCart } from "../../store/cart/cartSlice";
-import { addToWishlist, removeFromWishlist } from "../../store/wishlist/wishlistSlice";
-import { Heart } from "lucide-react";
-import { toast } from "react-toastify";
+} from '../../store/product/partsSlice';
+import { addToCart } from '../../store/cart/cartSlice';
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from '../../store/wishlist/wishlistSlice';
+import { Heart } from 'lucide-react';
+import { toast } from 'react-toastify';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import RecentlyViewed, { RECENTLY_VIEWED_KEY } from "../../components/RecentlyViewed";
+import { motion, AnimatePresence } from 'framer-motion';
+import RecentlyViewed, {
+  RECENTLY_VIEWED_KEY,
+} from '../../components/RecentlyViewed';
 
 const SingleProduct = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { part, loading, error, parts, similarParts, fbtParts, recommendedParts } =
-    useSelector((state) => state.parts);
+  const {
+    part,
+    loading,
+    error,
+    parts,
+    similarParts,
+    fbtParts,
+    recommendedParts,
+  } = useSelector((state) => state.parts);
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const { wishlist } = useSelector((state) => state.wishlist);
   const wishlistItems = wishlist?.items || [];
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
+  const [comment, setComment] = useState('');
   const [hoveredStar, setHoveredStar] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
 
@@ -70,7 +82,7 @@ const SingleProduct = () => {
         setComment(userReview.comment);
       } else {
         setRating(0);
-        setComment("");
+        setComment('');
       }
     }
   }, [part, user, isAuthenticated]);
@@ -81,10 +93,10 @@ const SingleProduct = () => {
     fbtParts && fbtParts.length > 0
       ? fbtParts
       : parts && part
-      ? parts
-          .filter((p) => p._id !== part._id && p.category === part.category)
-          .slice(0, 5)
-      : [];
+        ? parts
+            .filter((p) => p._id !== part._id && p.category === part.category)
+            .slice(0, 5)
+        : [];
 
   // Recommended For You — uses the personalized backend endpoint
   // (recommendedParts, based on the user's cart / wishlist / order history).
@@ -94,10 +106,10 @@ const SingleProduct = () => {
     recommendedParts && recommendedParts.length > 0
       ? recommendedParts
       : parts && part
-      ? parts
-          .filter((p) => p._id !== part._id && p.category !== part.category)
-          .slice(0, 5)
-      : [];
+        ? parts
+            .filter((p) => p._id !== part._id && p.category !== part.category)
+            .slice(0, 5)
+        : [];
 
   // Track recommendation impressions once the recommendation sets for this
   // product have loaded. We send the unique set of product IDs actually shown
@@ -129,23 +141,25 @@ const SingleProduct = () => {
     if (!product?._id) return;
 
     try {
-      const storedItems = JSON.parse(localStorage.getItem(RECENTLY_VIEWED_KEY) || "[]");
+      const storedItems = JSON.parse(
+        localStorage.getItem(RECENTLY_VIEWED_KEY) || '[]'
+      );
       const normalizedItems = Array.isArray(storedItems) ? storedItems : [];
 
       const updatedItems = [
         {
           id: product._id,
           name: product.name,
-          image: product.images?.[0]?.url || "",
+          image: product.images?.[0]?.url || '',
           price: product.price,
         },
         ...normalizedItems.filter((item) => item.id !== product._id),
       ].slice(0, 5);
 
       localStorage.setItem(RECENTLY_VIEWED_KEY, JSON.stringify(updatedItems));
-      window.dispatchEvent(new Event("recently-viewed-updated"));
+      window.dispatchEvent(new Event('recently-viewed-updated'));
     } catch (error) {
-      console.error("Failed to save recently viewed products", error);
+      console.error('Failed to save recently viewed products', error);
     }
   };
 
@@ -157,8 +171,8 @@ const SingleProduct = () => {
 
   const handleAddToCart = () => {
     if (!isAuthenticated) {
-      toast.error("Please log in to add items to cart");
-      navigate("/login");
+      toast.error('Please log in to add items to cart');
+      navigate('/login');
       return;
     }
     dispatch(
@@ -179,7 +193,7 @@ const SingleProduct = () => {
     wishlistItems.some((i) => (i.part?._id || i.part) === id);
   const toggleWishlist = () => {
     if (!isAuthenticated) {
-      toast.info("Please log in to use your wishlist");
+      toast.info('Please log in to use your wishlist');
       return;
     }
     if (!part?._id) return;
@@ -193,78 +207,79 @@ const SingleProduct = () => {
   const handleSubmitReview = (e) => {
     e.preventDefault();
     if (!isAuthenticated) {
-      toast.error("Please log in to submit a review");
-      navigate("/login");
+      toast.error('Please log in to submit a review');
+      navigate('/login');
       return;
     }
     if (rating < 1 || rating > 5) {
-      toast.error("Please select a rating between 1 and 5");
+      toast.error('Please select a rating between 1 and 5');
       return;
     }
     if (!comment.trim()) {
-      toast.error("Please enter a review comment");
+      toast.error('Please enter a review comment');
       return;
     }
     if (comment.length > 500) {
-      toast.error("Review comment cannot exceed 500 characters");
+      toast.error('Review comment cannot exceed 500 characters');
       return;
     }
-    dispatch(createOrUpdateReview({ partId: id, rating, comment })).then((result) => {
-      if (createOrUpdateReview.fulfilled.match(result)) {
-        toast.success("Review submitted successfully!");
-        dispatch(fetchPartById(id));
-        dispatch(clearPartSuccess());
-      } else if (createOrUpdateReview.rejected.match(result)) {
-        toast.error(result.payload || "Failed to submit review");
-        dispatch(clearPartError());
+    dispatch(createOrUpdateReview({ partId: id, rating, comment })).then(
+      (result) => {
+        if (createOrUpdateReview.fulfilled.match(result)) {
+          toast.success('Review submitted successfully!');
+          dispatch(fetchPartById(id));
+          dispatch(clearPartSuccess());
+        } else if (createOrUpdateReview.rejected.match(result)) {
+          toast.error(result.payload || 'Failed to submit review');
+          dispatch(clearPartError());
+        }
       }
-    });
+    );
   };
 
   const handleDeleteReview = () => {
     if (!isAuthenticated) {
-      toast.error("Please log in to delete a review");
-      navigate("/login");
+      toast.error('Please log in to delete a review');
+      navigate('/login');
       return;
     }
     dispatch(deleteReview(id)).then((result) => {
       if (deleteReview.fulfilled.match(result)) {
-        toast.success("Review deleted successfully!");
+        toast.success('Review deleted successfully!');
         dispatch(fetchPartById(id));
         dispatch(clearPartSuccess());
         setRating(0);
-        setComment("");
+        setComment('');
       } else if (deleteReview.rejected.match(result)) {
-        toast.error(result.payload || "Failed to delete review");
+        toast.error(result.payload || 'Failed to delete review');
         dispatch(clearPartError());
       }
     });
   };
 
-  
   const getStockStatus = () => {
     if (part.stock === 0)
-      return { text: "Out of Stock", color: "text-red-500", bg: "bg-red-50" };
+      return { text: 'Out of Stock', color: 'text-red-500', bg: 'bg-red-50' };
     if (part.stock <= 5)
       return {
-        text: "Only few left!",
-        color: "text-orange-500",
-        bg: "bg-orange-50",
+        text: 'Only few left!',
+        color: 'text-orange-500',
+        bg: 'bg-orange-50',
       };
     if (part.stock <= 15)
       return {
-        text: "Limited Stock",
-        color: "text-yellow-600",
-        bg: "bg-yellow-50",
+        text: 'Limited Stock',
+        color: 'text-yellow-600',
+        bg: 'bg-yellow-50',
       };
-    return { text: "In Stock", color: "text-emerald-500", bg: "bg-emerald-50" };
+    return { text: 'In Stock', color: 'text-emerald-500', bg: 'bg-emerald-50' };
   };
 
   const handleQuantityChange = (e) => {
     const value = e.target.value;
     // Allow empty input for manual typing
-    if (value === "") {
-      setQuantity("");
+    if (value === '') {
+      setQuantity('');
       return;
     }
     const num = Number(value);
@@ -338,33 +353,34 @@ const SingleProduct = () => {
 
   if (!part) return null;
 
-
-
   const stockStatus = getStockStatus();
 
   const productSchema = {
-    "@context": "https://schema.org/",
-    "@type": "Product",
-    "name": part.name,
-    "image": part.images?.map(img => img.url) || [],
-    "description": part.description,
-    "sku": part.product_id,
-    "offers": {
-      "@type": "Offer",
-      "url": typeof window !== "undefined" ? window.location.href : "",
-      "priceCurrency": "INR",
-      "price": part.price,
-      "availability": part.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
-    }
+    '@context': 'https://schema.org/',
+    '@type': 'Product',
+    name: part.name,
+    image: part.images?.map((img) => img.url) || [],
+    description: part.description,
+    sku: part.product_id,
+    offers: {
+      '@type': 'Offer',
+      url: typeof window !== 'undefined' ? window.location.href : '',
+      priceCurrency: 'INR',
+      price: part.price,
+      availability:
+        part.stock > 0
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/OutOfStock',
+    },
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
-      <SEO 
-        title={part.name} 
-        description={part.description} 
-        image={part.images?.[0]?.url} 
-        schema={productSchema} 
+      <SEO
+        title={part.name}
+        description={part.description}
+        image={part.images?.[0]?.url}
+        schema={productSchema}
       />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16">
         <motion.div
@@ -373,7 +389,6 @@ const SingleProduct = () => {
           transition={{ duration: 0.6 }}
           className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden"
         >
-          
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
@@ -381,7 +396,7 @@ const SingleProduct = () => {
               transition={{ duration: 0.7 }}
               className="relative p-8 lg:p-12 bg-gradient-to-br from-gray-50 to-white flex flex-col items-center"
             >
-             {part.bestseller && (
+              {part.bestseller && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -389,73 +404,72 @@ const SingleProduct = () => {
                   className="absolute top-4 left-4 z-10 bg-gradient-to-r from-orange-400 to-orange-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg"
                 >
                   Bestseller
-                </ motion.div>
+                </motion.div>
               )}
-          
-            <div className="flex justify-center mb-8">
-  <motion.div
-    className="relative cursor-pointer group"
-    onClick={() => setIsZoomed(!isZoomed)}
-    whileHover={{ scale: 1.05 }}
-    transition={{ type: "spring", stiffness: 300 }}
-  >
-      <img
-      src={
-        part.images?.[selectedImage]?.url ||
-        "/images/placeholder.jpg"
-      }
-      alt={part.name || "Product Image"}
-      className={`w-96 h-96 object-cover rounded-2xl shadow-lg transition-all duration-500 ${
-        isZoomed ? "w-[30rem] h-[30rem]" : "w-96 h-96"
-      }`}
-    /> 
 
-    <div className="absolute inset-0 bg-blue-400 opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl"></div>
+              <div className="flex justify-center mb-8">
+                <motion.div
+                  className="relative cursor-pointer group"
+                  onClick={() => setIsZoomed(!isZoomed)}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: 'spring', stiffness: 300 }}
+                >
+                  <img
+                    src={
+                      part.images?.[selectedImage]?.url ||
+                      '/images/placeholder.jpg'
+                    }
+                    alt={part.name || 'Product Image'}
+                    className={`w-96 h-96 object-cover rounded-2xl shadow-lg transition-all duration-500 ${
+                      isZoomed ? 'w-[30rem] h-[30rem]' : 'w-96 h-96'
+                    }`}
+                  />
 
-    <div className="absolute top-4 right-4 bg-white dark:bg-gray-800 bg-opacity-80 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-      <svg
-        className="w-5 h-5 text-blue-500"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
-        />
-      </svg>
-    </div>
-  </motion.div>
-</div>
+                  <div className="absolute inset-0 bg-blue-400 opacity-0 group-hover:opacity-10 transition-opacity duration-300 rounded-2xl"></div>
 
-{part.images?.length > 1 && (
- 
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.3 }}
-    className="flex justify-center gap-3 overflow-x-auto pb-2"
-  >
-    {part.images.map((img, index) => (
-      <motion.img
-        key={img.public_id || `img-${index}`}
-        src={img.url || "/images/placeholder.jpg"}
-        alt={`${part.name || "Product"}-${index}`}
-        className={`w-20 h-20 object-cover cursor-pointer rounded-xl border-2 transition-all duration-300 ${
-          selectedImage === index
-            ? "border-blue-500 shadow-lg shadow-blue-200"
-            : "border-gray-200 dark:border-gray-700 hover:border-blue-300"
-        }`}
-        onClick={() => setSelectedImage(index)}
-        whileHover={{ scale: 1.1, y: -2 }}
-        whileTap={{ scale: 0.95 }}
-      />
-    ))}
-  </motion.div>
-)}
-</motion.div>
+                  <div className="absolute top-4 right-4 bg-white dark:bg-gray-800 bg-opacity-80 p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                    <svg
+                      className="w-5 h-5 text-blue-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"
+                      />
+                    </svg>
+                  </div>
+                </motion.div>
+              </div>
+
+              {part.images?.length > 1 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="flex justify-center gap-3 overflow-x-auto pb-2"
+                >
+                  {part.images.map((img, index) => (
+                    <motion.img
+                      key={img.public_id || `img-${index}`}
+                      src={img.url || '/images/placeholder.jpg'}
+                      alt={`${part.name || 'Product'}-${index}`}
+                      className={`w-20 h-20 object-cover cursor-pointer rounded-xl border-2 transition-all duration-300 ${
+                        selectedImage === index
+                          ? 'border-blue-500 shadow-lg shadow-blue-200'
+                          : 'border-gray-200 dark:border-gray-700 hover:border-blue-300'
+                      }`}
+                      onClick={() => setSelectedImage(index)}
+                      whileHover={{ scale: 1.1, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                    />
+                  ))}
+                </motion.div>
+              )}
+            </motion.div>
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
@@ -470,7 +484,7 @@ const SingleProduct = () => {
                     transition={{ delay: 0.2 }}
                     className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 leading-tight capitalize"
                   >
-                    {part.name || "Unknown Product"}
+                    {part.name || 'Unknown Product'}
                   </motion.h1>
 
                   <motion.div
@@ -485,8 +499,8 @@ const SingleProduct = () => {
                           key={i}
                           className={`w-5 h-5 ${
                             i < Math.round(part.ratings || 0)
-                              ? "text-yellow-400"
-                              : "text-gray-300"
+                              ? 'text-yellow-400'
+                              : 'text-gray-300'
                           }`}
                           fill="currentColor"
                           viewBox="0 0 20 20"
@@ -496,7 +510,7 @@ const SingleProduct = () => {
                       ))}
                     </div>
                     <span className="text-blue-600 dark:text-blue-400 font-medium hover:underline cursor-pointer">
-                      {part.ratings?.toFixed(1) || "0.0"} (
+                      {part.ratings?.toFixed(1) || '0.0'} (
                       {part.numOfReviews || 0} reviews)
                     </span>
                   </motion.div>
@@ -510,7 +524,7 @@ const SingleProduct = () => {
                 >
                   <div className="flex items-baseline gap-4">
                     <span className="text-4xl font-bold text-blue-600 dark:text-blue-400">
-                      ₹{part.price?.toLocaleString() || "0"}
+                      ₹{part.price?.toLocaleString() || '0'}
                     </span>
                   </div>
                 </motion.div>
@@ -523,8 +537,8 @@ const SingleProduct = () => {
                 >
                   <div
                     className={`w-2 h-2 rounded-full ${stockStatus.color.replace(
-                      "text-",
-                      "bg-"
+                      'text-',
+                      'bg-'
                     )}`}
                   ></div>
                   {stockStatus.text}
@@ -540,15 +554,15 @@ const SingleProduct = () => {
                     Product Details
                   </h3>
                   <p className="text-gray-700 dark:text-gray-200 leading-relaxed">
-                    {part.description || "No description available"}
+                    {part.description || 'No description available'}
                   </p>
                   <div className="text-sm text-gray-600 dark:text-gray-300">
-                    <span className="font-medium">Product Id:</span>{" "}
-                    {part.product_id || "N/A"}
+                    <span className="font-medium">Product Id:</span>{' '}
+                    {part.product_id || 'N/A'}
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-300">
-                    <span className="font-medium">Category:</span>{" "}
-                    {part.category || "N/A"}
+                    <span className="font-medium">Category:</span>{' '}
+                    {part.category || 'N/A'}
                   </div>
                 </motion.div>
 
@@ -654,18 +668,18 @@ const SingleProduct = () => {
                 <motion.button
                   whileHover={{
                     scale: 1.02,
-                    boxShadow: "0 10px 25px rgba(59, 130, 246, 0.3)",
+                    boxShadow: '0 10px 25px rgba(59, 130, 246, 0.3)',
                   }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleAddToCart}
                   disabled={part.stock === 0}
                   className={`w-full py-4 rounded-2xl font-bold text-lg transition-all duration-300 ${
                     part.stock > 0
-                      ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-lg"
-                      : "bg-gray-300 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-lg'
+                      : 'bg-gray-300 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                   }`}
                 >
-                  {part.stock > 0 ? "Add to Cart" : "Out of Stock"}
+                  {part.stock > 0 ? 'Add to Cart' : 'Out of Stock'}
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.02 }}
@@ -673,56 +687,54 @@ const SingleProduct = () => {
                   onClick={toggleWishlist}
                   aria-label={
                     isInWishlist(part._id)
-                      ? "Remove from wishlist"
-                      : "Add to wishlist"
+                      ? 'Remove from wishlist'
+                      : 'Add to wishlist'
                   }
                   className={`w-full py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 border-2 transition-all duration-300 ${
                     isInWishlist(part._id)
-                      ? "border-red-500 text-red-500 bg-red-50 hover:bg-red-100"
-                      : "border-gray-300 text-gray-600 bg-white hover:border-red-300 hover:text-red-500"
+                      ? 'border-red-500 text-red-500 bg-red-50 hover:bg-red-100'
+                      : 'border-gray-300 text-gray-600 bg-white hover:border-red-300 hover:text-red-500'
                   }`}
                 >
                   <Heart
                     className={`w-5 h-5 transition ${
-                      isInWishlist(part._id) ? "fill-red-500 text-red-500" : ""
+                      isInWishlist(part._id) ? 'fill-red-500 text-red-500' : ''
                     }`}
                   />
                   {isInWishlist(part._id)
-                    ? "Remove from Wishlist"
-                    : "Add to Wishlist"}
+                    ? 'Remove from Wishlist'
+                    : 'Add to Wishlist'}
                 </motion.button>
               </motion.div>
             </motion.div>
           </div>
         </motion.div>
 
-        
-    {similarParts && similarParts.length > 0 && (
-    <ProductCarouselSection
-      title="Similar Products"
-      description="Related parts in the same category and compatible with similar vehicles."
-      iconPath="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-      products={similarParts}
-      delay={0.4}
-        
-    />
+        {similarParts && similarParts.length > 0 && (
+          <ProductCarouselSection
+            title="Similar Products"
+            description="Related parts in the same category and compatible with similar vehicles."
+            iconPath="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+            products={similarParts}
+            delay={0.4}
+          />
         )}
 
-    <ProductCarouselSection
-      title="Frequently Bought Together"
-      description="Customers who purchased this piece also bundled these highly compatible components together."
-      iconPath="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-      products={frequentlyBought}
-      delay={0.6}
-    />
+        <ProductCarouselSection
+          title="Frequently Bought Together"
+          description="Customers who purchased this piece also bundled these highly compatible components together."
+          iconPath="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+          products={frequentlyBought}
+          delay={0.6}
+        />
 
-    <ProductCarouselSection
-      title="Recommended For You"
-      description="Personalized updates matched dynamically using your viewing behavior metrics."
-      iconPath="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-      products={recommendedForYou}
-      delay={0.8}
-    />
+        <ProductCarouselSection
+          title="Recommended For You"
+          description="Personalized updates matched dynamically using your viewing behavior metrics."
+          iconPath="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+          products={recommendedForYou}
+          delay={0.8}
+        />
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -758,8 +770,8 @@ const SingleProduct = () => {
                   {part.reviews.find(
                     (r) => r.user?.toString() === user?._id?.toString()
                   )
-                    ? "Update Your Review"
-                    : "Share Your Experience"}
+                    ? 'Update Your Review'
+                    : 'Share Your Experience'}
                 </h3>
                 <form onSubmit={handleSubmitReview} className="space-y-6">
                   <div className="flex items-center gap-4">
@@ -772,8 +784,8 @@ const SingleProduct = () => {
                           key={i}
                           className={`w-8 h-8 cursor-pointer transition-colors ${
                             i < (hoveredStar || rating)
-                              ? "text-yellow-400"
-                              : "text-gray-300"
+                              ? 'text-yellow-400'
+                              : 'text-gray-300'
                           }`}
                           fill="currentColor"
                           viewBox="0 0 20 20"
@@ -844,12 +856,12 @@ const SingleProduct = () => {
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                            {(review.name || "A").charAt(0).toUpperCase()}
+                            {(review.name || 'A').charAt(0).toUpperCase()}
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
                               <h4 className="font-semibold text-gray-900 dark:text-gray-100">
-                                {review.name || "Anonymous"}
+                                {review.name || 'Anonymous'}
                               </h4>
                               {review.verifiedPurchase && (
                                 <span className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs font-semibold px-2.5 py-0.5 rounded-full border border-green-200 dark:border-green-800">
@@ -864,8 +876,8 @@ const SingleProduct = () => {
                                     key={i}
                                     className={`w-4 h-4 ${
                                       i < (review.rating || 0)
-                                        ? "text-yellow-400"
-                                        : "text-gray-300"
+                                        ? 'text-yellow-400'
+                                        : 'text-gray-300'
                                     }`}
                                     fill="currentColor"
                                     viewBox="0 0 20 20"
@@ -876,11 +888,11 @@ const SingleProduct = () => {
                               </div>
                               <span className="text-gray-500 dark:text-gray-400 text-sm">
                                 {new Date(review.createdAt).toLocaleDateString(
-                                  "en-US",
+                                  'en-US',
                                   {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric',
                                   }
                                 )}
                               </span>
@@ -932,6 +944,5 @@ const SingleProduct = () => {
     </div>
   );
 };
-
 
 export default SingleProduct;

@@ -1,25 +1,25 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 import {
   adminGetAllOrders,
   adminVerifyPayment,
   adminUpdateOrderStatus,
   clearOrderError,
-} from "../../store/order/orderSlice";
-import Loader from "../../extras/Loader";
-import EmptyState from "../../components/EmptyState";
+} from '../../store/order/orderSlice';
+import Loader from '../../extras/Loader';
+import EmptyState from '../../components/EmptyState';
 
 const STATUS_OPTIONS = [
-  "",
-  "Pending Verification",
-  "Confirmed",
-  "Processing",
-  "Shipped",
-  "Delivered",
-  "Cancelled",
+  '',
+  'Pending Verification',
+  'Confirmed',
+  'Processing',
+  'Shipped',
+  'Delivered',
+  'Cancelled',
 ];
 
 // The fulfilment lifecycle an admin can move an order through. Mirrors the
@@ -27,45 +27,45 @@ const STATUS_OPTIONS = [
 // only accepts these post-confirmation statuses (payment verification is
 // handled separately via Approve/Reject).
 const FULFILLMENT_STATUSES = [
-  "Confirmed",
-  "Processing",
-  "Shipped",
-  "Delivered",
-  "Cancelled",
+  'Confirmed',
+  'Processing',
+  'Shipped',
+  'Delivered',
+  'Cancelled',
 ];
 
 const statusColor = (status) => {
   switch (status) {
-    case "Success":
-    case "Confirmed":
-    case "Delivered":
-      return "bg-green-100 text-green-800";
-    case "Pending":
-    case "Pending Verification":
-    case "Processing":
-    case "Shipped":
-      return "bg-yellow-100 text-yellow-800";
-    case "Failed":
-    case "Cancelled":
-      return "bg-red-100 text-red-800";
+    case 'Success':
+    case 'Confirmed':
+    case 'Delivered':
+      return 'bg-green-100 text-green-800';
+    case 'Pending':
+    case 'Pending Verification':
+    case 'Processing':
+    case 'Shipped':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'Failed':
+    case 'Cancelled':
+      return 'bg-red-100 text-red-800';
     default:
-      return "bg-gray-100 text-gray-800";
+      return 'bg-gray-100 text-gray-800';
   }
 };
 
 const formatDate = (d) =>
-  new Date(d).toLocaleString("en-IN", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  new Date(d).toLocaleString('en-IN', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
 const AdminOrders = () => {
   const dispatch = useDispatch();
   const { adminOrders, loading, error } = useSelector((state) => state.order);
-  const [filter, setFilter] = useState("");
+  const [filter, setFilter] = useState('');
 
   useEffect(() => {
     dispatch(adminGetAllOrders(filter || undefined));
@@ -79,9 +79,9 @@ const AdminOrders = () => {
   }, [error, dispatch]);
 
   const handleApprove = (id) => {
-    dispatch(adminVerifyPayment({ id, action: "approve" })).then((res) => {
+    dispatch(adminVerifyPayment({ id, action: 'approve' })).then((res) => {
       if (adminVerifyPayment.fulfilled.match(res)) {
-        toast.success("Payment approved and order confirmed");
+        toast.success('Payment approved and order confirmed');
         dispatch(adminGetAllOrders(filter || undefined));
       }
     });
@@ -89,16 +89,16 @@ const AdminOrders = () => {
 
   const handleReject = (id) => {
     const reason = window.prompt(
-      "Reason for rejecting this payment (optional):",
-      ""
+      'Reason for rejecting this payment (optional):',
+      ''
     );
     // window.prompt returns null if the admin cancels.
     if (reason === null) return;
     dispatch(
-      adminVerifyPayment({ id, action: "reject", rejectionReason: reason })
+      adminVerifyPayment({ id, action: 'reject', rejectionReason: reason })
     ).then((res) => {
       if (adminVerifyPayment.fulfilled.match(res)) {
-        toast.success("Payment rejected and order cancelled");
+        toast.success('Payment rejected and order cancelled');
         dispatch(adminGetAllOrders(filter || undefined));
       }
     });
@@ -108,29 +108,31 @@ const AdminOrders = () => {
   // payment-verified rule (Processing/Shipped/Delivered require a successful
   // payment); we surface any rejection message it returns.
   const handleStatusChange = (id, orderStatus, carrier, trackingNumber) => {
-    dispatch(adminUpdateOrderStatus({ id, orderStatus, carrier, trackingNumber })).then((res) => {
+    dispatch(
+      adminUpdateOrderStatus({ id, orderStatus, carrier, trackingNumber })
+    ).then((res) => {
       if (adminUpdateOrderStatus.fulfilled.match(res)) {
         toast.success(`Order status/shipment updated`);
         dispatch(adminGetAllOrders(filter || undefined));
       } else if (adminUpdateOrderStatus.rejected.match(res)) {
-        toast.error(res.payload || "Failed to update order status");
+        toast.error(res.payload || 'Failed to update order status');
       }
     });
   };
 
   const handleDownloadInvoice = async (orderId) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await fetch(`/api/orders/admin/${orderId}/invoice`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!response.ok) throw new Error("Failed to fetch invoice");
+      if (!response.ok) throw new Error('Failed to fetch invoice');
       const htmlStr = await response.text();
-      const win = window.open("", "_blank");
+      const win = window.open('', '_blank');
       win.document.write(htmlStr);
       win.document.close();
     } catch (err) {
-      toast.error("Failed to download invoice");
+      toast.error('Failed to download invoice');
     }
   };
 
@@ -149,8 +151,8 @@ const AdminOrders = () => {
             className="px-4 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             {STATUS_OPTIONS.map((s) => (
-              <option key={s || "all"} value={s}>
-                {s === "" ? "All Statuses" : s}
+              <option key={s || 'all'} value={s}>
+                {s === '' ? 'All Statuses' : s}
               </option>
             ))}
           </select>
@@ -160,7 +162,11 @@ const AdminOrders = () => {
           <EmptyState
             icon="Inbox"
             title="No orders found"
-            message={filter ? `No orders with status "${filter}". Try a different filter.` : "No orders have been placed yet. They will appear here once customers start ordering."}
+            message={
+              filter
+                ? `No orders with status "${filter}". Try a different filter.`
+                : 'No orders have been placed yet. They will appear here once customers start ordering.'
+            }
           />
         ) : (
           <div className="space-y-6">
@@ -201,20 +207,20 @@ const AdminOrders = () => {
                     </p>
 
                     <div className="text-sm text-gray-700 mb-3">
-                      <span className="font-semibold">Customer:</span>{" "}
-                      {order.user?.name || "—"}{" "}
-                      {order.user?.email ? `(${order.user.email})` : ""}
+                      <span className="font-semibold">Customer:</span>{' '}
+                      {order.user?.name || '—'}{' '}
+                      {order.user?.email ? `(${order.user.email})` : ''}
                     </div>
 
                     <div className="text-sm text-gray-700 mb-3">
-                      <span className="font-semibold">Ship to:</span>{" "}
-                      {order.shippingAddress?.fullName},{" "}
-                      {order.shippingAddress?.addressLine},{" "}
+                      <span className="font-semibold">Ship to:</span>{' '}
+                      {order.shippingAddress?.fullName},{' '}
+                      {order.shippingAddress?.addressLine},{' '}
                       {order.shippingAddress?.city}
                       {order.shippingAddress?.state
-                        ? ", " + order.shippingAddress.state
-                        : ""}{" "}
-                      - {order.shippingAddress?.pincode}, Ph:{" "}
+                        ? ', ' + order.shippingAddress.state
+                        : ''}{' '}
+                      - {order.shippingAddress?.pincode}, Ph:{' '}
                       {order.shippingAddress?.phone}
                     </div>
 
@@ -225,7 +231,7 @@ const AdminOrders = () => {
                           className="flex justify-between text-sm"
                         >
                           <span className="text-gray-700 pr-2">
-                            {item.name}{" "}
+                            {item.name}{' '}
                             <span className="text-gray-400">
                               x{item.quantity}
                             </span>
@@ -270,13 +276,13 @@ const AdminOrders = () => {
                       </a>
                     ) : (
                       <div className="w-full h-40 rounded-xl border border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-400 text-center p-3">
-                        {order.paymentMethod === "COD"
-                          ? "COD — no screenshot"
-                          : "No screenshot"}
+                        {order.paymentMethod === 'COD'
+                          ? 'COD — no screenshot'
+                          : 'No screenshot'}
                       </div>
                     )}
 
-                    {order.paymentStatus === "Pending Verification" && (
+                    {order.paymentStatus === 'Pending Verification' && (
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleApprove(order._id)}
@@ -305,9 +311,9 @@ const AdminOrders = () => {
                         terminal state. Lets the admin advance the lifecycle
                         (Confirmed -> Processing -> Shipped -> Delivered) or
                         cancel. */}
-                    {order.orderStatus !== "Pending Verification" &&
-                      order.orderStatus !== "Delivered" &&
-                      order.orderStatus !== "Cancelled" && (
+                    {order.orderStatus !== 'Pending Verification' &&
+                      order.orderStatus !== 'Delivered' &&
+                      order.orderStatus !== 'Cancelled' && (
                         <div className="border-t border-gray-100 pt-3 mt-1 space-y-2">
                           <label className="block text-xs font-medium text-gray-500 mb-1">
                             Update fulfilment status & tracking
@@ -315,7 +321,12 @@ const AdminOrders = () => {
                           <select
                             value={order.orderStatus}
                             onChange={(e) =>
-                              handleStatusChange(order._id, e.target.value, order.carrier, order.trackingNumber)
+                              handleStatusChange(
+                                order._id,
+                                e.target.value,
+                                order.carrier,
+                                order.trackingNumber
+                              )
                             }
                             className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                           >
@@ -328,18 +339,28 @@ const AdminOrders = () => {
                           <input
                             type="text"
                             placeholder="Carrier (e.g. Blue Dart)"
-                            defaultValue={order.carrier || ""}
+                            defaultValue={order.carrier || ''}
                             onBlur={(e) =>
-                              handleStatusChange(order._id, order.orderStatus, e.target.value, order.trackingNumber)
+                              handleStatusChange(
+                                order._id,
+                                order.orderStatus,
+                                e.target.value,
+                                order.trackingNumber
+                              )
                             }
                             className="w-full px-3 py-1.5 rounded-xl border border-gray-200 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-400"
                           />
                           <input
                             type="text"
                             placeholder="Tracking Number"
-                            defaultValue={order.trackingNumber || ""}
+                            defaultValue={order.trackingNumber || ''}
                             onBlur={(e) =>
-                              handleStatusChange(order._id, order.orderStatus, order.carrier, e.target.value)
+                              handleStatusChange(
+                                order._id,
+                                order.orderStatus,
+                                order.carrier,
+                                e.target.value
+                              )
                             }
                             className="w-full px-3 py-1.5 rounded-xl border border-gray-200 bg-white text-xs focus:outline-none focus:ring-2 focus:ring-blue-400"
                           />

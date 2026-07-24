@@ -1,26 +1,38 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { clearAuthState, resetPassword } from "@/store/auth-slice/user";
-import { useNavigate } from "react-router-dom";
-import MetaData from "../../extras/MetaData";
-import { toast } from "react-toastify";
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { clearAuthState, resetPassword } from '@/store/auth-slice/user';
+import { useNavigate } from 'react-router-dom';
+import MetaData from '../../extras/MetaData';
+import { toast } from 'react-toastify';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
 const passwordRequirements = [
-  { id: "length", label: "8+ characters", test: (pw) => pw.length >= 8 },
-  { id: "uppercase", label: "Uppercase letter (A-Z)", test: (pw) => /[A-Z]/.test(pw) },
-  { id: "lowercase", label: "Lowercase letter (a-z)", test: (pw) => /[a-z]/.test(pw) },
-  { id: "number", label: "Number (0-9)", test: (pw) => /\d/.test(pw) },
-  { id: "special", label: "Special character", test: (pw) => /[!@#$%^&*(),.?":{}|<>]/.test(pw) },
+  { id: 'length', label: '8+ characters', test: (pw) => pw.length >= 8 },
+  {
+    id: 'uppercase',
+    label: 'Uppercase letter (A-Z)',
+    test: (pw) => /[A-Z]/.test(pw),
+  },
+  {
+    id: 'lowercase',
+    label: 'Lowercase letter (a-z)',
+    test: (pw) => /[a-z]/.test(pw),
+  },
+  { id: 'number', label: 'Number (0-9)', test: (pw) => /\d/.test(pw) },
+  {
+    id: 'special',
+    label: 'Special character',
+    test: (pw) => /[!@#$%^&*(),.?":{}|<>]/.test(pw),
+  },
 ];
 
 const ResetPassword = () => {
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -29,31 +41,33 @@ const ResetPassword = () => {
   const { loading, error, success } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    const storedEmail = localStorage.getItem("resetEmail");
-    const storedOtp = localStorage.getItem("resetOtp");
+    const storedEmail = localStorage.getItem('resetEmail');
+    const storedOtp = localStorage.getItem('resetOtp');
     if (storedEmail && storedOtp) {
       setEmail(storedEmail);
       setOtp(storedOtp);
     } else {
-      localStorage.removeItem("resetEmail");
-      localStorage.removeItem("resetOtp");
-      toast.error("Invalid request! Please verify OTP first.");
-      navigate("/verify-otp");
+      localStorage.removeItem('resetEmail');
+      localStorage.removeItem('resetOtp');
+      toast.error('Invalid request! Please verify OTP first.');
+      navigate('/verify-otp');
     }
   }, [navigate]);
 
   const handleResetPassword = () => {
     if (!email || !otp || !newPassword || !confirmPassword) {
-      toast.error("All fields are required!");
+      toast.error('All fields are required!');
       return;
     }
-    const isAllRequirementsMet = passwordRequirements.every((req) => req.test(newPassword));
+    const isAllRequirementsMet = passwordRequirements.every((req) =>
+      req.test(newPassword)
+    );
     if (!isAllRequirementsMet) {
-      toast.error("Password does not meet complexity requirements!");
+      toast.error('Password does not meet complexity requirements!');
       return;
     }
     if (newPassword !== confirmPassword) {
-      toast.error("Passwords do not match!");
+      toast.error('Passwords do not match!');
       return;
     }
     dispatch(resetPassword({ email, otp, newPassword, confirmPassword }));
@@ -61,11 +75,11 @@ const ResetPassword = () => {
 
   useEffect(() => {
     if (success) {
-      toast.success("Password updated successfully! Redirecting to login...");
-      localStorage.removeItem("resetEmail");
-      localStorage.removeItem("resetOtp");
+      toast.success('Password updated successfully! Redirecting to login...');
+      localStorage.removeItem('resetEmail');
+      localStorage.removeItem('resetOtp');
       setTimeout(() => {
-        navigate("/login");
+        navigate('/login');
       }, 2000);
     }
     if (error) {
@@ -84,7 +98,7 @@ const ResetPassword = () => {
     visible: {
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.6, ease: "easeOut", staggerChildren: 0.15 },
+      transition: { duration: 0.6, ease: 'easeOut', staggerChildren: 0.15 },
     },
     exit: { opacity: 0, scale: 0.95, transition: { duration: 0.3 } },
   };
@@ -95,12 +109,12 @@ const ResetPassword = () => {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { duration: 0.5, ease: "easeOut" },
+      transition: { duration: 0.5, ease: 'easeOut' },
     },
   };
 
   const buttonVariants = {
-    hover: { scale: 1.05, boxShadow: "0px 4px 20px rgba(59, 130, 246, 0.5)" },
+    hover: { scale: 1.05, boxShadow: '0px 4px 20px rgba(59, 130, 246, 0.5)' },
     tap: { scale: 0.98 },
   };
 
@@ -110,7 +124,11 @@ const ResetPassword = () => {
 
   return (
     <>
-      <MetaData title="Reset Password | Samridhi Enterprises" description="Set a new password for your Samridhi Enterprises account. Choose a strong, unique password." keywords="reset password, new password, Samridhi Enterprises, bike parts account security" />
+      <MetaData
+        title="Reset Password | Samridhi Enterprises"
+        description="Set a new password for your Samridhi Enterprises account. Choose a strong, unique password."
+        keywords="reset password, new password, Samridhi Enterprises, bike parts account security"
+      />
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-blue-100 px-4 sm:px-6 lg:px-8">
         <AnimatePresence>
           <motion.div
@@ -167,7 +185,7 @@ const ResetPassword = () => {
                 </label>
                 <motion.input
                   id="reset-new-password"
-                  type={showNewPassword ? "text" : "password"}
+                  type={showNewPassword ? 'text' : 'password'}
                   autoComplete="new-password"
                   placeholder="New Password"
                   value={newPassword}
@@ -181,7 +199,11 @@ const ResetPassword = () => {
                   className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-blue-500"
                   onClick={() => setShowNewPassword(!showNewPassword)}
                 >
-                  {showNewPassword ? <EyeOff className="w-5 h-5 sm:w-6 sm:h-6" /> : <Eye className="w-5 h-5 sm:w-6 sm:h-6" />}
+                  {showNewPassword ? (
+                    <EyeOff className="w-5 h-5 sm:w-6 sm:h-6" />
+                  ) : (
+                    <Eye className="w-5 h-5 sm:w-6 sm:h-6" />
+                  )}
                 </motion.div>
               </motion.div>
 
@@ -189,22 +211,34 @@ const ResetPassword = () => {
                 {newPassword && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
+                    animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
                     className="p-4 bg-blue-50/50 rounded-xl border border-blue-200 text-xs sm:text-sm text-blue-800 space-y-2 overflow-hidden"
                   >
-                    <p className="font-semibold text-blue-900 mb-1">Password requirements:</p>
+                    <p className="font-semibold text-blue-900 mb-1">
+                      Password requirements:
+                    </p>
                     <div className="grid grid-cols-2 gap-2">
                       {passwordRequirements.map((req) => {
                         const isMet = req.test(newPassword);
                         return (
                           <div key={req.id} className="flex items-center gap-2">
-                            <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                              isMet ? "bg-green-500 text-white" : "bg-blue-200/50 text-blue-400"
-                            }`}>
-                              {isMet ? "✓" : "✗"}
+                            <span
+                              className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                                isMet
+                                  ? 'bg-green-500 text-white'
+                                  : 'bg-blue-200/50 text-blue-400'
+                              }`}
+                            >
+                              {isMet ? '✓' : '✗'}
                             </span>
-                            <span className={isMet ? "text-green-600 line-through decoration-green-400/50" : "text-blue-600/70"}>
+                            <span
+                              className={
+                                isMet
+                                  ? 'text-green-600 line-through decoration-green-400/50'
+                                  : 'text-blue-600/70'
+                              }
+                            >
                               {req.label}
                             </span>
                           </div>
@@ -228,7 +262,7 @@ const ResetPassword = () => {
                 </label>
                 <motion.input
                   id="reset-confirm-password"
-                  type={showConfirmPassword ? "text" : "password"}
+                  type={showConfirmPassword ? 'text' : 'password'}
                   autoComplete="new-password"
                   placeholder="Confirm Password"
                   value={confirmPassword}
@@ -242,7 +276,11 @@ const ResetPassword = () => {
                   className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-blue-500"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5 sm:w-6 sm:h-6" /> : <Eye className="w-5 h-5 sm:w-6 sm:h-6" />}
+                  {showConfirmPassword ? (
+                    <EyeOff className="w-5 h-5 sm:w-6 sm:h-6" />
+                  ) : (
+                    <Eye className="w-5 h-5 sm:w-6 sm:h-6" />
+                  )}
                 </motion.div>
               </motion.div>
             </div>
@@ -255,7 +293,7 @@ const ResetPassword = () => {
               disabled={loading}
               className="w-full mt-6 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 text-sm sm:text-base"
             >
-              {loading ? "Updating..." : "Update Password"}
+              {loading ? 'Updating...' : 'Update Password'}
             </motion.button>
           </motion.div>
         </AnimatePresence>

@@ -1,12 +1,12 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "@/api";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '@/api';
 
-const API_URL = "/api/wishlist";
+const API_URL = '/api/wishlist';
 
 const authConfig = () => ({});
 
 export const fetchWishlist = createAsyncThunk(
-  "wishlist/fetch",
+  'wishlist/fetch',
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get(`${API_URL}`, authConfig());
@@ -18,10 +18,14 @@ export const fetchWishlist = createAsyncThunk(
 );
 
 export const addToWishlist = createAsyncThunk(
-  "wishlist/add",
+  'wishlist/add',
   async (partId, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post(`${API_URL}`, { partId }, authConfig());
+      const res = await axiosInstance.post(
+        `${API_URL}`,
+        { partId },
+        authConfig()
+      );
       return res.data.wishlist;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -30,10 +34,13 @@ export const addToWishlist = createAsyncThunk(
 );
 
 export const removeFromWishlist = createAsyncThunk(
-  "wishlist/remove",
+  'wishlist/remove',
   async (partId, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.delete(`${API_URL}/${partId}`, authConfig());
+      const res = await axiosInstance.delete(
+        `${API_URL}/${partId}`,
+        authConfig()
+      );
       return res.data.wishlist;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -42,7 +49,7 @@ export const removeFromWishlist = createAsyncThunk(
 );
 
 const wishlistSlice = createSlice({
-  name: "wishlist",
+  name: 'wishlist',
   initialState: {
     wishlist: { items: [] },
     loading: false,

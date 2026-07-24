@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchBikeModels,
   addBikeModel,
@@ -7,13 +7,13 @@ import {
   deleteBikeModel,
   clearError,
   clearSuccess,
-} from "../../store/product/bikeSlice";
-import { fetchBrands } from "../../store/product/brandSlice";
-import { toast } from "react-toastify";
+} from '../../store/product/bikeSlice';
+import { fetchBrands } from '../../store/product/brandSlice';
+import { toast } from 'react-toastify';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import ConfirmationModal from "../../extras/ConfirmationModal";
-import Loader from "../../extras/Loader";
+import { motion, AnimatePresence } from 'framer-motion';
+import ConfirmationModal from '../../extras/ConfirmationModal';
+import Loader from '../../extras/Loader';
 
 export default function AdminBikeModelPage() {
   const dispatch = useDispatch();
@@ -25,19 +25,19 @@ export default function AdminBikeModelPage() {
   } = useSelector((state) => state.bike);
   const { brands = [] } = useSelector((state) => state.brand);
 
-  const [name, setName] = useState("");
-  const [brandId, setBrandId] = useState("");
-  const [yearStart, setYearStart] = useState("");
-  const [yearEnd, setYearEnd] = useState("");
-  const [engineType, setEngineType] = useState("");
+  const [name, setName] = useState('');
+  const [brandId, setBrandId] = useState('');
+  const [yearStart, setYearStart] = useState('');
+  const [yearEnd, setYearEnd] = useState('');
+  const [engineType, setEngineType] = useState('');
   const [image, setImage] = useState(null);
   const [editId, setEditId] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedIdToDelete, setSelectedIdToDelete] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [errors, setErrors] = useState({});
-  const [search, setSearch] = useState("");
-  const [brandFilter, setBrandFilter] = useState("");
+  const [search, setSearch] = useState('');
+  const [brandFilter, setBrandFilter] = useState('');
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function AdminBikeModelPage() {
 
   useEffect(() => {
     if (success) {
-      toast.success("Operation successful");
+      toast.success('Operation successful');
       dispatch(clearSuccess());
     }
     if (error) {
@@ -59,28 +59,28 @@ export default function AdminBikeModelPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const fieldErrors = {};
-    if (!name.trim()) fieldErrors.name = "Model name is required";
-    if (!brandId) fieldErrors.brandId = "Please select a brand";
+    if (!name.trim()) fieldErrors.name = 'Model name is required';
+    if (!brandId) fieldErrors.brandId = 'Please select a brand';
     if (yearStart && yearEnd && Number(yearStart) > Number(yearEnd)) {
-      fieldErrors.yearEnd = "End year must be after start year";
+      fieldErrors.yearEnd = 'End year must be after start year';
     }
-    if (!editId && !image) fieldErrors.image = "Image is required";
+    if (!editId && !image) fieldErrors.image = 'Image is required';
     setErrors(fieldErrors);
     if (Object.keys(fieldErrors).length > 0) return;
 
     const formData = new FormData();
-    formData.append("name", name);
-    formData.append("brand", brandId);
-    formData.append("yearStart", yearStart);
-    formData.append("yearEnd", yearEnd);
-    formData.append("engineType", engineType);
+    formData.append('name', name);
+    formData.append('brand', brandId);
+    formData.append('yearStart', yearStart);
+    formData.append('yearEnd', yearEnd);
+    formData.append('engineType', engineType);
 
     if (editId) {
-      if (image) formData.append("image", image);
+      if (image) formData.append('image', image);
       dispatch(updateBikeModel({ id: editId, formData }));
     } else {
-      if (!image) return toast.warn("Image is required!");
-      formData.append("image", image);
+      if (!image) return toast.warn('Image is required!');
+      formData.append('image', image);
       dispatch(addBikeModel(formData));
     }
 
@@ -89,14 +89,14 @@ export default function AdminBikeModelPage() {
 
   const handleEdit = (model) => {
     if (!model || !model._id) {
-      toast.error("Invalid model data");
+      toast.error('Invalid model data');
       return;
     }
-    setName(model.name || "");
-    setBrandId(model.brand?._id || "");
-    setYearStart(model.yearStart ?? "");
-    setYearEnd(model.yearEnd ?? "");
-    setEngineType(model.engineType || "");
+    setName(model.name || '');
+    setBrandId(model.brand?._id || '');
+    setYearStart(model.yearStart ?? '');
+    setYearEnd(model.yearEnd ?? '');
+    setEngineType(model.engineType || '');
     setEditId(model._id);
     setImagePreview(
       Array.isArray(model.images) &&
@@ -106,7 +106,7 @@ export default function AdminBikeModelPage() {
         : null
     );
     setShowForm(true);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleImageChange = (e) => {
@@ -134,11 +134,11 @@ export default function AdminBikeModelPage() {
   };
 
   const resetForm = () => {
-    setName("");
-    setBrandId("");
-    setYearStart("");
-    setYearEnd("");
-    setEngineType("");
+    setName('');
+    setBrandId('');
+    setYearStart('');
+    setYearEnd('');
+    setEngineType('');
     setImage(null);
     setEditId(null);
     setImagePreview(null);
@@ -155,7 +155,7 @@ export default function AdminBikeModelPage() {
       (model) =>
         model &&
         model._id &&
-        typeof model === "object" &&
+        typeof model === 'object' &&
         (model.name.toLowerCase().includes(search.toLowerCase()) ||
           model.brand?.name.toLowerCase().includes(search.toLowerCase())) &&
         (!brandFilter || model.brand?._id === brandFilter)
@@ -165,7 +165,7 @@ export default function AdminBikeModelPage() {
       name: model.name.toUpperCase(),
       brand: model.brand
         ? { ...model.brand, name: model.brand.name.toUpperCase() }
-        : { _id: "", name: "N/A" },
+        : { _id: '', name: 'N/A' },
     }));
 
   const containerVariants = {
@@ -184,12 +184,12 @@ export default function AdminBikeModelPage() {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { type: "spring", stiffness: 100, damping: 12 },
+      transition: { type: 'spring', stiffness: 100, damping: 12 },
     },
     hover: {
       y: -8,
       scale: 1.02,
-      transition: { type: "spring", stiffness: 400, damping: 10 },
+      transition: { type: 'spring', stiffness: 400, damping: 10 },
     },
   };
 
@@ -197,9 +197,9 @@ export default function AdminBikeModelPage() {
     hidden: { opacity: 0, height: 0, scale: 0.95 },
     visible: {
       opacity: 1,
-      height: "auto",
+      height: 'auto',
       scale: 1,
-      transition: { duration: 0.3, ease: "easeOut" },
+      transition: { duration: 0.3, ease: 'easeOut' },
     },
   };
 
@@ -304,11 +304,18 @@ export default function AdminBikeModelPage() {
                           <input
                             type="text"
                             value={name}
-                            onChange={(e) => { setName(e.target.value); setErrors((prev) => ({ ...prev, name: "" })); }}
+                            onChange={(e) => {
+                              setName(e.target.value);
+                              setErrors((prev) => ({ ...prev, name: '' }));
+                            }}
                             placeholder="Enter model name"
-                            className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400 transition-all duration-300 ${errors.name ? "border-red-400" : "border-blue-200"}`}
+                            className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400 transition-all duration-300 ${errors.name ? 'border-red-400' : 'border-blue-200'}`}
                           />
-                          {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+                          {errors.name && (
+                            <p className="mt-1 text-sm text-red-500">
+                              {errors.name}
+                            </p>
+                          )}
                         </div>
                         <div>
                           <label className="block text-sm font-semibold text-slate-700 mb-2">
@@ -316,8 +323,11 @@ export default function AdminBikeModelPage() {
                           </label>
                           <select
                             value={brandId}
-                            onChange={(e) => { setBrandId(e.target.value); setErrors((prev) => ({ ...prev, brandId: "" })); }}
-                            className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400 transition-all duration-300 appearance-none cursor-pointer ${errors.brandId ? "border-red-400" : "border-blue-200"}`}
+                            onChange={(e) => {
+                              setBrandId(e.target.value);
+                              setErrors((prev) => ({ ...prev, brandId: '' }));
+                            }}
+                            className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400 transition-all duration-300 appearance-none cursor-pointer ${errors.brandId ? 'border-red-400' : 'border-blue-200'}`}
                           >
                             <option value="">Select brand</option>
                             {sortedBrands.map((b) => (
@@ -332,7 +342,7 @@ export default function AdminBikeModelPage() {
                       <div className="grid sm:grid-cols-3 gap-6">
                         <div>
                           <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Year From{" "}
+                            Year From{' '}
                             <span className="text-slate-400 font-normal">
                               (optional)
                             </span>
@@ -348,7 +358,7 @@ export default function AdminBikeModelPage() {
                         </div>
                         <div>
                           <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Year To{" "}
+                            Year To{' '}
                             <span className="text-slate-400 font-normal">
                               (optional)
                             </span>
@@ -356,16 +366,23 @@ export default function AdminBikeModelPage() {
                           <input
                             type="number"
                             value={yearEnd}
-                            onChange={(e) => { setYearEnd(e.target.value); setErrors((prev) => ({ ...prev, yearEnd: "" })); }}
+                            onChange={(e) => {
+                              setYearEnd(e.target.value);
+                              setErrors((prev) => ({ ...prev, yearEnd: '' }));
+                            }}
                             placeholder="e.g. 2024"
                             min="1900"
-                            className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400 transition-all duration-300 ${errors.yearEnd ? "border-red-400" : "border-blue-200"}`}
+                            className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400 transition-all duration-300 ${errors.yearEnd ? 'border-red-400' : 'border-blue-200'}`}
                           />
-                          {errors.yearEnd && <p className="mt-1 text-sm text-red-500">{errors.yearEnd}</p>}
+                          {errors.yearEnd && (
+                            <p className="mt-1 text-sm text-red-500">
+                              {errors.yearEnd}
+                            </p>
+                          )}
                         </div>
                         <div>
                           <label className="block text-sm font-semibold text-slate-700 mb-2">
-                            Engine Type{" "}
+                            Engine Type{' '}
                             <span className="text-slate-400 font-normal">
                               (optional)
                             </span>
@@ -385,13 +402,20 @@ export default function AdminBikeModelPage() {
                           Image
                         </label>
                         <input
-                          key={editId || "I"}
+                          key={editId || 'I'}
                           type="file"
                           accept="image/*"
-                          onChange={(e) => { handleImageChange(e); setErrors((prev) => ({ ...prev, image: "" })); }}
-                          className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400 transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-100 file:text-blue-700 file:cursor-pointer hover:file:bg-blue-200 ${errors.image ? "border-red-400" : "border-blue-200"}`}
+                          onChange={(e) => {
+                            handleImageChange(e);
+                            setErrors((prev) => ({ ...prev, image: '' }));
+                          }}
+                          className={`w-full px-4 py-3 bg-slate-50 border rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400/30 focus:border-blue-400 transition-all duration-300 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-blue-100 file:text-blue-700 file:cursor-pointer hover:file:bg-blue-200 ${errors.image ? 'border-red-400' : 'border-blue-200'}`}
                         />
-                        {errors.image && <p className="mt-1 text-sm text-red-500">{errors.image}</p>}
+                        {errors.image && (
+                          <p className="mt-1 text-sm text-red-500">
+                            {errors.image}
+                          </p>
+                        )}
                       </div>
 
                       {imagePreview && (
@@ -417,10 +441,10 @@ export default function AdminBikeModelPage() {
                           className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {loading
-                            ? "Processing..."
+                            ? 'Processing...'
                             : editId
-                            ? "Update Model"
-                            : "Create Model"}
+                              ? 'Update Model'
+                              : 'Create Model'}
                         </motion.button>
                         <motion.button
                           whileHover={{ scale: 1.02 }}
@@ -502,9 +526,9 @@ export default function AdminBikeModelPage() {
                     {(model.yearStart || model.yearEnd || model.engineType) && (
                       <p className="text-xs text-slate-400 mb-4">
                         {model.yearStart || model.yearEnd
-                          ? `${model.yearStart || "—"}–${model.yearEnd || "—"}`
-                          : ""}
-                        {model.engineType ? ` • ${model.engineType}` : ""}
+                          ? `${model.yearStart || '—'}–${model.yearEnd || '—'}`
+                          : ''}
+                        {model.engineType ? ` • ${model.engineType}` : ''}
                       </p>
                     )}
 

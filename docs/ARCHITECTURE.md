@@ -38,33 +38,33 @@ Images are stored on **Cloudinary**; transactional email (OTPs) is sent through
 
 The server follows a conventional layered structure under `server/`:
 
-| Layer | Directory | Responsibility |
-|-------|-----------|----------------|
-| Entry | `index.js` | Loads env, configures middleware (CORS, cookies, JSON), Cloudinary, mounts routers, connects to DB, starts listening |
-| Config | `config/` | `connectDB.js` (Mongoose connection) |
-| Routes | `route/` | Declare endpoints and attach middleware (`auth`, `admin`, `multer`) |
-| Middleware | `middleware/` | `auth.js`, `Admin.js`, `multer.js`, `error.js`, `catchAsyncErrors.js` |
-| Controllers | `controllers/` | Request handling and business logic |
-| Models | `models/` | Mongoose schemas (see [Database Schema](./DATABASE_SCHEMA.md)) |
-| Utils | `utils/` | Helpers such as `jwtToken.js` (`sendToken`) and the error handler |
+| Layer       | Directory      | Responsibility                                                                                                       |
+| ----------- | -------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Entry       | `index.js`     | Loads env, configures middleware (CORS, cookies, JSON), Cloudinary, mounts routers, connects to DB, starts listening |
+| Config      | `config/`      | `connectDB.js` (Mongoose connection)                                                                                 |
+| Routes      | `route/`       | Declare endpoints and attach middleware (`auth`, `admin`, `multer`)                                                  |
+| Middleware  | `middleware/`  | `auth.js`, `Admin.js`, `multer.js`, `error.js`, `catchAsyncErrors.js`                                                |
+| Controllers | `controllers/` | Request handling and business logic                                                                                  |
+| Models      | `models/`      | Mongoose schemas (see [Database Schema](./DATABASE_SCHEMA.md))                                                       |
+| Utils       | `utils/`       | Helpers such as `jwtToken.js` (`sendToken`) and the error handler                                                    |
 
 ### Router mounts
 
 All routers are mounted under `/api` in `server/index.js`:
 
-| Prefix | Router |
-|--------|--------|
-| `/api/user` | `userRoute.js` |
-| `/api/brand` | `brandRoutes.js` |
-| `/api/bike-model` | `bikeModelRoutes.js` |
-| `/api/parts` | `partRoutes.js` |
-| `/api/cart` | `cartRoutes.js` |
-| `/api/orders` | `orderRoutes.js` |
+| Prefix                  | Router                     |
+| ----------------------- | -------------------------- |
+| `/api/user`             | `userRoute.js`             |
+| `/api/brand`            | `brandRoutes.js`           |
+| `/api/bike-model`       | `bikeModelRoutes.js`       |
+| `/api/parts`            | `partRoutes.js`            |
+| `/api/cart`             | `cartRoutes.js`            |
+| `/api/orders`           | `orderRoutes.js`           |
 | `/api/payment-settings` | `paymentSettingsRoutes.js` |
-| `/api/coupon` | `couponRoutes.js` |
-| `/api/support` | `supportTicketRoutes.js` |
-| `/api/address` | `addressRoutes.js` |
-| `/api/garage` | `garageroutes.js` |
+| `/api/coupon`           | `couponRoutes.js`          |
+| `/api/support`          | `supportTicketRoutes.js`   |
+| `/api/address`          | `addressRoutes.js`         |
+| `/api/garage`           | `garageroutes.js`          |
 
 ### Global middleware stack
 
@@ -178,17 +178,17 @@ The client (`client/src/`) is a Vite + React SPA:
 
 ## Technology stack
 
-| Concern | Technology |
-|---------|------------|
-| Runtime | Node.js (ES modules — `"type": "module"`) |
-| API framework | Express |
-| Database | MongoDB + Mongoose |
-| Auth | JSON Web Tokens (`jsonwebtoken`), `bcryptjs` for hashing |
-| Uploads | `multer` (parsing) + Cloudinary (storage) |
-| Email | Brevo via `sib-api-v3-sdk` |
-| Frontend | React + Vite |
-| Client state | Redux Toolkit |
-| Styling | Tailwind CSS |
+| Concern       | Technology                                               |
+| ------------- | -------------------------------------------------------- |
+| Runtime       | Node.js (ES modules — `"type": "module"`)                |
+| API framework | Express                                                  |
+| Database      | MongoDB + Mongoose                                       |
+| Auth          | JSON Web Tokens (`jsonwebtoken`), `bcryptjs` for hashing |
+| Uploads       | `multer` (parsing) + Cloudinary (storage)                |
+| Email         | Brevo via `sib-api-v3-sdk`                               |
+| Frontend      | React + Vite                                             |
+| Client state  | Redux Toolkit                                            |
+| Styling       | Tailwind CSS                                             |
 
 ---
 

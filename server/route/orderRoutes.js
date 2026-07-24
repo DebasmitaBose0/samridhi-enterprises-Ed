@@ -1,7 +1,7 @@
-import express from "express";
-import auth from "../middleware/auth.js";
-import admin from "../middleware/Admin.js";
-import upload from "../middleware/multer.js";
+import express from 'express';
+import auth from '../middleware/auth.js';
+import admin from '../middleware/Admin.js';
+import upload from '../middleware/multer.js';
 import {
   updateRefundStatus,
   createOrder,
@@ -13,45 +13,40 @@ import {
   adminUpdateOrderStatus,
   // getOrderInvoice,
   // getAdminOrderInvoice,
-} from "../controllers/orderController.js";
+} from '../controllers/orderController.js';
 import {
   adminGetDashboardAnalytics,
   adminGetInventoryOverview,
   adminGetSalesAnalytics,
-} from "../controllers/analyticsController.js";
+} from '../controllers/analyticsController.js';
 
 const orderRouter = express.Router();
 
 // Customer
-orderRouter.post("/new", auth, upload.single("paymentScreenshot"), createOrder);
-orderRouter.get("/my-orders", auth, getMyOrders);
+orderRouter.post('/new', auth, upload.single('paymentScreenshot'), createOrder);
+orderRouter.get('/my-orders', auth, getMyOrders);
 // orderRouter.get("/:id/invoice", auth, getOrderInvoice);
 // Customer-initiated cancellation of an own order (owner + status checked in
 // the controller). Distinct method/path from the dynamic GET "/:id" below, so
 // there is no route shadowing.
-orderRouter.put("/:id/cancel", auth, cancelMyOrder);
+orderRouter.put('/:id/cancel', auth, cancelMyOrder);
 
 // Admin
-orderRouter.get("/admin/all", auth, admin, adminGetAllOrders);
+orderRouter.get('/admin/all', auth, admin, adminGetAllOrders);
 // orderRouter.get("/admin/:id/invoice", auth, admin, getAdminOrderInvoice);
-orderRouter.put("/admin/verify/:id", auth, admin, adminVerifyPayment);
-orderRouter.put("/admin/status/:id", auth, admin, adminUpdateOrderStatus);
+orderRouter.put('/admin/verify/:id', auth, admin, adminVerifyPayment);
+orderRouter.put('/admin/status/:id', auth, admin, adminUpdateOrderStatus);
 
 // Admin — dashboard analytics & inventory (real data, no hardcoded values)
-orderRouter.get("/admin/analytics", auth, admin, adminGetDashboardAnalytics);
-orderRouter.get("/admin/inventory", auth, admin, adminGetInventoryOverview);
+orderRouter.get('/admin/analytics', auth, admin, adminGetDashboardAnalytics);
+orderRouter.get('/admin/inventory', auth, admin, adminGetInventoryOverview);
 
 // Admin — chart-oriented sales analytics (monthly trends, top products,
 // customer growth, recent orders) for the dedicated Sales Analytics page.
-orderRouter.get(
-  "/admin/sales-analytics",
-  auth,
-  admin,
-  adminGetSalesAnalytics
-);
+orderRouter.get('/admin/sales-analytics', auth, admin, adminGetSalesAnalytics);
 
 // Keep the dynamic /:id route LAST so it does not shadow the specific routes
 // above (e.g. /my-orders, /admin/all).
-orderRouter.get("/:id", auth, getOrderById);
+orderRouter.get('/:id', auth, getOrderById);
 
 export default orderRouter;

@@ -3,13 +3,13 @@
 #    (it never fails on pre-existing ones).
 #  - npm-audit: full advisory report for each workspace, reported (not gated)
 #    so existing advisories are visible without blocking every PR. Runs weekly.
-name: "Dependency Audit"
+name: 'Dependency Audit'
 
 on:
   pull_request:
     branches: [main, elusoc]
   schedule:
-    - cron: "30 2 * * 1"
+    - cron: '30 2 * * 1'
   workflow_dispatch:
 
 permissions:
@@ -30,7 +30,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: '20'
       - name: Run npm audit (${{ matrix.workspace }})
         working-directory: ${{ matrix.workspace }}
         run: npm audit --audit-level=high
@@ -49,7 +49,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: "20"
+          node-version: '20'
       - name: Run npm audit (${{ matrix.workspace }})
         working-directory: ${{ matrix.workspace }}
         continue-on-error: true

@@ -1,10 +1,10 @@
-import { useEffect, useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   getStockBadge,
   IN_STOCK_THRESHOLD,
   LOW_STOCK_THRESHOLD,
-} from "@/utils/stockStatus";
+} from '@/utils/stockStatus';
 import {
   addPart,
   fetchParts,
@@ -12,53 +12,53 @@ import {
   deletePart,
   clearPartError,
   clearPartSuccess,
-} from "../../store/product/partsSlice";
-import { fetchBikeModels } from "../../store/product/bikeSlice";
-import { toast } from "react-toastify";
+} from '../../store/product/partsSlice';
+import { fetchBikeModels } from '../../store/product/bikeSlice';
+import { toast } from 'react-toastify';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import ConfirmationModal from "../../extras/ConfirmationModal";
-import Loader from "../../extras/Loader";
-import { Images } from "lucide-react";
-import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from 'framer-motion';
+import ConfirmationModal from '../../extras/ConfirmationModal';
+import Loader from '../../extras/Loader';
+import { Images } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const categories = [
-  "Abs",
-  "Belt Drive",
-  "Bearing Kit",
-  "BSVI Products",
-  "Brake Switch",
-  "CDEI",
-  "C.D.I",
-  "Consumable Filters",
-  "Drum / Drum Plate / Coupling Hub / Wheel Rim",
-  "Electronic Relay",
-  "Filters & Horn",
-  "Footrest Bracket",
-  "Other Products (Cylinder Kit / Fuse Blade)",
-  "Flasher / Buzzer",
-  "Floor Set / Speedo Gear",
-  "Fuel Items",
-  "Lever & Yoke",
-  "Varroc Oil / Grease",
-  "Handle Bar Switch / Handle Bar Weigth",
-  "Ignition Coil",
-  "Insulator For Carburetor",
-  "Lighting Products",
-  "Magneto Assembly & Spares",
-  "Modular Switch",
-  "Oring",
-  "Other (Oil Pump Gear / Clutch Roller / Plug Cap)",
-  "Oil Seal Kit",
-  "Gaskets",
-  "Rear View Mirror",
-  "Regulator Rectifier (R.R.)",
-  "Rubber Items",
-  "Relay",
-  "Switches / Locks",
-  "Starter Moter & Spares",
-  "Speedo Gear",
-  "TPSR / Swing Arm Assly",
+  'Abs',
+  'Belt Drive',
+  'Bearing Kit',
+  'BSVI Products',
+  'Brake Switch',
+  'CDEI',
+  'C.D.I',
+  'Consumable Filters',
+  'Drum / Drum Plate / Coupling Hub / Wheel Rim',
+  'Electronic Relay',
+  'Filters & Horn',
+  'Footrest Bracket',
+  'Other Products (Cylinder Kit / Fuse Blade)',
+  'Flasher / Buzzer',
+  'Floor Set / Speedo Gear',
+  'Fuel Items',
+  'Lever & Yoke',
+  'Varroc Oil / Grease',
+  'Handle Bar Switch / Handle Bar Weigth',
+  'Ignition Coil',
+  'Insulator For Carburetor',
+  'Lighting Products',
+  'Magneto Assembly & Spares',
+  'Modular Switch',
+  'Oring',
+  'Other (Oil Pump Gear / Clutch Roller / Plug Cap)',
+  'Oil Seal Kit',
+  'Gaskets',
+  'Rear View Mirror',
+  'Regulator Rectifier (R.R.)',
+  'Rubber Items',
+  'Relay',
+  'Switches / Locks',
+  'Starter Moter & Spares',
+  'Speedo Gear',
+  'TPSR / Swing Arm Assly',
 ];
 
 const AdminPartPage = () => {
@@ -76,13 +76,13 @@ const AdminPartPage = () => {
   } = useSelector((state) => state.bike);
 
   const [formData, setFormData] = useState({
-    product_id: "",
-    name: "",
-    description: "",
-    price: "",
+    product_id: '',
+    name: '',
+    description: '',
+    price: '',
     stock: 1,
     vehicleCompatibility: [],
-    category: "",
+    category: '',
     bestseller: false,
   });
   const [images, setImages] = useState([]);
@@ -91,16 +91,16 @@ const AdminPartPage = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [selectedIdToDelete, setSelectedIdToDelete] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterCategory, setFilterCategory] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
   const [filterCompatibility, setFilterCompatibility] = useState([]);
-  const [filterStockStatus, setFilterStockStatus] = useState("");
+  const [filterStockStatus, setFilterStockStatus] = useState('');
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   // eslint-disable-next-line no-unused-vars
-  const [viewMode, setViewMode] = useState("grid");
-  const [sortBy, setSortBy] = useState("name");
+  const [viewMode, setViewMode] = useState('grid');
+  const [sortBy, setSortBy] = useState('name');
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const dropdownRef = useRef(null);
   const filterDropdownRef = useRef(null);
@@ -112,7 +112,7 @@ const AdminPartPage = () => {
 
   useEffect(() => {
     if (partsSuccess) {
-      toast.success("Operation successful!");
+      toast.success('Operation successful!');
       dispatch(clearPartSuccess());
       setShowAddForm(false);
     }
@@ -137,15 +137,15 @@ const AdminPartPage = () => {
         setIsFilterDropdownOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
@@ -169,7 +169,7 @@ const AdminPartPage = () => {
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     if (files.length > 5) {
-      toast.warn("Maximum 5 images allowed!");
+      toast.warn('Maximum 5 images allowed!');
       return;
     }
     setImages(files);
@@ -181,11 +181,13 @@ const AdminPartPage = () => {
     e.preventDefault();
     const { product_id, name, price, category } = formData;
     const fieldErrors = {};
-    if (!product_id.trim()) fieldErrors.product_id = "Product ID is required";
-    if (!name.trim()) fieldErrors.name = "Part name is required";
-    if (!price || Number(price) <= 0) fieldErrors.price = "Valid price is required";
-    if (!category) fieldErrors.category = "Category is required";
-    if (!editId && images.length === 0) fieldErrors.image = "At least one image is required";
+    if (!product_id.trim()) fieldErrors.product_id = 'Product ID is required';
+    if (!name.trim()) fieldErrors.name = 'Part name is required';
+    if (!price || Number(price) <= 0)
+      fieldErrors.price = 'Valid price is required';
+    if (!category) fieldErrors.category = 'Category is required';
+    if (!editId && images.length === 0)
+      fieldErrors.image = 'At least one image is required';
     setFormErrors(fieldErrors);
     if (Object.keys(fieldErrors).length > 0) return;
 
@@ -197,7 +199,7 @@ const AdminPartPage = () => {
         data.append(key, formData[key]);
       }
     });
-    images.forEach((img) => data.append("images", img));
+    images.forEach((img) => data.append('images', img));
 
     if (editId) {
       dispatch(updatePart({ id: editId, formData: data }));
@@ -210,13 +212,13 @@ const AdminPartPage = () => {
 
   const resetForm = () => {
     setFormData({
-      product_id: "",
-      name: "",
-      description: "",
-      price: "",
+      product_id: '',
+      name: '',
+      description: '',
+      price: '',
       stock: 1,
       vehicleCompatibility: [],
-      category: "",
+      category: '',
       bestseller: false,
     });
     setImages([]);
@@ -230,7 +232,7 @@ const AdminPartPage = () => {
     setFormData({
       product_id: part.product_id,
       name: part.name,
-      description: part.description || "",
+      description: part.description || '',
       price: part.price,
       stock: part.stock,
       vehicleCompatibility: part.vehicleCompatibility.map((v) => v._id || v),
@@ -254,10 +256,10 @@ const AdminPartPage = () => {
   };
 
   const clearAllFilters = () => {
-    setSearchTerm("");
-    setFilterCategory("");
+    setSearchTerm('');
+    setFilterCategory('');
     setFilterCompatibility([]);
-    setFilterStockStatus("");
+    setFilterStockStatus('');
     setPriceRange([0, 10000]);
   };
 
@@ -278,14 +280,14 @@ const AdminPartPage = () => {
       const matchesPrice =
         part.price >= priceRange[0] && part.price <= priceRange[1];
       const matchesStockStatus = filterStockStatus
-        ? filterStockStatus === "inStock"
+        ? filterStockStatus === 'inStock'
           ? part.stock > IN_STOCK_THRESHOLD
-          : filterStockStatus === "lowStock"
-          ? part.stock >= LOW_STOCK_THRESHOLD &&
-            part.stock <= IN_STOCK_THRESHOLD
-          : filterStockStatus === "outOfStock"
-          ? part.stock < LOW_STOCK_THRESHOLD
-          : true
+          : filterStockStatus === 'lowStock'
+            ? part.stock >= LOW_STOCK_THRESHOLD &&
+              part.stock <= IN_STOCK_THRESHOLD
+            : filterStockStatus === 'outOfStock'
+              ? part.stock < LOW_STOCK_THRESHOLD
+              : true
         : true;
       return (
         matchesSearch &&
@@ -297,13 +299,13 @@ const AdminPartPage = () => {
     })
     .sort((a, b) => {
       switch (sortBy) {
-        case "price-low":
+        case 'price-low':
           return a.price - b.price;
-        case "price-high":
+        case 'price-high':
           return b.price - a.price;
-        case "stock":
+        case 'stock':
           return b.stock - a.stock;
-        case "newest":
+        case 'newest':
           return new Date(b.createdAt) - new Date(a.createdAt);
         default:
           return a.name.localeCompare(b.name);
@@ -340,7 +342,7 @@ const AdminPartPage = () => {
               whileTap={{ scale: 0.98 }}
               className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg font-medium transition-colors duration-200 shadow-sm text-sm sm:text-base"
             >
-              {showAddForm ? "Cancel" : "+ Add New Part"}
+              {showAddForm ? 'Cancel' : '+ Add New Part'}
             </motion.button>
           </div>
         </div>
@@ -351,14 +353,14 @@ const AdminPartPage = () => {
           {showAddForm && (
             <motion.div
               initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
+              animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
               className="bg-white rounded-lg shadow-lg border border-gray-200 mb-6 overflow-hidden"
             >
               <div className="p-4 sm:p-6 border-b border-gray-200">
                 <h2 className="text-lg sm:text-xl font-semibold text-gray-900">
-                  {editId ? "Edit Part" : "Add New Part"}
+                  {editId ? 'Edit Part' : 'Add New Part'}
                 </h2>
               </div>
               <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6">
@@ -371,11 +373,18 @@ const AdminPartPage = () => {
                       type="text"
                       name="product_id"
                       value={formData.product_id}
-                      onChange={(e) => { handleInputChange(e); setFormErrors((prev) => ({ ...prev, product_id: "" })); }}
-                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${formErrors.product_id ? "border-red-400" : "border-gray-300"}`}
+                      onChange={(e) => {
+                        handleInputChange(e);
+                        setFormErrors((prev) => ({ ...prev, product_id: '' }));
+                      }}
+                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${formErrors.product_id ? 'border-red-400' : 'border-gray-300'}`}
                       placeholder="Enter product ID"
                     />
-                    {formErrors.product_id && <p className="mt-1 text-xs text-red-500">{formErrors.product_id}</p>}
+                    {formErrors.product_id && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {formErrors.product_id}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -385,11 +394,18 @@ const AdminPartPage = () => {
                       type="text"
                       name="name"
                       value={formData.name}
-                      onChange={(e) => { handleInputChange(e); setFormErrors((prev) => ({ ...prev, name: "" })); }}
-                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${formErrors.name ? "border-red-400" : "border-gray-300"}`}
+                      onChange={(e) => {
+                        handleInputChange(e);
+                        setFormErrors((prev) => ({ ...prev, name: '' }));
+                      }}
+                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${formErrors.name ? 'border-red-400' : 'border-gray-300'}`}
                       placeholder="Enter part name"
                     />
-                    {formErrors.name && <p className="mt-1 text-xs text-red-500">{formErrors.name}</p>}
+                    {formErrors.name && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {formErrors.name}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -399,13 +415,20 @@ const AdminPartPage = () => {
                       type="number"
                       name="price"
                       value={formData.price}
-                      onChange={(e) => { handleInputChange(e); setFormErrors((prev) => ({ ...prev, price: "" })); }}
-                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${formErrors.price ? "border-red-400" : "border-gray-300"}`}
+                      onChange={(e) => {
+                        handleInputChange(e);
+                        setFormErrors((prev) => ({ ...prev, price: '' }));
+                      }}
+                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${formErrors.price ? 'border-red-400' : 'border-gray-300'}`}
                       placeholder="0.00"
                       min="0"
                       step="0.01"
                     />
-                    {formErrors.price && <p className="mt-1 text-xs text-red-500">{formErrors.price}</p>}
+                    {formErrors.price && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {formErrors.price}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -427,8 +450,11 @@ const AdminPartPage = () => {
                     <select
                       name="category"
                       value={formData.category}
-                      onChange={(e) => { handleInputChange(e); setFormErrors((prev) => ({ ...prev, category: "" })); }}
-                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm cursor-pointer ${formErrors.category ? "border-red-400" : "border-gray-300"}`}
+                      onChange={(e) => {
+                        handleInputChange(e);
+                        setFormErrors((prev) => ({ ...prev, category: '' }));
+                      }}
+                      className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm cursor-pointer ${formErrors.category ? 'border-red-400' : 'border-gray-300'}`}
                     >
                       <option value="">Select Category</option>
                       {categories.map((cat) => (
@@ -437,7 +463,11 @@ const AdminPartPage = () => {
                         </option>
                       ))}
                     </select>
-                    {formErrors.category && <p className="mt-1 text-xs text-red-500">{formErrors.category}</p>}
+                    {formErrors.category && (
+                      <p className="mt-1 text-xs text-red-500">
+                        {formErrors.category}
+                      </p>
+                    )}
                   </div>
                   <div className="relative" ref={dropdownRef}>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -449,7 +479,7 @@ const AdminPartPage = () => {
                     >
                       {formData.vehicleCompatibility.length > 0
                         ? `${formData.vehicleCompatibility.length} model(s) selected`
-                        : "Select compatible models"}
+                        : 'Select compatible models'}
                     </div>
                     <AnimatePresence>
                       {isDropdownOpen && (
@@ -512,10 +542,17 @@ const AdminPartPage = () => {
                     type="file"
                     multiple
                     accept="image/*"
-                    onChange={(e) => { handleImageChange(e); setFormErrors((prev) => ({ ...prev, image: "" })); }}
+                    onChange={(e) => {
+                      handleImageChange(e);
+                      setFormErrors((prev) => ({ ...prev, image: '' }));
+                    }}
                     className="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   />
-                  {formErrors.image && <p className="mt-1 text-xs text-red-500">{formErrors.image}</p>}
+                  {formErrors.image && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {formErrors.image}
+                    </p>
+                  )}
                   {imagePreviews.length > 0 && (
                     <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
                       <AnimatePresence>
@@ -568,7 +605,7 @@ const AdminPartPage = () => {
                     whileTap={{ scale: 0.98 }}
                     className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200 text-sm"
                   >
-                    {editId ? "Update Part" : "Add Part"}
+                    {editId ? 'Update Part' : 'Add Part'}
                   </motion.button>
                 </div>
               </form>
@@ -647,7 +684,7 @@ const AdminPartPage = () => {
                 >
                   {filterCompatibility.length > 0
                     ? `${filterCompatibility.length} model(s) selected`
-                    : "All Models"}
+                    : 'All Models'}
                 </div>
                 <AnimatePresence>
                   {isFilterDropdownOpen && (
@@ -750,9 +787,9 @@ const AdminPartPage = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 >
                   <option value="">All Stock Status</option>
-                  <option value="inStock">In Stock ({">"} 15)</option>
+                  <option value="inStock">In Stock ({'>'} 15)</option>
                   <option value="lowStock">Low Stock (5–15)</option>
-                  <option value="outOfStock">Out of Stock ({"<"} 5)</option>
+                  <option value="outOfStock">Out of Stock ({'<'} 5)</option>
                 </select>
               </div>
               <div className="flex items-end">
@@ -816,30 +853,30 @@ const AdminPartPage = () => {
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.3 }}
                   className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200 overflow-hidden ${
-                    viewMode === "list" ? "flex flex-col" : ""
+                    viewMode === 'list' ? 'flex flex-col' : ''
                   }`}
                 >
                   <Link to={`/products/${part._id}`}>
                     <div
                       className={`${
-                        viewMode === "list"
-                          ? "w-full sm:w-32 sm:flex-shrink-0"
-                          : "w-full"
+                        viewMode === 'list'
+                          ? 'w-full sm:w-32 sm:flex-shrink-0'
+                          : 'w-full'
                       }`}
                     >
                       <motion.img
                         src={
                           part.images[0]?.url ||
-                          "https://via.placeholder.com/150"
+                          'https://via.placeholder.com/150'
                         }
                         alt={part.name}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.3, delay: 0.1 }}
                         className={`object-fit w-full ${
-                          viewMode === "list"
-                            ? "h-48 sm:h-full"
-                            : "h-48 sm:h-40"
+                          viewMode === 'list'
+                            ? 'h-48 sm:h-full'
+                            : 'h-48 sm:h-40'
                         } rounded-t-lg sm:rounded-t-none sm:rounded-l-lg`}
                       />
                     </div>
@@ -875,23 +912,23 @@ const AdminPartPage = () => {
                         </span>
                       </div>
                       <div className="text-sm text-gray-600">
-                        <span className="font-medium">Category:</span>{" "}
+                        <span className="font-medium">Category:</span>{' '}
                         {part.category}
                       </div>
                       <div className="text-sm text-gray-600">
-                        <span className="font-medium">Compatible:</span>{" "}
+                        <span className="font-medium">Compatible:</span>{' '}
                         <span className=" uppercase">
                           {part.vehicleCompatibility.length > 0
                             ? part.vehicleCompatibility
                                 .slice(0, 2)
                                 .map((v) => v.name || v)
-                                .join(", ") +
+                                .join(', ') +
                               (part.vehicleCompatibility.length > 2
                                 ? ` +${
                                     part.vehicleCompatibility.length - 2
                                   } more`
-                                : "")
-                            : "None specified"}
+                                : '')
+                            : 'None specified'}
                         </span>
                       </div>
                     </div>

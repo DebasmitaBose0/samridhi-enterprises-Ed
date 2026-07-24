@@ -16,9 +16,17 @@ export const buildSearchAggregation = (q, filters) => {
   pipeline.push({
     $facet: {
       results: [{ $limit: 100 }],
-      categories: [{ $group: { _id: "$category", count: { $sum: 1 } } }],
-      priceRange: [{ $group: { _id: null, min: { $min: "$price" }, max: { $max: "$price" } } }]
-    }
+      categories: [{ $group: { _id: '$category', count: { $sum: 1 } } }],
+      priceRange: [
+        {
+          $group: {
+            _id: null,
+            min: { $min: '$price' },
+            max: { $max: '$price' },
+          },
+        },
+      ],
+    },
   });
   return pipeline;
 };

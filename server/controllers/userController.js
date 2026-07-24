@@ -1,27 +1,29 @@
-import ErrorHandler from "../utils/errorHandler.js";
-import UserModel from "../models/userModel.js";
-import bcryptjs from "bcryptjs";
-import sendEmail from "../config/sendEmail.js";
-import verifyEmailTemplate from "../template/verifyEmailTemplate.js";
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import { deleteImage, uploadImage, getPublicIdFromUrl } from "../utils/cloudinary.js";
-import generatedOtp from "../utils/generatedOtp.js";
-import sendToken from "../utils/jwtToken.js";
-import forgotPasswordTemplate from "../template/forgotPasswordTemplate.js";
-import { logAudit } from "../utils/auditLogger.js";
-import { isOtpDevMode } from "../utils/validateEnv.js";
-import validatePassword from "../utils/validatePassword.js";
-
+import ErrorHandler from '../utils/errorHandler.js';
+import UserModel from '../models/userModel.js';
+import bcryptjs from 'bcryptjs';
+import sendEmail from '../config/sendEmail.js';
+import verifyEmailTemplate from '../template/verifyEmailTemplate.js';
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import {
+  deleteImage,
+  uploadImage,
+  getPublicIdFromUrl,
+} from '../utils/cloudinary.js';
+import generatedOtp from '../utils/generatedOtp.js';
+import sendToken from '../utils/jwtToken.js';
+import forgotPasswordTemplate from '../template/forgotPasswordTemplate.js';
+import { logAudit } from '../utils/auditLogger.js';
+import { isOtpDevMode } from '../utils/validateEnv.js';
+import validatePassword from '../utils/validatePassword.js';
 
 const shouldLogOtp = isOtpDevMode();
-
 
 export const registerUser = catchAsyncErrors(async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-      return next(new ErrorHandler("Please fill all required fields", 400));
+      return next(new ErrorHandler('Please fill all required fields', 400));
     }
 
     const passwordValidation = validatePassword(password);
@@ -32,7 +34,7 @@ export const registerUser = catchAsyncErrors(async (req, res, next) => {
     const existingUser = await UserModel.findOne({ email });
 
     if (existingUser) {
-      return next(new ErrorHandler("Email already exists", 400));
+      return next(new ErrorHandler('Email already exists', 400));
     }
 
     const otp = generatedOtp();
@@ -45,12 +47,12 @@ export const registerUser = catchAsyncErrors(async (req, res, next) => {
 
     const emailResponse = await sendEmail({
       sendTo: email,
-      subject: "Verify Your Email - Nandani Jewelllers",
+      subject: 'Verify Your Email - Nandani Jewelllers',
       html: verifyEmailTemplate({ name, otp }),
     });
 
     if (!emailResponse) {
-      return next(new ErrorHandler("Failed to send verification email", 500));
+      return next(new ErrorHandler('Failed to send verification email', 500));
     }
 
     const otpHash = await bcryptjs.hash(String(otp), 12);
@@ -68,18 +70,18 @@ export const registerUser = catchAsyncErrors(async (req, res, next) => {
     const savedUser = await newUser.save();
 
     if (!savedUser) {
-      return next(new ErrorHandler("Failed to create user", 500));
+      return next(new ErrorHandler('Failed to create user', 500));
     }
 
     return res.status(201).json({
       message:
-        "User registered successfully. Please check your email to verify your account.",
+        'User registered successfully. Please check your email to verify your account.',
       error: false,
       success: true,
       data: savedUser,
     });
   } catch (error) {
-    return next(new ErrorHandler("Server error. Please try again.", 500));
+    return next(new ErrorHandler('Server error. Please try again.', 500));
   }
 });
 
@@ -90,7 +92,7 @@ export const verifyEmailOtp = catchAsyncErrors(async (req, res, next) => {
     const user = await UserModel.findOne({ email });
 
     if (!user) {
-      return next(new ErrorHandler("Email not registered.", 400));
+      return next(new ErrorHandler('Email not registered.', 400));
     }
     if (user.login_expiry < new Date()) {
       const newOtp = generatedOtp();
@@ -99,12 +101,14 @@ export const verifyEmailOtp = catchAsyncErrors(async (req, res, next) => {
 
       const emailResponse = await sendEmail({
         sendTo: email,
-        subject: "New OTP for Email Verification - Samridhi Enterprises",
+        subject: 'New OTP for Email Verification - Samridhi Enterprises',
         html: verifyEmailTemplate({ name: user.name, otp: newOtp }),
       });
 
       if (!emailResponse) {
-        return next(new ErrorHandler("Failed to resend OTP. Try again later.", 500));
+        return next(
+          new ErrorHandler('Failed to resend OTP. Try again later.', 500)
+        );
       }
 
       const newOtpHash = await bcryptjs.hash(String(newOtp), 12);
@@ -113,13 +117,19 @@ export const verifyEmailOtp = catchAsyncErrors(async (req, res, next) => {
       await user.save();
 
       return next(
-        new ErrorHandler("OTP expired. A new OTP has been sent to your email.", 410)
+        new ErrorHandler(
+          'OTP expired. A new OTP has been sent to your email.',
+          410
+        )
       );
     }
 
-    const isOtpValid = await bcryptjs.compare(String(otp), user.login_otp || "");
+    const isOtpValid = await bcryptjs.compare(
+      String(otp),
+      user.login_otp || ''
+    );
     if (!isOtpValid) {
-      return next(new ErrorHandler("Invalid OTP", 401));
+      return next(new ErrorHandler('Invalid OTP', 401));
     }
 
     await UserModel.findByIdAndUpdate(user._id, {
@@ -129,13 +139,16 @@ export const verifyEmailOtp = catchAsyncErrors(async (req, res, next) => {
     });
 
     return res.json({
-      message: "Email verified successfully.",
+      message: 'Email verified successfully.',
       error: false,
       success: true,
     });
   } catch (error) {
     return next(
-      new ErrorHandler(error.message || "An error occurred while verifying OTP.", 500)
+      new ErrorHandler(
+        error.message || 'An error occurred while verifying OTP.',
+        500
+      )
     );
   }
 });
@@ -147,7 +160,7 @@ export const resendOtp = catchAsyncErrors(async (req, res, next) => {
     const user = await UserModel.findOne({ email });
 
     if (!user) {
-      return next(new ErrorHandler("Email not registered.", 400));
+      return next(new ErrorHandler('Email not registered.', 400));
     }
 
     const newOtp = generatedOtp();
@@ -160,12 +173,14 @@ export const resendOtp = catchAsyncErrors(async (req, res, next) => {
 
     const emailResponse = await sendEmail({
       sendTo: email,
-      subject: "New OTP for Email Verification - Samridhi Enterprises",
+      subject: 'New OTP for Email Verification - Samridhi Enterprises',
       html: verifyEmailTemplate({ name: user.name, otp: newOtp }),
     });
 
     if (!emailResponse) {
-      return next(new ErrorHandler("Failed to resend OTP. Try again later.", 500));
+      return next(
+        new ErrorHandler('Failed to resend OTP. Try again later.', 500)
+      );
     }
 
     const newOtpHash = await bcryptjs.hash(String(newOtp), 12);
@@ -174,12 +189,14 @@ export const resendOtp = catchAsyncErrors(async (req, res, next) => {
     await user.save();
 
     return res.status(200).json({
-      message: "A new OTP has been sent to your email.",
+      message: 'A new OTP has been sent to your email.',
       error: false,
       success: true,
     });
   } catch (error) {
-    return next(new ErrorHandler(error.message || "Failed to resend OTP.", 500));
+    return next(
+      new ErrorHandler(error.message || 'Failed to resend OTP.', 500)
+    );
   }
 });
 
@@ -187,18 +204,21 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    return next(new ErrorHandler("Please provide email and password", 400));
+    return next(new ErrorHandler('Please provide email and password', 400));
   }
 
-  const user = await UserModel.findOne({ email }).select("+password");
+  const user = await UserModel.findOne({ email }).select('+password');
 
   if (!user) {
-    return next(new ErrorHandler("User is not registered", 400));
+    return next(new ErrorHandler('User is not registered', 400));
   }
 
-  if (user.status !== "Active") {
+  if (user.status !== 'Active') {
     return next(
-      new ErrorHandler("Your account is not active. Please contact the admin.", 400)
+      new ErrorHandler(
+        'Your account is not active. Please contact the admin.',
+        400
+      )
     );
   }
 
@@ -209,7 +229,9 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
   // If a lock is currently active, reject before checking the password so a
   // locked account cannot keep guessing.
   if (user.lockUntil && user.lockUntil.getTime() > Date.now()) {
-    const minutesLeft = Math.ceil((user.lockUntil.getTime() - Date.now()) / 60000);
+    const minutesLeft = Math.ceil(
+      (user.lockUntil.getTime() - Date.now()) / 60000
+    );
     return next(
       new ErrorHandler(
         `Account temporarily locked due to too many failed login attempts. Try again in ${minutesLeft} minute(s).`,
@@ -243,7 +265,7 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
     }
 
     await user.save();
-    return next(new ErrorHandler("Incorrect email or password", 400));
+    return next(new ErrorHandler('Incorrect email or password', 400));
   }
 
   // Successful login — clear any failed-attempt state.
@@ -262,18 +284,20 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
 
 export const logoutUser = catchAsyncErrors(async (req, res, next) => {
   try {
-    res.cookie("token", null, {
+    res.cookie('token', null, {
       expires: new Date(Date.now()),
       httpOnly: true,
     });
 
     return res.status(200).json({
-      message: "Logout successful",
+      message: 'Logout successful',
       error: false,
       success: true,
     });
   } catch (error) {
-    return next(new ErrorHandler(error.message || "Internal Server Error", 500));
+    return next(
+      new ErrorHandler(error.message || 'Internal Server Error', 500)
+    );
   }
 });
 
@@ -283,12 +307,12 @@ export const uploadAvatar = catchAsyncErrors(async (req, res, next) => {
     const image = req.file;
 
     if (!image) {
-      return next(new ErrorHandler("No image file provided", 400));
+      return next(new ErrorHandler('No image file provided', 400));
     }
 
     const user = await UserModel.findById(userId);
     if (!user) {
-      return next(new ErrorHandler("User not found", 404));
+      return next(new ErrorHandler('User not found', 404));
     }
 
     if (user.avatar) {
@@ -297,7 +321,7 @@ export const uploadAvatar = catchAsyncErrors(async (req, res, next) => {
         try {
           await deleteImage(publicId);
         } catch (delErr) {
-          console.error("Old avatar delete failed:", delErr.message);
+          console.error('Old avatar delete failed:', delErr.message);
         }
       }
     }
@@ -305,7 +329,7 @@ export const uploadAvatar = catchAsyncErrors(async (req, res, next) => {
     const upload = await uploadImage(image);
 
     if (!upload || !upload.url) {
-      return next(new ErrorHandler("Image upload failed", 500));
+      return next(new ErrorHandler('Image upload failed', 500));
     }
 
     const updatedUser = await UserModel.findByIdAndUpdate(
@@ -317,11 +341,11 @@ export const uploadAvatar = catchAsyncErrors(async (req, res, next) => {
     );
 
     if (!updatedUser) {
-      return next(new ErrorHandler("User not found", 404));
+      return next(new ErrorHandler('User not found', 404));
     }
 
     return res.json({
-      message: "Profile picture uploaded successfully",
+      message: 'Profile picture uploaded successfully',
       success: true,
       error: false,
       data: {
@@ -336,20 +360,20 @@ export const uploadAvatar = catchAsyncErrors(async (req, res, next) => {
 
 export const updatePassword = catchAsyncErrors(async (req, res, next) => {
   try {
-    const user = await UserModel.findById(req.user.id).select("+password");
+    const user = await UserModel.findById(req.user.id).select('+password');
 
     if (!user) {
-      return next(new ErrorHandler("User not found", 404));
+      return next(new ErrorHandler('User not found', 404));
     }
 
     const isPasswordMatched = await user.comparePassword(req.body.oldPassword);
 
     if (!isPasswordMatched) {
-      return next(new ErrorHandler("Old password is incorrect", 400));
+      return next(new ErrorHandler('Old password is incorrect', 400));
     }
 
     if (req.body.newPassword !== req.body.confirmPassword) {
-      return next(new ErrorHandler("Password does not match", 400));
+      return next(new ErrorHandler('Password does not match', 400));
     }
 
     const passwordValidation = validatePassword(req.body.newPassword);
@@ -362,12 +386,12 @@ export const updatePassword = catchAsyncErrors(async (req, res, next) => {
     await user.save();
 
     return res.json({
-      message: "Password updated successfully",
+      message: 'Password updated successfully',
       error: false,
       success: true,
     });
   } catch (error) {
-    next(new ErrorHandler(error.message || "Error updating password", 500));
+    next(new ErrorHandler(error.message || 'Error updating password', 500));
   }
 });
 
@@ -380,12 +404,11 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
     if (!user) {
       return res.json({
         message:
-          "If the email exists, a password reset OTP has been sent. Please check your inbox.",
+          'If the email exists, a password reset OTP has been sent. Please check your inbox.',
         error: false,
         success: true,
       });
     }
-
 
     const otp = generatedOtp();
     const expireTime = new Date(new Date().getTime() + 10 * 60 * 1000);
@@ -404,12 +427,12 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
     });
 
     if (!update) {
-      return next(new ErrorHandler("Failed to update user with OTP", 500));
+      return next(new ErrorHandler('Failed to update user with OTP', 500));
     }
 
     await sendEmail({
       sendTo: email,
-      subject: "Forgot password from Samridhi Enterprises",
+      subject: 'Forgot password from Samridhi Enterprises',
       html: forgotPasswordTemplate({
         name: user.name,
         otp: otp,
@@ -418,7 +441,7 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
 
     return res.json({
       message:
-        "A password reset OTP has been sent to your email. Please check your inbox.",
+        'A password reset OTP has been sent to your email. Please check your inbox.',
       error: false,
       success: true,
     });
@@ -431,19 +454,18 @@ export const verifyOtp = catchAsyncErrors(async (req, res, next) => {
   const { email, otp } = req.body;
 
   if (!email || !otp) {
-    return next(new ErrorHandler("Please provide both email and otp.", 400));
+    return next(new ErrorHandler('Please provide both email and otp.', 400));
   }
 
   const maxAttempts = Number(process.env.FORGOT_PASSWORD_MAX_ATTEMPTS) || 5;
-  const lockMinutes =
-    Number(process.env.FORGOT_PASSWORD_LOCK_MINUTES) || 15;
+  const lockMinutes = Number(process.env.FORGOT_PASSWORD_LOCK_MINUTES) || 15;
 
   const user = await UserModel.findOne({ email });
 
   // Generic error message to avoid leaking whether the email exists
   // or whether the OTP is correct.
   const genericOtpError = new ErrorHandler(
-    "Invalid or expired OTP. Please request a new one.",
+    'Invalid or expired OTP. Please request a new one.',
     400
   );
 
@@ -457,7 +479,7 @@ export const verifyOtp = catchAsyncErrors(async (req, res, next) => {
     user.forgot_password_lockUntil.getTime() > Date.now()
   ) {
     return next(
-      new ErrorHandler("Too many OTP attempts. Please try again later.", 429)
+      new ErrorHandler('Too many OTP attempts. Please try again later.', 429)
     );
   }
 
@@ -478,7 +500,7 @@ export const verifyOtp = catchAsyncErrors(async (req, res, next) => {
 
   const isOtpValid = await bcryptjs.compare(
     String(otp),
-    user.forgot_password_otp || ""
+    user.forgot_password_otp || ''
   );
 
   if (!isOtpValid) {
@@ -496,10 +518,7 @@ export const verifyOtp = catchAsyncErrors(async (req, res, next) => {
 
     if (user.forgot_password_lockUntil) {
       return next(
-        new ErrorHandler(
-          "Too many OTP attempts. Please try again later.",
-          429
-        )
+        new ErrorHandler('Too many OTP attempts. Please try again later.', 429)
       );
     }
 
@@ -516,22 +535,20 @@ export const verifyOtp = catchAsyncErrors(async (req, res, next) => {
   });
 
   return res.json({
-    message: "OTP verified successfully.",
+    message: 'OTP verified successfully.',
     error: false,
     success: true,
   });
 });
 
-
 export const resetPassword = catchAsyncErrors(async (req, res, next) => {
-
   try {
     const { email, otp, newPassword, confirmPassword } = req.body;
 
     if (!email || !otp || !newPassword || !confirmPassword) {
       return next(
         new ErrorHandler(
-          "Please provide required fields: email, otp, newPassword, and confirmPassword.",
+          'Please provide required fields: email, otp, newPassword, and confirmPassword.',
           400
         )
       );
@@ -540,7 +557,7 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
     if (newPassword !== confirmPassword) {
       return next(
         new ErrorHandler(
-          "New password and confirm password must be the same.",
+          'New password and confirm password must be the same.',
           400
         )
       );
@@ -556,7 +573,7 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
     // Generic error to avoid leaking whether the email exists or whether the
     // OTP is correct (mirrors verifyOtp's enumeration-safe messaging).
     const genericOtpError = new ErrorHandler(
-      "Invalid or expired OTP. Please request a new one.",
+      'Invalid or expired OTP. Please request a new one.',
       400
     );
 
@@ -571,7 +588,7 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
       user.forgot_password_lockUntil.getTime() > Date.now()
     ) {
       return next(
-        new ErrorHandler("Too many OTP attempts. Please try again later.", 429)
+        new ErrorHandler('Too many OTP attempts. Please try again later.', 429)
       );
     }
 
@@ -593,12 +610,11 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
 
     const isOtpValid = await bcryptjs.compare(
       String(otp),
-      user.forgot_password_otp || ""
+      user.forgot_password_otp || ''
     );
 
     if (!isOtpValid) {
-      const maxAttempts =
-        Number(process.env.FORGOT_PASSWORD_MAX_ATTEMPTS) || 5;
+      const maxAttempts = Number(process.env.FORGOT_PASSWORD_MAX_ATTEMPTS) || 5;
       const lockMinutes =
         Number(process.env.FORGOT_PASSWORD_LOCK_MINUTES) || 15;
 
@@ -616,7 +632,10 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
 
       if (user.forgot_password_lockUntil) {
         return next(
-          new ErrorHandler("Too many OTP attempts. Please try again later.", 429)
+          new ErrorHandler(
+            'Too many OTP attempts. Please try again later.',
+            429
+          )
         );
       }
 
@@ -642,31 +661,36 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
     );
 
     if (!updatedUser) {
-      return next(new ErrorHandler("Failed to update password. Please try again.", 500));
+      return next(
+        new ErrorHandler('Failed to update password. Please try again.', 500)
+      );
     }
 
     return res.json({
-      message: "Password updated successfully.",
+      message: 'Password updated successfully.',
       error: false,
       success: true,
     });
   } catch (error) {
     return next(
-      new ErrorHandler(error.message || "An error occurred while updating the password.", 500)
+      new ErrorHandler(
+        error.message || 'An error occurred while updating the password.',
+        500
+      )
     );
   }
 });
 
 export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
   try {
-    console.log("Checking User model:", UserModel);
+    console.log('Checking User model:', UserModel);
 
-    console.log("User ID:", req.user?._id);
+    console.log('User ID:', req.user?._id);
 
     const user = await UserModel.findById(req.user._id);
 
     if (!user) {
-      return next(new ErrorHandler("User not found", 404));
+      return next(new ErrorHandler('User not found', 404));
     }
 
     res.status(200).json({
@@ -675,7 +699,10 @@ export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
     });
   } catch (error) {
     return next(
-      new ErrorHandler(error.message || "Server error while fetching user details", 500)
+      new ErrorHandler(
+        error.message || 'Server error while fetching user details',
+        500
+      )
     );
   }
 });
@@ -698,11 +725,11 @@ export const updateUserDetails = catchAsyncErrors(async (req, res, next) => {
     }
 
     if (avatar) {
-      const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+      const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
       if (!validImageTypes.includes(avatar.mimetype)) {
         return next(
           new ErrorHandler(
-            "Invalid image type. Only JPEG, PNG, and GIF are allowed.",
+            'Invalid image type. Only JPEG, PNG, and GIF are allowed.',
             400
           )
         );
@@ -716,7 +743,7 @@ export const updateUserDetails = catchAsyncErrors(async (req, res, next) => {
           try {
             await deleteImage(publicId);
           } catch (delErr) {
-            console.error("Old avatar delete failed:", delErr.message);
+            console.error('Old avatar delete failed:', delErr.message);
           }
         }
       }
@@ -724,7 +751,7 @@ export const updateUserDetails = catchAsyncErrors(async (req, res, next) => {
       const uploadResult = await uploadImage(avatar);
 
       if (!uploadResult || !uploadResult.url) {
-        return next(new ErrorHandler("Image upload failed", 500));
+        return next(new ErrorHandler('Image upload failed', 500));
       }
 
       updateFields.avatar = uploadResult.url;
@@ -735,11 +762,11 @@ export const updateUserDetails = catchAsyncErrors(async (req, res, next) => {
     });
 
     if (!updateUser) {
-      return next(new ErrorHandler("User not found", 404));
+      return next(new ErrorHandler('User not found', 404));
     }
 
     return res.json({
-      message: "User details updated successfully",
+      message: 'User details updated successfully',
       error: false,
       success: true,
       user: updateUser,
@@ -752,36 +779,34 @@ export const updateUserDetails = catchAsyncErrors(async (req, res, next) => {
 // Admin
 export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
   try {
-    if (req.user.role !== "ADMIN" && req.user.role !== "MANAGER") {
-      return next(new ErrorHandler("Access denied. Admins only.", 403));
+    if (req.user.role !== 'ADMIN' && req.user.role !== 'MANAGER') {
+      return next(new ErrorHandler('Access denied. Admins only.', 403));
     }
 
     // Non-admin flows should never expose soft-deleted users.
     // (Admin/Manager requests are handled here through their role.)
-    const includeDeleted = req.user.role === "ADMIN";
+    const includeDeleted = req.user.role === 'ADMIN';
 
-
-    const { page = 1, limit = 10, search = "" } = req.query;
+    const { page = 1, limit = 10, search = '' } = req.query;
     const skip = (page - 1) * limit;
 
     const query = {
       ...(includeDeleted ? {} : { isDeleted: false }),
       $or: [
-        { name: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
       ],
     };
-
 
     const totalUsers = await UserModel.countDocuments(query);
 
     const users = await UserModel.find(query)
-      .select("-password")
+      .select('-password')
       .skip(skip)
       .limit(Number(limit));
 
     return res.json({
-      message: "Users fetched successfully",
+      message: 'Users fetched successfully',
       error: false,
       success: true,
       totalUsers,
@@ -797,24 +822,23 @@ export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
 // Admin
 export const getSingleUser = catchAsyncErrors(async (req, res, next) => {
   try {
-    if (req.user.role !== "ADMIN" && req.user.role !== "MANAGER") {
-      return next(new ErrorHandler("Permission denied. Admins only.", 403));
+    if (req.user.role !== 'ADMIN' && req.user.role !== 'MANAGER') {
+      return next(new ErrorHandler('Permission denied. Admins only.', 403));
     }
 
     const userId = req.params.id;
 
     const user = await UserModel.findOne({
       _id: userId,
-      ...(req.user.role === "ADMIN" ? {} : { isDeleted: false }),
-    }).select("-password");
-
+      ...(req.user.role === 'ADMIN' ? {} : { isDeleted: false }),
+    }).select('-password');
 
     if (!user) {
-      return next(new ErrorHandler("User not found", 404));
+      return next(new ErrorHandler('User not found', 404));
     }
 
     return res.json({
-      message: "User details fetched successfully",
+      message: 'User details fetched successfully',
       error: false,
       success: true,
       data: user,
@@ -827,13 +851,13 @@ export const getSingleUser = catchAsyncErrors(async (req, res, next) => {
 // Admin
 export const updateUserRole = catchAsyncErrors(async (req, res, next) => {
   try {
-    if (req.user.role !== "ADMIN") {
-      return next(new ErrorHandler("Permission denied. Admins only.", 403));
+    if (req.user.role !== 'ADMIN') {
+      return next(new ErrorHandler('Permission denied. Admins only.', 403));
     }
 
     const { email, role } = req.body;
 
-    if (!role || !["USER", "ADMIN", "MANAGER"].includes(role)) {
+    if (!role || !['USER', 'ADMIN', 'MANAGER'].includes(role)) {
       return next(
         new ErrorHandler(
           "Invalid role. Role must be either 'USER', 'MANAGER', or 'ADMIN'.",
@@ -844,11 +868,11 @@ export const updateUserRole = catchAsyncErrors(async (req, res, next) => {
 
     const user = await UserModel.findOne({
       email,
-      ...(req.user.role === "ADMIN" ? {} : { isDeleted: false }),
+      ...(req.user.role === 'ADMIN' ? {} : { isDeleted: false }),
     });
 
     if (!user) {
-      return next(new ErrorHandler("User not found", 404));
+      return next(new ErrorHandler('User not found', 404));
     }
 
     const previousRole = user.role;
@@ -859,15 +883,14 @@ export const updateUserRole = catchAsyncErrors(async (req, res, next) => {
     logAudit({
       actorId: req.user._id,
       actorRole: req.user.role,
-      action: "USER_ROLE_UPDATE",
-      entityType: "User",
+      action: 'USER_ROLE_UPDATE',
+      entityType: 'User',
       entityId: user._id.toString(),
       metadata: { previousRole, nextRole: role },
     }).catch(() => {});
 
     return res.json({
-
-      message: "User role updated successfully",
+      message: 'User role updated successfully',
 
       error: false,
       success: true,
@@ -883,17 +906,17 @@ export const deleteUser = catchAsyncErrors(async (req, res, next) => {
   try {
     const userId = req.params.id;
 
-    if (req.user.role !== "ADMIN" && req.user.role !== "MANAGER") {
-      return next(new ErrorHandler("Permission denied. Admins only.", 403));
+    if (req.user.role !== 'ADMIN' && req.user.role !== 'MANAGER') {
+      return next(new ErrorHandler('Permission denied. Admins only.', 403));
     }
 
     const user = await UserModel.findOne({
       _id: userId,
-      ...(req.user.role === "ADMIN" ? {} : { isDeleted: false }),
+      ...(req.user.role === 'ADMIN' ? {} : { isDeleted: false }),
     });
 
     if (!user) {
-      return next(new ErrorHandler("User not found", 404));
+      return next(new ErrorHandler('User not found', 404));
     }
 
     if (user.avatar) {
@@ -902,7 +925,7 @@ export const deleteUser = catchAsyncErrors(async (req, res, next) => {
         try {
           await deleteImage(publicId);
         } catch (delErr) {
-          console.error("Old avatar delete failed:", delErr.message);
+          console.error('Old avatar delete failed:', delErr.message);
         }
       }
     }
@@ -916,45 +939,46 @@ export const deleteUser = catchAsyncErrors(async (req, res, next) => {
     await logAudit({
       actorId: req.user._id,
       actorRole: req.user.role,
-      action: "USER_DELETE",
-      entityType: "User",
+      action: 'USER_DELETE',
+      entityType: 'User',
       entityId: userId,
       metadata: { previousRole: user.role, previousStatus: user.status },
     }).catch(() => {});
 
-
     return res.json({
-      message: "User soft-deleted successfully",
+      message: 'User soft-deleted successfully',
 
       success: true,
       error: false,
     });
   } catch (error) {
-    return next(new ErrorHandler(error.message || "Internal Server Error", 500));
+    return next(
+      new ErrorHandler(error.message || 'Internal Server Error', 500)
+    );
   }
 });
 
 // Admin
 export const updateUserStatus = catchAsyncErrors(async (req, res, next) => {
   try {
-    if (req.user.role !== "ADMIN" && req.user.role !== "MANAGER") {
-      return next(new ErrorHandler("Permission denied. Admins only.", 403));
+    if (req.user.role !== 'ADMIN' && req.user.role !== 'MANAGER') {
+      return next(new ErrorHandler('Permission denied. Admins only.', 403));
     }
 
     const { status } = req.body;
     const { id } = req.params;
 
-    const allowedStatuses = ["Active", "Warning", "Suspended"];
+    const allowedStatuses = ['Active', 'Warning', 'Suspended'];
     if (!allowedStatuses.includes(status)) {
-      return next(new ErrorHandler("Invalid status provided", 400));
+      return next(new ErrorHandler('Invalid status provided', 400));
     }
 
     const user = await UserModel.findOne({
       _id: id,
-      ...(req.user.role === "ADMIN" ? {} : { isDeleted: false }),
+      ...(req.user.role === 'ADMIN' ? {} : { isDeleted: false }),
     });
     if (!user) {
-      return next(new ErrorHandler("User not found", 404));
+      return next(new ErrorHandler('User not found', 404));
     }
 
     const previousStatus = user.status;
@@ -966,17 +990,16 @@ export const updateUserStatus = catchAsyncErrors(async (req, res, next) => {
       actorId: req.user._id,
       actorRole: req.user.role,
 
-      action: "USER_STATUS_UPDATE",
-      entityType: "User",
+      action: 'USER_STATUS_UPDATE',
+      entityType: 'User',
       entityId: user._id.toString(),
       metadata: { previousStatus, nextStatus: status },
     }).catch(() => {});
 
-
-    if (status === "Warning") {
+    if (status === 'Warning') {
       await sendEmail({
         sendTo: user.email,
-        subject: "⚠️ Account Warning - Samridhi Enterprises",
+        subject: '⚠️ Account Warning - Samridhi Enterprises',
         html: `
             <div style="font-family: Arial, sans-serif; color: #333;">
               <div style="background-color: #ffcc00; padding: 10px; text-align: center;">
@@ -999,10 +1022,10 @@ export const updateUserStatus = catchAsyncErrors(async (req, res, next) => {
       });
     }
 
-    if (status === "Suspended") {
+    if (status === 'Suspended') {
       await sendEmail({
         sendTo: user.email,
-        subject: "❌ Account Suspended - Samridhi Enterprises",
+        subject: '❌ Account Suspended - Samridhi Enterprises',
         html: `
             <div style="font-family: Arial, sans-serif; color: #333;">
               <div style="background-color: #f44336; padding: 10px; text-align: center;">
@@ -1025,10 +1048,10 @@ export const updateUserStatus = catchAsyncErrors(async (req, res, next) => {
       });
     }
 
-    if (status === "Active") {
+    if (status === 'Active') {
       await sendEmail({
         sendTo: user.email,
-        subject: "✅ Your Account is Active - Samridhi Enterprises",
+        subject: '✅ Your Account is Active - Samridhi Enterprises',
         html: `
             <div style="font-family: Arial, sans-serif; color: #333;">
               <div style="background-color: #4caf50; padding: 10px; text-align: center;">
@@ -1046,21 +1069,22 @@ export const updateUserStatus = catchAsyncErrors(async (req, res, next) => {
       });
     }
 
-    res.status(200).json({ message: "User status updated successfully", user });
+    res.status(200).json({ message: 'User status updated successfully', user });
   } catch (error) {
-    return next(new ErrorHandler("Server error", 500));
+    return next(new ErrorHandler('Server error', 500));
   }
 });
 
-
 // Added for #350: Assign granular permissions to users
-export const assignUserPermissions = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
-  if (!user) return next(new ErrorHandler("User not found", 404));
+export const assignUserPermissions = catchAsyncErrors(
+  async (req, res, next) => {
+    const user = await User.findById(req.params.id);
+    if (!user) return next(new ErrorHandler('User not found', 404));
 
-  const { permissions } = req.body;
-  user.permissions = permissions;
-  await user.save();
+    const { permissions } = req.body;
+    user.permissions = permissions;
+    await user.save();
 
-  res.status(200).json({ success: true, user });
-});
+    res.status(200).json({ success: true, user });
+  }
+);

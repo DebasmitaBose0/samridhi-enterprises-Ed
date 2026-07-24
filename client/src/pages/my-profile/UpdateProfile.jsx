@@ -1,16 +1,16 @@
-import { useState, useRef, useEffect } from "react";
-import { User, Camera, Mail, Phone } from "lucide-react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, useRef, useEffect } from 'react';
+import { User, Camera, Mail, Phone } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   updateProfile,
   getSingleDetail,
   uploadAvatar,
-} from "@/store/auth-slice/user";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import MetaData from "../../extras/MetaData";
+} from '@/store/auth-slice/user';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import MetaData from '../../extras/MetaData';
 
 const UpdateProfile = () => {
   const dispatch = useDispatch();
@@ -19,9 +19,9 @@ const UpdateProfile = () => {
   const navigate = useNavigate();
 
   const [profileImage, setProfileImage] = useState(
-    user?.avatar || "https://placehold.co/150x150"
+    user?.avatar || 'https://placehold.co/150x150'
   );
-  const [formData, setFormData] = useState({ name: "", email: "", mobile: "" });
+  const [formData, setFormData] = useState({ name: '', email: '', mobile: '' });
 
   useEffect(() => {
     dispatch(getSingleDetail());
@@ -30,9 +30,9 @@ const UpdateProfile = () => {
   useEffect(() => {
     if (user) {
       setFormData({
-        name: user.name || "",
-        email: user.email || "",
-        mobile: user.mobile || "",
+        name: user.name || '',
+        email: user.email || '',
+        mobile: user.mobile || '',
         avatar: user.avatar || null,
       });
       if (user.avatar) setProfileImage(user.avatar);
@@ -48,21 +48,21 @@ const UpdateProfile = () => {
     const file = event.target.files[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        toast.error("File size should be less than 5MB");
+        toast.error('File size should be less than 5MB');
         return;
       }
-      if (!file.type.startsWith("image/")) {
-        toast.error("Please upload an image file");
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please upload an image file');
         return;
       }
       dispatch(uploadAvatar(file))
         .unwrap()
         .then(() => {
-          toast.success("Avatar updated successfully!");
-          navigate("/my-profile");
+          toast.success('Avatar updated successfully!');
+          navigate('/my-profile');
         })
         .catch((error) => {
-          toast.error(error || "Failed to update avatar");
+          toast.error(error || 'Failed to update avatar');
         });
     }
   };
@@ -74,27 +74,27 @@ const UpdateProfile = () => {
     const formDataToSend = new FormData();
 
     if (!formData.name || !formData.email || !formData.mobile) {
-      toast.error("All fields are required");
+      toast.error('All fields are required');
       return;
     }
     if (formData.mobile.length !== 10) {
-      toast.error("Mobile number must be 10 digits");
+      toast.error('Mobile number must be 10 digits');
       return;
     }
 
     Object.keys(formData).forEach((key) =>
       formDataToSend.append(key, formData[key])
     );
-    if (formData.avatar) formDataToSend.append("avatar", formData.avatar);
+    if (formData.avatar) formDataToSend.append('avatar', formData.avatar);
 
     dispatch(updateProfile(formDataToSend))
       .unwrap()
       .then(() => {
-        toast.success("Profile updated successfully.");
-        navigate("/my-profile");
+        toast.success('Profile updated successfully.');
+        navigate('/my-profile');
       })
       .catch((error) =>
-        toast.error(error.message || "Failed to update profile")
+        toast.error(error.message || 'Failed to update profile')
       );
   };
 
@@ -152,14 +152,14 @@ const UpdateProfile = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           {[
             {
-              name: "name",
-              placeholder: "Full Name",
+              name: 'name',
+              placeholder: 'Full Name',
               icon: <User size={20} />,
             },
-            { name: "email", placeholder: "Email", icon: <Mail size={20} /> },
+            { name: 'email', placeholder: 'Email', icon: <Mail size={20} /> },
             {
-              name: "mobile",
-              placeholder: "Mobile",
+              name: 'mobile',
+              placeholder: 'Mobile',
               icon: <Phone size={20} />,
             },
           ].map(({ name, placeholder, icon }, idx) => (
@@ -171,7 +171,7 @@ const UpdateProfile = () => {
               transition={{ duration: 0.4, delay: idx * 0.15 }}
             >
               <input
-                type={name === "email" ? "email" : "text"}
+                type={name === 'email' ? 'email' : 'text'}
                 name={name}
                 value={formData[name]}
                 onChange={handleChange}
@@ -193,19 +193,22 @@ const UpdateProfile = () => {
             type="submit"
             disabled={loading && !user}
             className="w-full py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white text-lg font-semibold rounded-xl shadow-lg transform transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            whileHover={{ scale: 1.03, boxShadow: "0 10px 20px rgba(59, 130, 246, 0.3)" }}
+            whileHover={{
+              scale: 1.03,
+              boxShadow: '0 10px 20px rgba(59, 130, 246, 0.3)',
+            }}
             whileTap={{ scale: 0.97 }}
           >
             {loading && !user ? (
               <motion.span
                 animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                 className="inline-block"
               >
                 Updating...
               </motion.span>
             ) : (
-              "Update Profile"
+              'Update Profile'
             )}
           </motion.button>
         </form>

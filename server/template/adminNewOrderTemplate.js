@@ -4,8 +4,8 @@
 // admin reviews the payment screenshot and approves or rejects it.
 const generateAdminNewOrderEmail = (order, customer) => {
   const isOnlinePending =
-    order.paymentMethod === "Online" &&
-    order.paymentStatus === "Pending Verification";
+    order.paymentMethod === 'Online' &&
+    order.paymentStatus === 'Pending Verification';
 
   const itemsRows = (order.items || [])
     .map(
@@ -15,10 +15,10 @@ const generateAdminNewOrderEmail = (order, customer) => {
           <td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center;">${item.quantity}</td>
           <td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:right;">Rs. ${Number(
             item.price * item.quantity
-          ).toLocaleString("en-IN")}</td>
+          ).toLocaleString('en-IN')}</td>
         </tr>`
     )
-    .join("");
+    .join('');
 
   return `
   <div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;padding:20px;color:#333;">
@@ -31,15 +31,15 @@ const generateAdminNewOrderEmail = (order, customer) => {
             <strong style="color:#b45309;">Action required:</strong>
             <span style="color:#92400e;"> This is an Online payment awaiting verification. Please review the payment screenshot and approve or reject it.</span>
           </div>`
-        : ""
+        : ''
     }
 
     <table style="width:100%;border-collapse:collapse;margin-top:8px;">
       <tr>
         <td style="padding:4px 8px;color:#666;">Customer</td>
         <td style="padding:4px 8px;"><strong>${
-          customer?.name || order.shippingAddress?.fullName || "Customer"
-        }</strong> (${customer?.email || "no email"})</td>
+          customer?.name || order.shippingAddress?.fullName || 'Customer'
+        }</strong> (${customer?.email || 'no email'})</td>
       </tr>
       <tr>
         <td style="padding:4px 8px;color:#666;">Payment</td>
@@ -51,9 +51,9 @@ const generateAdminNewOrderEmail = (order, customer) => {
       </tr>
       <tr>
         <td style="padding:4px 8px;color:#666;">Ship to</td>
-        <td style="padding:4px 8px;">${order.shippingAddress?.city || ""}${
-    order.shippingAddress?.state ? ", " + order.shippingAddress.state : ""
-  } - ${order.shippingAddress?.pincode || ""}</td>
+        <td style="padding:4px 8px;">${order.shippingAddress?.city || ''}${
+          order.shippingAddress?.state ? ', ' + order.shippingAddress.state : ''
+        } - ${order.shippingAddress?.pincode || ''}</td>
       </tr>
     </table>
 
@@ -69,7 +69,7 @@ const generateAdminNewOrderEmail = (order, customer) => {
     </table>
 
     <p style="text-align:right;font-size:16px;margin-top:12px;">
-      <strong>Grand Total: Rs. ${Number(order.grandTotal).toLocaleString("en-IN")}</strong>
+      <strong>Grand Total: Rs. ${Number(order.grandTotal).toLocaleString('en-IN')}</strong>
     </p>
     <p style="color:#888;font-size:12px;margin-top:18px;">You are receiving this because new-order notifications are enabled in admin settings.</p>
   </div>`;

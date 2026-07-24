@@ -3,26 +3,26 @@
 // compatibility across email clients.
 
 const escapeHtml = (value) =>
-  String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+  String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 
-const inr = (n) => `Rs. ${Number(n || 0).toLocaleString("en-IN")}`;
+const inr = (n) => `Rs. ${Number(n || 0).toLocaleString('en-IN')}`;
 
 const orderReceiptHtml = (order, user) => {
-  const date = new Date(order.createdAt || Date.now()).toLocaleString("en-IN", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  const date = new Date(order.createdAt || Date.now()).toLocaleString('en-IN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
   const addr = order.shippingAddress || {};
-  const customerName = escapeHtml(addr.fullName || user?.name || "Customer");
+  const customerName = escapeHtml(addr.fullName || user?.name || 'Customer');
 
   const rows = (order.items || [])
     .map(
@@ -42,13 +42,13 @@ const orderReceiptHtml = (order, user) => {
         )}</td>
       </tr>`
     )
-    .join("");
+    .join('');
 
   const upiRefRow = order.upiReference
     ? `<p style="margin:4px 0;font-size:14px;color:#555555;"><strong>UPI Reference:</strong> ${escapeHtml(
         order.upiReference
       )}</p>`
-    : "";
+    : '';
 
   return `
   <div style="max-width:600px;margin:0 auto;font-family:Arial,Helvetica,sans-serif;background-color:#ffffff;border:1px solid #e5e5e5;border-radius:8px;overflow:hidden;">
@@ -73,7 +73,7 @@ const orderReceiptHtml = (order, user) => {
             ${
               user?.email
                 ? `<p style="margin:8px 0 0;">${escapeHtml(user.email)}</p>`
-                : ""
+                : ''
             }
           </td>
         </tr>
@@ -84,9 +84,9 @@ const orderReceiptHtml = (order, user) => {
         <p style="margin:0;font-size:13px;color:#555555;line-height:1.5;">
           ${escapeHtml(addr.fullName)}<br/>
           ${escapeHtml(addr.addressLine)}<br/>
-          ${escapeHtml(addr.city)}${addr.state ? ", " + escapeHtml(addr.state) : ""} - ${escapeHtml(
-    addr.pincode
-  )}<br/>
+          ${escapeHtml(addr.city)}${addr.state ? ', ' + escapeHtml(addr.state) : ''} - ${escapeHtml(
+            addr.pincode
+          )}<br/>
           Phone: ${escapeHtml(addr.phone)}
         </p>
       </div>

@@ -4,4 +4,3 @@ export const softDelete = (doc, { now = new Date() } = {}) => {
   doc.deletedAt = now;
   return doc;
 };
-

@@ -6,16 +6,17 @@ runs, when, and where to read the results.
 
 ## Overview
 
-| Tool | What it does | Trigger | Where results appear |
-|------|--------------|---------|----------------------|
-| **CodeQL** | Static analysis of the JS/JSX code for security issues | Push & PR to `main`/`elusoc`, plus weekly | **Security** tab → **Code scanning alerts** |
-| **Dependency Review** | Blocks PRs that add a high-severity vulnerable dependency | Pull requests | Inline check on the PR |
-| **npm audit** | Reports known advisories in `client/` and `server/` | Pull requests, plus weekly, plus manual | **Actions** tab → run logs |
-| **Dependabot** | Opens grouped PRs to update outdated/vulnerable deps | Weekly | **Pull requests** + **Security** tab → **Dependabot alerts** |
+| Tool                  | What it does                                              | Trigger                                   | Where results appear                                         |
+| --------------------- | --------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------ |
+| **CodeQL**            | Static analysis of the JS/JSX code for security issues    | Push & PR to `main`/`elusoc`, plus weekly | **Security** tab → **Code scanning alerts**                  |
+| **Dependency Review** | Blocks PRs that add a high-severity vulnerable dependency | Pull requests                             | Inline check on the PR                                       |
+| **npm audit**         | Reports known advisories in `client/` and `server/`       | Pull requests, plus weekly, plus manual   | **Actions** tab → run logs                                   |
+| **Dependabot**        | Opens grouped PRs to update outdated/vulnerable deps      | Weekly                                    | **Pull requests** + **Security** tab → **Dependabot alerts** |
 
 ## Workflows
 
 ### `.github/workflows/codeql.yml`
+
 Runs CodeQL with the `security-and-quality` query suite over the
 `javascript-typescript` language (covers both the React client and the Express
 server). JavaScript needs no build, so it uses `build-mode: none`. Findings show
@@ -23,7 +24,9 @@ up as **Code scanning alerts** in the Security tab; each alert links to the exac
 line and an explanation.
 
 ### `.github/workflows/dependency-audit.yml`
+
 Two jobs:
+
 - **dependency-review** — runs only on pull requests and fails the PR if it
   introduces a dependency with a **high** (or higher) severity advisory. It does
   **not** fail on advisories that already exist on the base branch.
@@ -34,7 +37,9 @@ Two jobs:
   high-severity advisories a hard failure.
 
 ## Dependabot — `.github/dependabot.yml`
+
 Opens **weekly** update PRs for:
+
 - `npm` packages in `/client` (grouped into one PR)
 - `npm` packages in `/server` (grouped into one PR)
 - the `github-actions` used by the workflows above

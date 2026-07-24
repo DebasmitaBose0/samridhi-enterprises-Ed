@@ -1,8 +1,8 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const bikeModelSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  brand: { type: mongoose.Schema.Types.ObjectId, ref: "Brand", required: true },
+  brand: { type: mongoose.Schema.Types.ObjectId, ref: 'Brand', required: true },
 
   // Manufacturing-year range this model was produced / is compatible with.
   // Both are optional: when left empty the model is treated as compatible with
@@ -13,7 +13,7 @@ const bikeModelSchema = new mongoose.Schema({
 
   // Engine type / variant (e.g. "150cc", "Petrol", "EFI"). Optional: an empty
   // value means the model matches any engine type.
-  engineType: { type: String, trim: true, default: "" },
+  engineType: { type: String, trim: true, default: '' },
 
   images: [
     {
@@ -35,4 +35,4 @@ const bikeModelSchema = new mongoose.Schema({
 bikeModelSchema.index({ brand: 1, name: 1 });
 bikeModelSchema.index({ yearStart: 1, yearEnd: 1 });
 
-export default mongoose.model("BikeModel", bikeModelSchema);
+export default mongoose.model('BikeModel', bikeModelSchema);

@@ -1,8 +1,8 @@
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { motion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import {
   LifeBuoy,
   Plus,
@@ -11,7 +11,7 @@ import {
   MessageSquare,
   Inbox,
   Clock,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   getMyTickets,
   getMyTicket,
@@ -19,49 +19,56 @@ import {
   addMessage,
   clearCurrentTicket,
   clearSupportError,
-} from "@/store/order/supportSlice";
-import Loader from "../../extras/Loader";
-import EmptyState from "../../components/EmptyState";
+} from '@/store/order/supportSlice';
+import Loader from '../../extras/Loader';
+import EmptyState from '../../components/EmptyState';
 
-const CATEGORIES = ["Order", "Payment", "Product", "Shipping", "Account", "Other"];
-const PRIORITIES = ["Low", "Medium", "High"];
+const CATEGORIES = [
+  'Order',
+  'Payment',
+  'Product',
+  'Shipping',
+  'Account',
+  'Other',
+];
+const PRIORITIES = ['Low', 'Medium', 'High'];
 
 const statusStyle = (status) => {
   switch (status) {
-    case "Open":
-      return "bg-blue-100 text-blue-700";
-    case "In Progress":
-      return "bg-amber-100 text-amber-700";
-    case "Resolved":
-      return "bg-emerald-100 text-emerald-700";
-    case "Closed":
-      return "bg-gray-200 text-gray-600";
+    case 'Open':
+      return 'bg-blue-100 text-blue-700';
+    case 'In Progress':
+      return 'bg-amber-100 text-amber-700';
+    case 'Resolved':
+      return 'bg-emerald-100 text-emerald-700';
+    case 'Closed':
+      return 'bg-gray-200 text-gray-600';
     default:
-      return "bg-gray-100 text-gray-600";
+      return 'bg-gray-100 text-gray-600';
   }
 };
 
 const formatDateTime = (d) =>
-  new Date(d).toLocaleString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  new Date(d).toLocaleString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
 const HELP_TOPICS = [
   {
-    q: "How do I track my order?",
+    q: 'How do I track my order?',
     a: "Go to My Orders from the account menu to see the current status of every order you've placed.",
   },
   {
-    q: "How long does delivery take?",
+    q: 'How long does delivery take?',
     a: "Orders are typically processed within 1–2 business days. You'll receive updates as your order moves through fulfilment.",
   },
   {
-    q: "How do I get a refund?",
-    a: "Open a ticket under the Payment category with your order ID and our team will assist you.",
+    q: 'How do I get a refund?',
+    a: 'Open a ticket under the Payment category with your order ID and our team will assist you.',
   },
 ];
 
@@ -72,14 +79,14 @@ const SupportTickets = () => {
   );
 
   // view: "list" | "new" | "detail"
-  const [view, setView] = useState("list");
+  const [view, setView] = useState('list');
   const [form, setForm] = useState({
-    subject: "",
-    category: "Other",
-    priority: "Medium",
-    message: "",
+    subject: '',
+    category: 'Other',
+    priority: 'Medium',
+    message: '',
   });
-  const [reply, setReply] = useState("");
+  const [reply, setReply] = useState('');
   const threadEndRef = useRef(null);
 
   useEffect(() => {
@@ -95,40 +102,45 @@ const SupportTickets = () => {
 
   // Scroll to the newest message when a thread is open/updated.
   useEffect(() => {
-    if (view === "detail" && threadEndRef.current) {
-      threadEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (view === 'detail' && threadEndRef.current) {
+      threadEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [current, view]);
 
   const openTicket = (id) => {
     dispatch(getMyTicket(id));
-    setView("detail");
+    setView('detail');
   };
 
   const backToList = () => {
     dispatch(clearCurrentTicket());
-    setView("list");
+    setView('list');
     dispatch(getMyTickets());
   };
 
   const handleCreate = async () => {
-    if (!form.subject.trim()) return toast.error("Please enter a subject");
-    if (!form.message.trim()) return toast.error("Please describe your issue");
+    if (!form.subject.trim()) return toast.error('Please enter a subject');
+    if (!form.message.trim()) return toast.error('Please describe your issue');
     const res = await dispatch(createTicket(form));
     if (createTicket.fulfilled.match(res)) {
-      toast.success("Ticket created");
-      setForm({ subject: "", category: "Other", priority: "Medium", message: "" });
-      setView("detail");
+      toast.success('Ticket created');
+      setForm({
+        subject: '',
+        category: 'Other',
+        priority: 'Medium',
+        message: '',
+      });
+      setView('detail');
     }
   };
 
   const handleReply = async () => {
     if (!reply.trim()) return;
     const res = await dispatch(addMessage({ id: current._id, body: reply }));
-    if (addMessage.fulfilled.match(res)) setReply("");
+    if (addMessage.fulfilled.match(res)) setReply('');
   };
 
-  if (loading && view === "list" && tickets.length === 0) return <Loader />;
+  if (loading && view === 'list' && tickets.length === 0) return <Loader />;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 pt-28 pb-16 px-4">
@@ -144,19 +156,23 @@ const SupportTickets = () => {
               <LifeBuoy className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Help &amp; Support</h1>
-              <p className="text-gray-600">Get help and track your support requests</p>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Help &amp; Support
+              </h1>
+              <p className="text-gray-600">
+                Get help and track your support requests
+              </p>
             </div>
           </div>
-          {view === "list" && (
+          {view === 'list' && (
             <button
-              onClick={() => setView("new")}
+              onClick={() => setView('new')}
               className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-xl transition"
             >
               <Plus className="w-4 h-4" /> New Ticket
             </button>
           )}
-          {view !== "list" && (
+          {view !== 'list' && (
             <button
               onClick={backToList}
               className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900"
@@ -167,7 +183,7 @@ const SupportTickets = () => {
         </motion.div>
 
         {/* ── LIST VIEW ── */}
-        {view === "list" && (
+        {view === 'list' && (
           <>
             {/* Help center */}
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow border border-white/20 p-6 mb-8">
@@ -185,13 +201,18 @@ const SupportTickets = () => {
             </div>
 
             {/* My tickets */}
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Your tickets</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              Your tickets
+            </h2>
             {tickets.length === 0 ? (
               <EmptyState
                 icon="Inbox"
                 title="No support tickets yet"
                 message="Have an issue or question? Create a support ticket and our team will help you out."
-                action={{ label: "Create a ticket", onClick: () => setView("new") }}
+                action={{
+                  label: 'Create a ticket',
+                  onClick: () => setView('new'),
+                }}
               />
             ) : (
               <div className="space-y-3">
@@ -207,7 +228,7 @@ const SupportTickets = () => {
                           {t.subject}
                         </p>
                         <p className="text-sm text-gray-500 mt-1">
-                          {t.category} ·{" "}
+                          {t.category} ·{' '}
                           <span className="inline-flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {formatDateTime(t.lastActivityAt)}
@@ -224,8 +245,8 @@ const SupportTickets = () => {
                     </div>
                     <p className="text-sm text-gray-500 mt-2 inline-flex items-center gap-1">
                       <MessageSquare className="w-3.5 h-3.5" />
-                      {t.messages?.length || 0}{" "}
-                      {t.messages?.length === 1 ? "message" : "messages"}
+                      {t.messages?.length || 0}{' '}
+                      {t.messages?.length === 1 ? 'message' : 'messages'}
                     </p>
                   </button>
                 ))}
@@ -235,13 +256,15 @@ const SupportTickets = () => {
         )}
 
         {/* ── NEW TICKET VIEW ── */}
-        {view === "new" && (
+        {view === 'new' && (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white/80 backdrop-blur-sm rounded-2xl shadow border border-white/20 p-6"
           >
-            <h2 className="text-xl font-bold text-gray-900 mb-6">Open a new ticket</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-6">
+              Open a new ticket
+            </h2>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -249,7 +272,9 @@ const SupportTickets = () => {
                 </label>
                 <input
                   value={form.subject}
-                  onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, subject: e.target.value })
+                  }
                   maxLength={150}
                   placeholder="Brief summary of your issue"
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
@@ -262,7 +287,9 @@ const SupportTickets = () => {
                   </label>
                   <select
                     value={form.category}
-                    onChange={(e) => setForm({ ...form, category: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, category: e.target.value })
+                    }
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
                   >
                     {CATEGORIES.map((c) => (
@@ -278,7 +305,9 @@ const SupportTickets = () => {
                   </label>
                   <select
                     value={form.priority}
-                    onChange={(e) => setForm({ ...form, priority: e.target.value })}
+                    onChange={(e) =>
+                      setForm({ ...form, priority: e.target.value })
+                    }
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none"
                   >
                     {PRIORITIES.map((p) => (
@@ -295,7 +324,9 @@ const SupportTickets = () => {
                 </label>
                 <textarea
                   value={form.message}
-                  onChange={(e) => setForm({ ...form, message: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, message: e.target.value })
+                  }
                   rows={5}
                   placeholder="Tell us what's going on…"
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-400 outline-none resize-none"
@@ -303,7 +334,7 @@ const SupportTickets = () => {
               </div>
               <div className="flex justify-end gap-3">
                 <button
-                  onClick={() => setView("list")}
+                  onClick={() => setView('list')}
                   className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50"
                 >
                   Cancel
@@ -313,7 +344,7 @@ const SupportTickets = () => {
                   disabled={actionLoading}
                   className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold disabled:opacity-60"
                 >
-                  {actionLoading ? "Submitting…" : "Submit Ticket"}
+                  {actionLoading ? 'Submitting…' : 'Submit Ticket'}
                 </button>
               </div>
             </div>
@@ -321,7 +352,7 @@ const SupportTickets = () => {
         )}
 
         {/* ── DETAIL / THREAD VIEW ── */}
-        {view === "detail" && current && (
+        {view === 'detail' && current && (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -329,7 +360,9 @@ const SupportTickets = () => {
           >
             <div className="px-6 py-4 border-b flex items-start justify-between gap-3">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">{current.subject}</h2>
+                <h2 className="text-xl font-bold text-gray-900">
+                  {current.subject}
+                </h2>
                 <p className="text-sm text-gray-500 mt-0.5">
                   {current.category} · {current.priority} priority
                 </p>
@@ -349,18 +382,20 @@ const SupportTickets = () => {
                 <div
                   key={m._id || idx}
                   className={`flex ${
-                    m.sender === "USER" ? "justify-end" : "justify-start"
+                    m.sender === 'USER' ? 'justify-end' : 'justify-start'
                   }`}
                 >
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
-                      m.sender === "USER"
-                        ? "bg-blue-600 text-white rounded-br-sm"
-                        : "bg-gray-100 text-gray-800 rounded-bl-sm"
+                      m.sender === 'USER'
+                        ? 'bg-blue-600 text-white rounded-br-sm'
+                        : 'bg-gray-100 text-gray-800 rounded-bl-sm'
                     }`}
                   >
                     <p className="text-xs font-medium opacity-80 mb-0.5">
-                      {m.sender === "USER" ? "You" : m.senderName || "Support Team"}
+                      {m.sender === 'USER'
+                        ? 'You'
+                        : m.senderName || 'Support Team'}
                     </p>
                     <p className="whitespace-pre-wrap text-sm">{m.body}</p>
                     <p className="text-[10px] opacity-70 mt-1 text-right">
@@ -373,7 +408,7 @@ const SupportTickets = () => {
             </div>
 
             {/* Reply box */}
-            {current.status === "Closed" ? (
+            {current.status === 'Closed' ? (
               <div className="px-6 py-4 border-t bg-gray-50 text-sm text-gray-500 text-center">
                 This ticket is closed. Open a new ticket if you still need help.
               </div>

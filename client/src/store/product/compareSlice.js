@@ -1,6 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
-const STORAGE_KEY = "compareList";
+const STORAGE_KEY = 'compareList';
 const MAX_COMPARE = 4;
 
 // Load the persisted compare list so the selection survives navigation and
@@ -37,11 +37,11 @@ const trimPart = (part) => ({
   category: part.category,
   ratings: part.ratings,
   bestseller: part.bestseller,
-  image: part.images?.[0]?.url || "",
+  image: part.images?.[0]?.url || '',
 });
 
 const compareSlice = createSlice({
-  name: "compare",
+  name: 'compare',
   initialState: {
     items: loadFromStorage(),
     max: MAX_COMPARE,

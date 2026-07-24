@@ -1,19 +1,19 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "@/api";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '@/api';
 
-const API_URL = "/api/orders";
+const API_URL = '/api/orders';
 
 const authConfig = (multipart = false) => {
   return {
     headers: {
-      ...(multipart ? { "Content-Type": "multipart/form-data" } : {}),
+      ...(multipart ? { 'Content-Type': 'multipart/form-data' } : {}),
     },
   };
 };
 
 // Create an order from the user's cart (multipart: optional paymentScreenshot)
 export const createOrder = createAsyncThunk(
-  "order/create",
+  'order/create',
   async (formData, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(
@@ -29,7 +29,7 @@ export const createOrder = createAsyncThunk(
 );
 
 export const getMyOrders = createAsyncThunk(
-  "order/getMine",
+  'order/getMine',
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
@@ -44,7 +44,7 @@ export const getMyOrders = createAsyncThunk(
 );
 
 export const getOrderById = createAsyncThunk(
-  "order/getById",
+  'order/getById',
   async (id, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
@@ -62,7 +62,7 @@ export const getOrderById = createAsyncThunk(
 // while the order is in an early, reversible state (Pending Verification /
 // Confirmed) and enforces ownership.
 export const cancelMyOrder = createAsyncThunk(
-  "order/cancelMine",
+  'order/cancelMine',
   async (id, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.put(
@@ -79,10 +79,10 @@ export const cancelMyOrder = createAsyncThunk(
 
 // Admin
 export const adminGetAllOrders = createAsyncThunk(
-  "order/adminGetAll",
+  'order/adminGetAll',
   async (status, { rejectWithValue }) => {
     try {
-      const query = status ? `?status=${encodeURIComponent(status)}` : "";
+      const query = status ? `?status=${encodeURIComponent(status)}` : '';
       const response = await axiosInstance.get(
         `${API_URL}/admin/all${query}`,
         authConfig()
@@ -96,7 +96,7 @@ export const adminGetAllOrders = createAsyncThunk(
 
 // Admin
 export const adminVerifyPayment = createAsyncThunk(
-  "order/adminVerify",
+  'order/adminVerify',
   async ({ id, action, rejectionReason }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.put(
@@ -113,7 +113,7 @@ export const adminVerifyPayment = createAsyncThunk(
 
 // Admin — dashboard analytics (real data)
 export const adminGetDashboardAnalytics = createAsyncThunk(
-  "order/adminAnalytics",
+  'order/adminAnalytics',
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
@@ -129,7 +129,7 @@ export const adminGetDashboardAnalytics = createAsyncThunk(
 
 // Admin — inventory overview
 export const adminGetInventory = createAsyncThunk(
-  "order/adminInventory",
+  'order/adminInventory',
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
@@ -146,7 +146,7 @@ export const adminGetInventory = createAsyncThunk(
 // Admin — chart-oriented sales analytics (monthly trends, top products,
 // customer growth, recent orders) for the dedicated Sales Analytics page.
 export const adminGetSalesAnalytics = createAsyncThunk(
-  "order/adminSalesAnalytics",
+  'order/adminSalesAnalytics',
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(
@@ -162,7 +162,7 @@ export const adminGetSalesAnalytics = createAsyncThunk(
 
 // Admin — update order fulfilment status
 export const adminUpdateOrderStatus = createAsyncThunk(
-  "order/adminUpdateStatus",
+  'order/adminUpdateStatus',
   async ({ id, orderStatus, carrier, trackingNumber }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.put(
@@ -178,7 +178,7 @@ export const adminUpdateOrderStatus = createAsyncThunk(
 );
 
 const orderSlice = createSlice({
-  name: "order",
+  name: 'order',
   initialState: {
     myOrders: [],
     adminOrders: [],

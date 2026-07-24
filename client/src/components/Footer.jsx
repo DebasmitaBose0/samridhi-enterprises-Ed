@@ -1,33 +1,32 @@
-import {
-  Car,
-  Mail,
-  Phone,
-  MapPin,
-  Star,
-  Zap,
-  Shield,
-} from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Car, Mail, Phone, MapPin, Star, Zap, Shield } from 'lucide-react';
+import { useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
-import { motion, useScroll, useSpring, useTransform, useMotionValue, useReducedMotion } from "framer-motion";
+import {
+  motion,
+  useScroll,
+  useSpring,
+  useTransform,
+  useMotionValue,
+  useReducedMotion,
+} from 'framer-motion';
 
 const quickLinks = [
-  { name: "Home", to: "/", icon: "🏠" },
-  { name: "Products", to: "/products", icon: "🛍️" },
-  { name: "Order Now", href: "#order", icon: "🚀" },
-  { name: "Reviews", href: "#reviews", icon: "⭐" },
+  { name: 'Home', to: '/', icon: '🏠' },
+  { name: 'Products', to: '/products', icon: '🛍️' },
+  { name: 'Order Now', href: '#order', icon: '🚀' },
+  { name: 'Reviews', href: '#reviews', icon: '⭐' },
 ];
 
 const supportLinks = [
-  { name: "FAQ", href: "#faq", icon: "❓" },
-  { name: "Contact", href: "#contact", icon: "📞" },
-  { name: "Support", href: "#support", icon: "🛠️" },
-  { name: "Warranty", href: "#warranty", icon: "🔒" },
+  { name: 'FAQ', href: '#faq', icon: '❓' },
+  { name: 'Contact', href: '#contact', icon: '📞' },
+  { name: 'Support', href: '#support', icon: '🛠️' },
+  { name: 'Warranty', href: '#warranty', icon: '🔒' },
 ];
 
 const linkClasses =
-  "group flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition-all duration-300 p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2";
+  'group flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition-all duration-300 p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2';
 
 const Footer = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -70,8 +69,6 @@ const Footer = () => {
     mouseX.set(e.clientX - rect.left - 192);
     mouseY.set(e.clientY - rect.top - 192);
   };
-
-
 
   const renderQuickLink = (link, index) => {
     const inner = (
@@ -141,12 +138,12 @@ const Footer = () => {
           className="absolute inset-0 opacity-30"
           animate={{
             background: [
-              "radial-gradient(circle at 20% 50%, rgba(59,130,246,0.05) 0%, transparent 50%)",
-              "radial-gradient(circle at 80% 50%, rgba(59,130,246,0.05) 0%, transparent 50%)",
-              "radial-gradient(circle at 40% 50%, rgba(59,130,246,0.05) 0%, transparent 50%)",
+              'radial-gradient(circle at 20% 50%, rgba(59,130,246,0.05) 0%, transparent 50%)',
+              'radial-gradient(circle at 80% 50%, rgba(59,130,246,0.05) 0%, transparent 50%)',
+              'radial-gradient(circle at 40% 50%, rgba(59,130,246,0.05) 0%, transparent 50%)',
             ],
           }}
-          transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
         ></motion.div>
       )}
 
@@ -220,7 +217,7 @@ const Footer = () => {
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: isVisible ? 1 : 0 }}
               transition={{ duration: 1, delay: 0.4 }}
-              onMouseEnter={() => setHoveredSection("links")}
+              onMouseEnter={() => setHoveredSection('links')}
               onMouseLeave={() => setHoveredSection(null)}
               className="relative"
             >
@@ -232,14 +229,16 @@ const Footer = () => {
                   <motion.div
                     aria-hidden="true"
                     animate={{
-                      width: hoveredSection === "links" ? "100%" : "3rem",
+                      width: hoveredSection === 'links' ? '100%' : '3rem',
                     }}
                     className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full"
                     transition={{ duration: 0.4 }}
                   ></motion.div>
                 </h3>
                 <ul className="space-y-4">
-                  {quickLinks.map((link, index) => renderQuickLink(link, index))}
+                  {quickLinks.map((link, index) =>
+                    renderQuickLink(link, index)
+                  )}
                 </ul>
               </div>
             </motion.nav>
@@ -249,7 +248,7 @@ const Footer = () => {
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: isVisible ? 1 : 0 }}
               transition={{ duration: 1, delay: 0.6 }}
-              onMouseEnter={() => setHoveredSection("support")}
+              onMouseEnter={() => setHoveredSection('support')}
               onMouseLeave={() => setHoveredSection(null)}
               className="relative"
             >
@@ -261,7 +260,7 @@ const Footer = () => {
                   <motion.div
                     aria-hidden="true"
                     animate={{
-                      width: hoveredSection === "support" ? "100%" : "3rem",
+                      width: hoveredSection === 'support' ? '100%' : '3rem',
                     }}
                     className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full"
                     transition={{ duration: 0.4 }}
@@ -295,7 +294,7 @@ const Footer = () => {
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: isVisible ? 1 : 0 }}
               transition={{ duration: 1, delay: 0.8 }}
-              onMouseEnter={() => setHoveredSection("contact")}
+              onMouseEnter={() => setHoveredSection('contact')}
               onMouseLeave={() => setHoveredSection(null)}
               className="relative"
             >
@@ -307,7 +306,7 @@ const Footer = () => {
                   <motion.div
                     aria-hidden="true"
                     animate={{
-                      width: hoveredSection === "contact" ? "100%" : "3rem",
+                      width: hoveredSection === 'contact' ? '100%' : '3rem',
                     }}
                     className="absolute -bottom-2 left-0 h-1 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full"
                     transition={{ duration: 0.4 }}
@@ -378,18 +377,18 @@ const Footer = () => {
           </div>
 
           <motion.div
-  initial={{ opacity: 0, y: 30 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 1, delay: 1 }}
-  className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700"
->
-  <div className="flex justify-center items-center">
-    <p className="text-gray-500 dark:text-gray-400 text-sm text-center">
-      © {new Date().getFullYear()} Samridhi Enterprises. All rights
-      reserved.
-    </p>
-  </div>
-</motion.div>
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 1 }}
+            className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-700"
+          >
+            <div className="flex justify-center items-center">
+              <p className="text-gray-500 dark:text-gray-400 text-sm text-center">
+                © {new Date().getFullYear()} Samridhi Enterprises. All rights
+                reserved.
+              </p>
+            </div>
+          </motion.div>
         </div>
       </motion.div>
 
@@ -399,9 +398,9 @@ const Footer = () => {
           className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-gray-200 via-blue-400 to-gray-200"
           animate={{
             background: [
-              "linear-gradient(90deg, rgba(229,231,235,1) 0%, rgba(59,130,246,0.8) 50%, rgba(229,231,235,1) 100%)",
-              "linear-gradient(90deg, rgba(59,130,246,0.8) 0%, rgba(229,231,235,1) 50%, rgba(59,130,246,0.8) 100%)",
-              "linear-gradient(90deg, rgba(229,231,235,1) 0%, rgba(59,130,246,0.8) 50%, rgba(229,231,235,1) 100%)",
+              'linear-gradient(90deg, rgba(229,231,235,1) 0%, rgba(59,130,246,0.8) 50%, rgba(229,231,235,1) 100%)',
+              'linear-gradient(90deg, rgba(59,130,246,0.8) 0%, rgba(229,231,235,1) 50%, rgba(59,130,246,0.8) 100%)',
+              'linear-gradient(90deg, rgba(229,231,235,1) 0%, rgba(59,130,246,0.8) 50%, rgba(229,231,235,1) 100%)',
             ],
           }}
           transition={{ duration: 4, repeat: Infinity }}

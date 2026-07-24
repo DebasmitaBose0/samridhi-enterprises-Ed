@@ -1,4 +1,4 @@
-import AuditLog from "../models/auditLogModel.js";
+import AuditLog from '../models/auditLogModel.js';
 
 /**
  * Writes an admin/audit trail event.
@@ -25,8 +25,6 @@ export const logAudit = async ({
     });
   } catch (err) {
     // Best-effort auditing: never block the main request.
-    console.error("Audit log failed:", err?.message || err);
+    console.error('Audit log failed:', err?.message || err);
   }
 };
-
-

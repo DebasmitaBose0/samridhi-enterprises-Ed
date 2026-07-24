@@ -1,15 +1,15 @@
 import { resolveDefaultStatus } from '../utils/defaultStatusResolver.js';
-import BikeModel from "../models/bikeModel.js";
-import Brand from "../models/brandModel.js";
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import ErrorHandler from "../utils/errorHandler.js";
-import { uploadImage, deleteImage } from "../utils/cloudinary.js";
+import BikeModel from '../models/bikeModel.js';
+import Brand from '../models/brandModel.js';
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import ErrorHandler from '../utils/errorHandler.js';
+import { uploadImage, deleteImage } from '../utils/cloudinary.js';
 
 // Coerce an incoming year value (which arrives as a string via multipart form
 // data) into a number. Empty or invalid input becomes null, meaning "no year
 // constraint" rather than 0.
 const parseYear = (value) => {
-  if (value === undefined || value === null || value === "") return null;
+  if (value === undefined || value === null || value === '') return null;
   const num = Number(value);
   return Number.isFinite(num) ? num : null;
 };
@@ -21,22 +21,22 @@ export const addBikeModel = catchAsyncErrors(async (req, res, next) => {
 
   if (yearStart !== null && yearEnd !== null && yearStart > yearEnd) {
     return next(
-      new ErrorHandler("Start year cannot be later than end year", 400)
+      new ErrorHandler('Start year cannot be later than end year', 400)
     );
   }
 
   const existing = await BikeModel.findOne({ name, brand });
   if (existing) {
-    return next(new ErrorHandler("Bike model already exists", 400));
+    return next(new ErrorHandler('Bike model already exists', 400));
   }
 
   if (!req.file) {
-    return next(new ErrorHandler("No image file provided", 400));
+    return next(new ErrorHandler('No image file provided', 400));
   }
 
   const upload = await uploadImage(req.file);
   if (!upload || !upload.url) {
-    return next(new ErrorHandler("Image upload failed", 500));
+    return next(new ErrorHandler('Image upload failed', 500));
   }
 
   const newBikeModel = await BikeModel.create({
@@ -44,7 +44,7 @@ export const addBikeModel = catchAsyncErrors(async (req, res, next) => {
     brand,
     yearStart,
     yearEnd,
-    engineType: (engineType || "").trim(),
+    engineType: (engineType || '').trim(),
     images: [
       {
         public_id: upload.public_id,
@@ -55,13 +55,13 @@ export const addBikeModel = catchAsyncErrors(async (req, res, next) => {
 
   res.status(201).json({
     success: true,
-    message: "Bike model created successfully",
+    message: 'Bike model created successfully',
     bikeModel: newBikeModel,
   });
 });
 
 export const getAllBikeModels = catchAsyncErrors(async (req, res, next) => {
-  const models = await BikeModel.find().populate("brand", "name");
+  const models = await BikeModel.find().populate('brand', 'name');
   res.status(200).json({
     success: true,
     count: models.length,
@@ -74,7 +74,7 @@ export const updateBikeModel = catchAsyncErrors(async (req, res, next) => {
   const bikeModel = await BikeModel.findById(id);
 
   if (!bikeModel) {
-    return next(new ErrorHandler("Bike model not found", 404));
+    return next(new ErrorHandler('Bike model not found', 404));
   }
 
   if (req.body.name) {
@@ -101,12 +101,12 @@ export const updateBikeModel = catchAsyncErrors(async (req, res, next) => {
     bikeModel.yearStart > bikeModel.yearEnd
   ) {
     return next(
-      new ErrorHandler("Start year cannot be later than end year", 400)
+      new ErrorHandler('Start year cannot be later than end year', 400)
     );
   }
 
   if (req.body.engineType !== undefined) {
-    bikeModel.engineType = (req.body.engineType || "").trim();
+    bikeModel.engineType = (req.body.engineType || '').trim();
   }
 
   if (req.file) {
@@ -118,7 +118,7 @@ export const updateBikeModel = catchAsyncErrors(async (req, res, next) => {
 
     const upload = await uploadImage(req.file);
     if (!upload || !upload.url) {
-      return next(new ErrorHandler("Image upload failed", 500));
+      return next(new ErrorHandler('Image upload failed', 500));
     }
 
     bikeModel.images = [
@@ -133,7 +133,7 @@ export const updateBikeModel = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Bike model updated successfully",
+    message: 'Bike model updated successfully',
     bikeModel,
   });
 });
@@ -143,7 +143,7 @@ export const deleteBikeModel = catchAsyncErrors(async (req, res, next) => {
   const bikeModel = await BikeModel.findById(id);
 
   if (!bikeModel) {
-    return next(new ErrorHandler("Bike model not found", 404));
+    return next(new ErrorHandler('Bike model not found', 404));
   }
 
   if (bikeModel.images.length > 0) {
@@ -156,6 +156,6 @@ export const deleteBikeModel = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Bike model deleted successfully",
+    message: 'Bike model deleted successfully',
   });
 });

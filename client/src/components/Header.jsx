@@ -13,16 +13,16 @@ import {
   UserCog,
   LifeBuoy,
   MapPin,
-} from "lucide-react";
+} from 'lucide-react';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { logoutUser } from "@/store/auth-slice/user";
-import { useTheme } from "@/context/ThemeContext";
-import SearchBar from "./SearchBar";
-import { toast } from "react-toastify";
-import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '@/store/auth-slice/user';
+import { useTheme } from '@/context/ThemeContext';
+import SearchBar from './SearchBar';
+import { toast } from 'react-toastify';
+import { useState, useEffect, useRef } from 'react';
 
 function Header() {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -41,8 +41,8 @@ function Header() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Close account dropdown when clicking outside
@@ -52,8 +52,8 @@ function Header() {
         setIsAccountOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Close mobile menu and dropdowns on route change
@@ -64,17 +64,18 @@ function Header() {
 
   const handleLogout = () => {
     dispatch(logoutUser());
-    toast.success("Logged out successfully!");
-    navigate("/login");
+    toast.success('Logged out successfully!');
+    navigate('/login');
   };
 
   // Returns active link classes for desktop nav items
   const navLinkClass = (path) => {
-    const isActive = location.pathname === path || location.pathname.startsWith(path + "/");
+    const isActive =
+      location.pathname === path || location.pathname.startsWith(path + '/');
     return `flex items-center gap-2 text-white text-sm font-semibold transition-colors duration-300 py-2 px-4 rounded-lg ${
       isActive
-        ? "bg-white/25 underline underline-offset-4"
-        : "hover:text-blue-100 hover:bg-white/10"
+        ? 'bg-white/25 underline underline-offset-4'
+        : 'hover:text-blue-100 hover:bg-white/10'
     }`;
   };
 
@@ -83,8 +84,8 @@ function Header() {
     const isActive = location.pathname === path;
     return `flex items-center gap-3 text-white text-base font-semibold transition-colors duration-300 py-3 px-4 rounded-lg w-full ${
       isActive
-        ? "bg-white/25 underline underline-offset-4"
-        : "hover:text-blue-100 hover:bg-white/10"
+        ? 'bg-white/25 underline underline-offset-4'
+        : 'hover:text-blue-100 hover:bg-white/10'
     }`;
   };
 
@@ -92,12 +93,12 @@ function Header() {
     initial: {
       y: -100,
       opacity: 0,
-      backdropFilter: "blur(0px)",
+      backdropFilter: 'blur(0px)',
     },
     animate: {
       y: 0,
       opacity: 1,
-      backdropFilter: scrolled ? "blur(20px)" : "blur(0px)",
+      backdropFilter: scrolled ? 'blur(20px)' : 'blur(0px)',
       transition: {
         duration: 0.8,
         ease: [0.25, 0.46, 0.45, 0.94],
@@ -120,7 +121,7 @@ function Header() {
       rotate: [0, -2, 2, 0],
       transition: {
         duration: 0.6,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
   };
@@ -139,7 +140,7 @@ function Header() {
     hover: {
       y: -2,
       scale: 1.05,
-      textShadow: "0 0 8px rgba(255,255,255,0.8)",
+      textShadow: '0 0 8px rgba(255,255,255,0.8)',
       transition: { duration: 0.3 },
     },
   };
@@ -155,7 +156,7 @@ function Header() {
       },
     },
     open: {
-      height: "auto",
+      height: 'auto',
       opacity: 1,
       y: 0,
       transition: {
@@ -171,7 +172,7 @@ function Header() {
       opacity: 1,
       scale: 1,
       y: 0,
-      transition: { duration: 0.2, ease: "easeOut" },
+      transition: { duration: 0.2, ease: 'easeOut' },
     },
   };
 
@@ -195,8 +196,8 @@ function Header() {
       animate="animate"
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-gradient-to-r from-blue-400/95 via-blue-500/95 to-blue-400/95 shadow-xl shadow-blue-500/25 dark:from-blue-950/95 dark:via-blue-900/95 dark:to-blue-950/95"
-          : "bg-gradient-to-r from-blue-400 via-blue-500 to-blue-400 shadow-lg dark:from-blue-950 dark:via-blue-900 dark:to-blue-950"
+          ? 'bg-gradient-to-r from-blue-400/95 via-blue-500/95 to-blue-400/95 shadow-xl shadow-blue-500/25 dark:from-blue-950/95 dark:via-blue-900/95 dark:to-blue-950/95'
+          : 'bg-gradient-to-r from-blue-400 via-blue-500 to-blue-400 shadow-lg dark:from-blue-950 dark:via-blue-900 dark:to-blue-950'
       }`}
     >
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
@@ -213,7 +214,7 @@ function Header() {
           >
             <motion.div
               animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
               className="hidden sm:block"
             >
               <Sparkles className="w-6 h-6 text-white" />
@@ -240,15 +241,16 @@ function Header() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                <Link to="/products" className={navLinkClass("/products")}>
+                <Link to="/products" className={navLinkClass('/products')}>
                   Products
                 </Link>
               </motion.div>
             )}
 
             {/* Dashboard — admin / manager only */}
-            {isAuthenticated && user &&
-              (user.role === "ADMIN" || user.role === "MANAGER") && (
+            {isAuthenticated &&
+              user &&
+              (user.role === 'ADMIN' || user.role === 'MANAGER') && (
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -256,7 +258,7 @@ function Header() {
                 >
                   <Link
                     to="/admin/dashboard"
-                    className={navLinkClass("/admin/dashboard")}
+                    className={navLinkClass('/admin/dashboard')}
                   >
                     Admin Dashboard
                   </Link>
@@ -277,7 +279,7 @@ function Header() {
                   >
                     <CircleUser className="w-4 h-4" />
                     <span className="max-w-[120px] truncate">
-                      {user?.name || "Account"}
+                      {user?.name || 'Account'}
                     </span>
                     <motion.span
                       animate={{ rotate: isAccountOpen ? 180 : 0 }}
@@ -377,14 +379,14 @@ function Header() {
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               aria-label={
-                theme === "dark"
-                  ? "Switch to light mode"
-                  : "Switch to dark mode"
+                theme === 'dark'
+                  ? 'Switch to light mode'
+                  : 'Switch to dark mode'
               }
-              title={theme === "dark" ? "Light mode" : "Dark mode"}
+              title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
               className="text-white p-2 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/20 transition-all duration-300"
             >
-              {theme === "dark" ? (
+              {theme === 'dark' ? (
                 <Sun className="w-5 h-5" />
               ) : (
                 <Moon className="w-5 h-5" />
@@ -400,7 +402,7 @@ function Header() {
             >
               <Link
                 to="/wishlist"
-                aria-label={`Wishlist — ${wishlistCount} ${wishlistCount === 1 ? "item" : "items"}`}
+                aria-label={`Wishlist — ${wishlistCount} ${wishlistCount === 1 ? 'item' : 'items'}`}
                 className="flex items-center"
               >
                 <Heart className="text-white w-6 h-6" />
@@ -409,7 +411,7 @@ function Header() {
                   initial={{ scale: 0.5, opacity: 0, y: -10 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0.5, opacity: 0, y: -10 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   className="absolute -top-2 -right-2 bg-gradient-to-r from-white to-blue-100 text-blue-500 text-xs font-bold px-2 py-1 rounded-full shadow-lg border border-white/20 min-w-[20px] text-center"
                   aria-hidden="true"
                 >
@@ -428,7 +430,7 @@ function Header() {
             >
               <Link
                 to="/cart"
-                aria-label={`Shopping cart — ${cartItemCount} ${cartItemCount === 1 ? "item" : "items"}`}
+                aria-label={`Shopping cart — ${cartItemCount} ${cartItemCount === 1 ? 'item' : 'items'}`}
                 className="flex items-center"
               >
                 <ShoppingCart className="text-white w-6 h-6" />
@@ -437,7 +439,7 @@ function Header() {
                   initial={{ scale: 0.5, opacity: 0, y: -10 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0.5, opacity: 0, y: -10 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                   className="absolute -top-2 -right-2 bg-gradient-to-r from-white to-blue-100 text-blue-500 text-xs font-bold px-2 py-1 rounded-full shadow-lg border border-white/20 min-w-[20px] text-center"
                   aria-hidden="true"
                 >
@@ -452,13 +454,15 @@ function Header() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+            aria-label={
+              isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'
+            }
             aria-expanded={isMenuOpen}
             className="lg:hidden text-white p-2 rounded-full bg-white/20 backdrop-blur-sm border border-white/20 transition-all duration-300"
           >
             <AnimatePresence mode="wait">
               <motion.div
-                key={isMenuOpen ? "close" : "menu"}
+                key={isMenuOpen ? 'close' : 'menu'}
                 initial={{ rotate: -90, opacity: 0 }}
                 animate={{ rotate: 0, opacity: 1 }}
                 exit={{ rotate: 90, opacity: 0 }}
@@ -507,7 +511,7 @@ function Header() {
                   >
                     <Link
                       to="/products"
-                      className={mobileNavLinkClass("/products")}
+                      className={mobileNavLinkClass('/products')}
                     >
                       Products
                     </Link>
@@ -515,8 +519,9 @@ function Header() {
                 )}
 
                 {/* Dashboard */}
-                {isAuthenticated && user &&
-                  (user.role === "ADMIN" || user.role === "MANAGER") && (
+                {isAuthenticated &&
+                  user &&
+                  (user.role === 'ADMIN' || user.role === 'MANAGER') && (
                     <motion.div
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -525,7 +530,7 @@ function Header() {
                     >
                       <Link
                         to="/admin/dashboard"
-                        className={mobileNavLinkClass("/admin/dashboard")}
+                        className={mobileNavLinkClass('/admin/dashboard')}
                       >
                         Admin Dashboard
                       </Link>
@@ -543,10 +548,10 @@ function Header() {
                     >
                       <Link
                         to="/my-profile"
-                        className={mobileNavLinkClass("/my-profile")}
+                        className={mobileNavLinkClass('/my-profile')}
                       >
                         <CircleUser className="w-5 h-5 flex-shrink-0" />
-                        {user?.name || "My Profile"}
+                        {user?.name || 'My Profile'}
                       </Link>
                     </motion.div>
 
@@ -559,7 +564,7 @@ function Header() {
                     >
                       <Link
                         to="/my-orders"
-                        className={mobileNavLinkClass("/my-orders")}
+                        className={mobileNavLinkClass('/my-orders')}
                       >
                         <Package className="w-5 h-5 flex-shrink-0" />
                         My Orders
@@ -575,7 +580,7 @@ function Header() {
                     >
                       <Link
                         to="/support"
-                        className={mobileNavLinkClass("/support")}
+                        className={mobileNavLinkClass('/support')}
                       >
                         <LifeBuoy className="w-5 h-5 flex-shrink-0" />
                         Help & Support
@@ -591,7 +596,7 @@ function Header() {
                     >
                       <Link
                         to="/my-addresses"
-                        className={mobileNavLinkClass("/my-addresses")}
+                        className={mobileNavLinkClass('/my-addresses')}
                       >
                         <MapPin className="w-5 h-5 flex-shrink-0" />
                         My Addresses
@@ -607,8 +612,8 @@ function Header() {
                     >
                       <Link
                         to="/cart"
-                        className={mobileNavLinkClass("/cart")}
-                        aria-label={`Cart — ${cartItemCount} ${cartItemCount === 1 ? "item" : "items"}`}
+                        className={mobileNavLinkClass('/cart')}
+                        aria-label={`Cart — ${cartItemCount} ${cartItemCount === 1 ? 'item' : 'items'}`}
                       >
                         <div className="relative">
                           <ShoppingCart className="w-5 h-5" />
@@ -633,19 +638,19 @@ function Header() {
                       <button
                         type="button"
                         onClick={toggleTheme}
-                        className={mobileNavLinkClass("/__theme")}
+                        className={mobileNavLinkClass('/__theme')}
                         aria-label={
-                          theme === "dark"
-                            ? "Switch to light mode"
-                            : "Switch to dark mode"
+                          theme === 'dark'
+                            ? 'Switch to light mode'
+                            : 'Switch to dark mode'
                         }
                       >
-                        {theme === "dark" ? (
+                        {theme === 'dark' ? (
                           <Sun className="w-5 h-5" />
                         ) : (
                           <Moon className="w-5 h-5" />
                         )}
-                        {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                        {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
                       </button>
                     </motion.div>
 
@@ -658,8 +663,8 @@ function Header() {
                     >
                       <Link
                         to="/wishlist"
-                        className={mobileNavLinkClass("/wishlist")}
-                        aria-label={`Wishlist — ${wishlistCount} ${wishlistCount === 1 ? "item" : "items"}`}
+                        className={mobileNavLinkClass('/wishlist')}
+                        aria-label={`Wishlist — ${wishlistCount} ${wishlistCount === 1 ? 'item' : 'items'}`}
                       >
                         <div className="relative">
                           <Heart className="w-5 h-5" />

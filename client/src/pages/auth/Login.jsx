@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { useDispatch, useSelector } from "react-redux";
-import { getSingleDetail, loginUser } from "@/store/auth-slice/user";
-import { toast } from "react-toastify";
-import MetaData from "../../extras/MetaData";
-import { Eye, EyeOff, LockIcon, Mail } from "lucide-react";
+import { motion } from 'framer-motion';
+import { useDispatch, useSelector } from 'react-redux';
+import { getSingleDetail, loginUser } from '@/store/auth-slice/user';
+import { toast } from 'react-toastify';
+import MetaData from '../../extras/MetaData';
+import { Eye, EyeOff, LockIcon, Mail } from 'lucide-react';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const dispatch = useDispatch();
@@ -21,12 +21,14 @@ const Login = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const redirect = location.search ? location.search.split("=")[1] : "/my-profile";
+  const redirect = location.search
+    ? location.search.split('=')[1]
+    : '/my-profile';
 
   const loginSubmit = (e) => {
     e.preventDefault();
     if (!email || !password) {
-      toast.error("Please fill in all fields");
+      toast.error('Please fill in all fields');
       return;
     }
     dispatch(loginUser({ email, password }));
@@ -38,13 +40,13 @@ const Login = () => {
     }
     if (isAuthenticated) {
       dispatch(getSingleDetail());
-      toast.success("Welcome back!");
-      const isEmailVerified = localStorage.getItem("verifyEmail") === "true";
+      toast.success('Welcome back!');
+      const isEmailVerified = localStorage.getItem('verifyEmail') === 'true';
 
       if (!verifyEmail && !isEmailVerified) {
-        navigate("/verify-email");
+        navigate('/verify-email');
       } else {
-        navigate(redirect || "/");
+        navigate(redirect || '/');
       }
     }
   }, [isAuthenticated, error, navigate, redirect, verifyEmail, dispatch]);
@@ -78,11 +80,11 @@ const Login = () => {
     visible: {
       x: 0,
       opacity: 1,
-      transition: { duration: 0.6, ease: "easeOut" },
+      transition: { duration: 0.6, ease: 'easeOut' },
     },
     focus: {
       scale: 1.02,
-      borderColor: "#3B82F6",
+      borderColor: '#3B82F6',
       transition: { duration: 0.3 },
     },
   };
@@ -108,9 +110,16 @@ const Login = () => {
           Welcome Back
         </motion.h2>
 
-        <motion.form variants={itemVariants} onSubmit={loginSubmit} className="space-y-6">
+        <motion.form
+          variants={itemVariants}
+          onSubmit={loginSubmit}
+          className="space-y-6"
+        >
           <motion.div variants={inputVariants} className="relative group">
-            <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400 group-hover:text-blue-500 transition-colors duration-300" size={20} />
+            <Mail
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400 group-hover:text-blue-500 transition-colors duration-300"
+              size={20}
+            />
             <label htmlFor="login-email" className="sr-only">
               Email
             </label>
@@ -126,13 +135,16 @@ const Login = () => {
           </motion.div>
 
           <motion.div variants={inputVariants} className="relative group">
-            <LockIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400 group-hover:text-blue-500 transition-colors duration-300" size={20} />
+            <LockIcon
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400 group-hover:text-blue-500 transition-colors duration-300"
+              size={20}
+            />
             <label htmlFor="login-password" className="sr-only">
               Password
             </label>
             <input
               id="login-password"
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
               placeholder="Your Password"
               value={password}
@@ -141,7 +153,7 @@ const Login = () => {
             />
             <motion.button
               type="button"
-              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
               whileHover={{ scale: 1.15, rotate: 5 }}
               whileTap={{ scale: 0.95 }}
               className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-blue-400 hover:text-blue-500 transition-colors duration-300"
@@ -160,7 +172,10 @@ const Login = () => {
             className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm"
           >
             <label className="flex items-center text-blue-600 cursor-pointer select-none">
-              <input type="checkbox" className="mr-2 accent-blue-500 focus:ring-blue-400" />
+              <input
+                type="checkbox"
+                className="mr-2 accent-blue-500 focus:ring-blue-400"
+              />
               Remember me
             </label>
             <Link
@@ -173,7 +188,10 @@ const Login = () => {
 
           <motion.button
             variants={itemVariants}
-            whileHover={{ scale: 1.05, boxShadow: "0 8px 20px rgba(59, 130, 246, 0.3)" }}
+            whileHover={{
+              scale: 1.05,
+              boxShadow: '0 8px 20px rgba(59, 130, 246, 0.3)',
+            }}
             whileTap={{ scale: 0.95 }}
             className="w-full bg-gradient-to-r from-blue-400 to-blue-500 text-white py-3 rounded-xl font-semibold tracking-wide shadow-lg hover:from-blue-500 hover:to-blue-600 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center text-sm sm:text-base"
             disabled={loading}
@@ -200,7 +218,7 @@ const Login = () => {
                 Signing In...
               </span>
             ) : (
-              "Sign In"
+              'Sign In'
             )}
           </motion.button>
         </motion.form>

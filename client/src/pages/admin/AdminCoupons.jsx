@@ -1,8 +1,8 @@
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import {
   ArrowLeft,
   Plus,
@@ -12,7 +12,7 @@ import {
   X,
   Percent,
   IndianRupee,
-} from "lucide-react";
+} from 'lucide-react';
 import {
   getAllCoupons,
   createCoupon,
@@ -20,41 +20,42 @@ import {
   deleteCoupon,
   clearCouponError,
   clearCouponSuccess,
-} from "@/store/order/couponSlice";
-import Loader from "../../extras/Loader";
+} from '@/store/order/couponSlice';
+import Loader from '../../extras/Loader';
 
 const EMPTY_FORM = {
-  code: "",
-  description: "",
-  discountType: "PERCENTAGE",
-  discountValue: "",
-  minOrderAmount: "",
-  maxDiscount: "",
-  expiresAt: "",
-  usageLimit: "",
+  code: '',
+  description: '',
+  discountType: 'PERCENTAGE',
+  discountValue: '',
+  minOrderAmount: '',
+  maxDiscount: '',
+  expiresAt: '',
+  usageLimit: '',
   isActive: true,
 };
 
 // Derive a human status from the coupon's own fields.
 const statusOf = (c) => {
-  if (!c.isActive) return { label: "Inactive", cls: "bg-gray-100 text-gray-600" };
+  if (!c.isActive)
+    return { label: 'Inactive', cls: 'bg-gray-100 text-gray-600' };
   if (c.expiresAt && new Date(c.expiresAt).getTime() < Date.now()) {
-    return { label: "Expired", cls: "bg-red-100 text-red-700" };
+    return { label: 'Expired', cls: 'bg-red-100 text-red-700' };
   }
   if (c.usageLimit > 0 && c.usedCount >= c.usageLimit) {
-    return { label: "Used up", cls: "bg-amber-100 text-amber-700" };
+    return { label: 'Used up', cls: 'bg-amber-100 text-amber-700' };
   }
-  return { label: "Active", cls: "bg-emerald-100 text-emerald-700" };
+  return { label: 'Active', cls: 'bg-emerald-100 text-emerald-700' };
 };
 
 const formatDate = (d) =>
   d
-    ? new Date(d).toLocaleDateString("en-IN", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
+    ? new Date(d).toLocaleDateString('en-IN', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
       })
-    : "No expiry";
+    : 'No expiry';
 
 const AdminCoupons = () => {
   const dispatch = useDispatch();
@@ -64,7 +65,7 @@ const AdminCoupons = () => {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [confirmDelete, setConfirmDelete] = useState(null);
-  const [formError, setFormError] = useState("");
+  const [formError, setFormError] = useState('');
   const [fieldErrors, setFieldErrors] = useState({});
 
   useEffect(() => {
@@ -91,53 +92,58 @@ const AdminCoupons = () => {
   }, [error, dispatch]);
 
   const stats = useMemo(() => {
-    const active = coupons.filter((c) => statusOf(c).label === "Active").length;
-    const totalRedemptions = coupons.reduce((sum, c) => sum + (c.usedCount || 0), 0);
+    const active = coupons.filter((c) => statusOf(c).label === 'Active').length;
+    const totalRedemptions = coupons.reduce(
+      (sum, c) => sum + (c.usedCount || 0),
+      0
+    );
     return { total: coupons.length, active, totalRedemptions };
   }, [coupons]);
 
   const openCreate = () => {
     setEditingId(null);
     setForm(EMPTY_FORM);
-    setFormError("");
+    setFormError('');
     setShowModal(true);
   };
 
   const openEdit = (c) => {
     setEditingId(c._id);
     setForm({
-      code: c.code || "",
-      description: c.description || "",
-      discountType: c.discountType || "PERCENTAGE",
-      discountValue: c.discountValue ?? "",
-      minOrderAmount: c.minOrderAmount ?? "",
-      maxDiscount: c.maxDiscount ?? "",
-      expiresAt: c.expiresAt ? new Date(c.expiresAt).toISOString().slice(0, 10) : "",
-      usageLimit: c.usageLimit ?? "",
+      code: c.code || '',
+      description: c.description || '',
+      discountType: c.discountType || 'PERCENTAGE',
+      discountValue: c.discountValue ?? '',
+      minOrderAmount: c.minOrderAmount ?? '',
+      maxDiscount: c.maxDiscount ?? '',
+      expiresAt: c.expiresAt
+        ? new Date(c.expiresAt).toISOString().slice(0, 10)
+        : '',
+      usageLimit: c.usageLimit ?? '',
       isActive: c.isActive ?? true,
     });
-    setFormError("");
+    setFormError('');
     setShowModal(true);
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
+    setForm((f) => ({ ...f, [name]: type === 'checkbox' ? checked : value }));
   };
 
   const handleSubmit = () => {
-    setFormError("");
+    setFormError('');
     setFieldErrors({});
     const code = form.code.trim().toUpperCase();
     const fe = {};
-    if (!code) fe.code = "Coupon code is required";
+    if (!code) fe.code = 'Coupon code is required';
 
     const discountValue = Number(form.discountValue);
     if (Number.isNaN(discountValue) || discountValue < 0) {
-      fe.discountValue = "Discount value must be a non-negative number";
+      fe.discountValue = 'Discount value must be a non-negative number';
     }
-    if (form.discountType === "PERCENTAGE" && discountValue > 100) {
-      fe.discountValue = "A percentage discount cannot exceed 100";
+    if (form.discountType === 'PERCENTAGE' && discountValue > 100) {
+      fe.discountValue = 'A percentage discount cannot exceed 100';
     }
     if (Object.keys(fe).length > 0) {
       setFieldErrors(fe);
@@ -149,10 +155,11 @@ const AdminCoupons = () => {
       description: form.description.trim(),
       discountType: form.discountType,
       discountValue,
-      minOrderAmount: form.minOrderAmount === "" ? 0 : Number(form.minOrderAmount),
-      maxDiscount: form.maxDiscount === "" ? 0 : Number(form.maxDiscount),
+      minOrderAmount:
+        form.minOrderAmount === '' ? 0 : Number(form.minOrderAmount),
+      maxDiscount: form.maxDiscount === '' ? 0 : Number(form.maxDiscount),
       expiresAt: form.expiresAt || null,
-      usageLimit: form.usageLimit === "" ? 0 : Number(form.usageLimit),
+      usageLimit: form.usageLimit === '' ? 0 : Number(form.usageLimit),
       isActive: form.isActive,
     };
 
@@ -185,7 +192,9 @@ const AdminCoupons = () => {
               <Tag className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Coupons & Promotions</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Coupons & Promotions
+              </h1>
               <p className="text-gray-600">
                 Create and manage discount coupons for checkout
               </p>
@@ -208,12 +217,16 @@ const AdminCoupons = () => {
         {/* Summary cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           {[
-            { label: "Total Coupons", value: stats.total, color: "bg-indigo-500" },
-            { label: "Active", value: stats.active, color: "bg-emerald-500" },
             {
-              label: "Total Redemptions",
+              label: 'Total Coupons',
+              value: stats.total,
+              color: 'bg-indigo-500',
+            },
+            { label: 'Active', value: stats.active, color: 'bg-emerald-500' },
+            {
+              label: 'Total Redemptions',
               value: stats.totalRedemptions,
-              color: "bg-blue-500",
+              color: 'bg-blue-500',
             },
           ].map((s) => (
             <div
@@ -263,26 +276,26 @@ const AdminCoupons = () => {
                           )}
                         </td>
                         <td className="px-4 py-3 text-gray-700">
-                          {c.discountType === "PERCENTAGE"
+                          {c.discountType === 'PERCENTAGE'
                             ? `${c.discountValue}%`
                             : `₹${c.discountValue}`}
-                          {c.discountType === "PERCENTAGE" &&
+                          {c.discountType === 'PERCENTAGE' &&
                             c.maxDiscount > 0 && (
                               <span className="text-xs text-gray-400">
-                                {" "}
+                                {' '}
                                 (max ₹{c.maxDiscount})
                               </span>
                             )}
                         </td>
                         <td className="px-4 py-3 text-gray-700">
-                          {c.minOrderAmount > 0 ? `₹${c.minOrderAmount}` : "—"}
+                          {c.minOrderAmount > 0 ? `₹${c.minOrderAmount}` : '—'}
                         </td>
                         <td className="px-4 py-3 text-gray-700">
                           {formatDate(c.expiresAt)}
                         </td>
                         <td className="px-4 py-3 text-gray-700">
                           {c.usedCount}
-                          {c.usageLimit > 0 ? ` / ${c.usageLimit}` : " / ∞"}
+                          {c.usageLimit > 0 ? ` / ${c.usageLimit}` : ' / ∞'}
                         </td>
                         <td className="px-4 py-3">
                           <span
@@ -329,7 +342,7 @@ const AdminCoupons = () => {
           >
             <div className="flex items-center justify-between px-6 py-4 border-b">
               <h2 className="text-xl font-bold text-gray-900">
-                {editingId ? "Edit Coupon" : "New Coupon"}
+                {editingId ? 'Edit Coupon' : 'New Coupon'}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
@@ -353,11 +366,18 @@ const AdminCoupons = () => {
                 <input
                   name="code"
                   value={form.code}
-                  onChange={(e) => { handleChange(e); setFieldErrors((prev) => ({ ...prev, code: "" })); }}
+                  onChange={(e) => {
+                    handleChange(e);
+                    setFieldErrors((prev) => ({ ...prev, code: '' }));
+                  }}
                   placeholder="e.g. SAVE20"
-                  className={`w-full rounded-lg border px-3 py-2 uppercase focus:ring-2 focus:ring-indigo-400 outline-none ${fieldErrors.code ? "border-red-400" : "border-gray-300"}`}
+                  className={`w-full rounded-lg border px-3 py-2 uppercase focus:ring-2 focus:ring-indigo-400 outline-none ${fieldErrors.code ? 'border-red-400' : 'border-gray-300'}`}
                 />
-                {fieldErrors.code && <p className="mt-1 text-xs text-red-500">{fieldErrors.code}</p>}
+                {fieldErrors.code && (
+                  <p className="mt-1 text-xs text-red-500">
+                    {fieldErrors.code}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -390,7 +410,7 @@ const AdminCoupons = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    {form.discountType === "PERCENTAGE" ? (
+                    {form.discountType === 'PERCENTAGE' ? (
                       <span className="inline-flex items-center gap-1">
                         <Percent className="w-3.5 h-3.5" /> Value
                       </span>
@@ -405,10 +425,20 @@ const AdminCoupons = () => {
                     type="number"
                     min="0"
                     value={form.discountValue}
-                    onChange={(e) => { handleChange(e); setFieldErrors((prev) => ({ ...prev, discountValue: "" })); }}
-                    className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-indigo-400 outline-none ${fieldErrors.discountValue ? "border-red-400" : "border-gray-300"}`}
+                    onChange={(e) => {
+                      handleChange(e);
+                      setFieldErrors((prev) => ({
+                        ...prev,
+                        discountValue: '',
+                      }));
+                    }}
+                    className={`w-full rounded-lg border px-3 py-2 focus:ring-2 focus:ring-indigo-400 outline-none ${fieldErrors.discountValue ? 'border-red-400' : 'border-gray-300'}`}
                   />
-                  {fieldErrors.discountValue && <p className="mt-1 text-xs text-red-500">{fieldErrors.discountValue}</p>}
+                  {fieldErrors.discountValue && (
+                    <p className="mt-1 text-xs text-red-500">
+                      {fieldErrors.discountValue}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -427,7 +457,7 @@ const AdminCoupons = () => {
                     className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-indigo-400 outline-none"
                   />
                 </div>
-                {form.discountType === "PERCENTAGE" && (
+                {form.discountType === 'PERCENTAGE' && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Max Discount (₹)
@@ -498,7 +528,7 @@ const AdminCoupons = () => {
                 disabled={loading}
                 className="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold disabled:opacity-60"
               >
-                {editingId ? "Save Changes" : "Create Coupon"}
+                {editingId ? 'Save Changes' : 'Create Coupon'}
               </button>
             </div>
           </motion.div>
@@ -509,11 +539,15 @@ const AdminCoupons = () => {
       {confirmDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Delete coupon?</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              Delete coupon?
+            </h3>
             <p className="text-gray-600 mb-6">
-              This will permanently delete{" "}
-              <span className="font-mono font-semibold">{confirmDelete.code}</span>.
-              This action cannot be undone.
+              This will permanently delete{' '}
+              <span className="font-mono font-semibold">
+                {confirmDelete.code}
+              </span>
+              . This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
               <button

@@ -1,26 +1,26 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import jsPDF from "jspdf";
+import { motion } from 'framer-motion';
+import jsPDF from 'jspdf';
 import {
   getMyOrders,
   cancelMyOrder,
   clearOrderError,
-} from "../../store/order/orderSlice";
-import Loader from "../../extras/Loader";
-import ConfirmationModal from "../../extras/ConfirmationModal";
+} from '../../store/order/orderSlice';
+import Loader from '../../extras/Loader';
+import ConfirmationModal from '../../extras/ConfirmationModal';
 
 // The fulfilment stages a normal order moves through, in order. Used by the
 // customer-facing tracker so a buyer can see how far along their order is.
-const TRACKER_STAGES = ["Confirmed", "Processing", "Shipped", "Delivered"];
+const TRACKER_STAGES = ['Confirmed', 'Processing', 'Shipped', 'Delivered'];
 
 // Statuses in which a customer may still cancel their own order. Mirrors the
 // server-side eligibility in cancelMyOrder so the button only appears when the
 // action will actually be accepted.
-const CUSTOMER_CANCELLABLE = ["Pending Verification", "Confirmed"];
+const CUSTOMER_CANCELLABLE = ['Pending Verification', 'Confirmed'];
 
 // Horizontal step tracker showing an order's progress through its lifecycle.
 // Cancelled / Pending-Verification orders skip the tracker (handled by the
@@ -39,15 +39,17 @@ const OrderTracker = ({ orderStatus }) => {
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
                   reached
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-400 dark:text-gray-500"
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 text-gray-400 dark:text-gray-500'
                 }`}
               >
-                {reached ? "✓" : i + 1}
+                {reached ? '✓' : i + 1}
               </div>
               <span
                 className={`mt-1.5 text-[11px] font-medium ${
-                  reached ? "text-blue-700 dark:text-blue-300" : "text-gray-400 dark:text-gray-500"
+                  reached
+                    ? 'text-blue-700 dark:text-blue-300'
+                    : 'text-gray-400 dark:text-gray-500'
                 }`}
               >
                 {stage}
@@ -56,7 +58,7 @@ const OrderTracker = ({ orderStatus }) => {
             {!isLast && (
               <div
                 className={`flex-1 h-1 mx-1 rounded-full transition-colors ${
-                  i < currentIndex ? "bg-blue-600" : "bg-gray-200"
+                  i < currentIndex ? 'bg-blue-600' : 'bg-gray-200'
                 }`}
               />
             )}
@@ -69,30 +71,30 @@ const OrderTracker = ({ orderStatus }) => {
 
 const statusColor = (status) => {
   switch (status) {
-    case "Success":
-    case "Confirmed":
-    case "Delivered":
-      return "bg-green-100 text-green-800";
-    case "Pending":
-    case "Pending Verification":
-    case "Processing":
-    case "Shipped":
-      return "bg-yellow-100 text-yellow-800";
-    case "Failed":
-    case "Cancelled":
-      return "bg-red-100 text-red-800";
+    case 'Success':
+    case 'Confirmed':
+    case 'Delivered':
+      return 'bg-green-100 text-green-800';
+    case 'Pending':
+    case 'Pending Verification':
+    case 'Processing':
+    case 'Shipped':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'Failed':
+    case 'Cancelled':
+      return 'bg-red-100 text-red-800';
     default:
-      return "bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100";
+      return 'bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100';
   }
 };
 
 const formatDate = (d) =>
-  new Date(d).toLocaleString("en-IN", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  new Date(d).toLocaleString('en-IN', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
 const generateReceiptPDF = (order, user) => {
@@ -101,10 +103,10 @@ const generateReceiptPDF = (order, user) => {
   let y = 20;
 
   doc.setFontSize(18);
-  doc.text("Samridhi Enterprises", 105, y, { align: "center" });
+  doc.text('Samridhi Enterprises', 105, y, { align: 'center' });
   y += 7;
   doc.setFontSize(11);
-  doc.text("Order Receipt", 105, y, { align: "center" });
+  doc.text('Order Receipt', 105, y, { align: 'center' });
   y += 6;
   doc.setLineWidth(0.4);
   doc.line(left, y, 195, y);
@@ -115,11 +117,7 @@ const generateReceiptPDF = (order, user) => {
   y += 6;
   doc.text(`Date: ${formatDate(order.createdAt)}`, left, y);
   y += 6;
-  doc.text(
-    `Payment: ${order.paymentMethod} (${order.paymentStatus})`,
-    left,
-    y
-  );
+  doc.text(`Payment: ${order.paymentMethod} (${order.paymentStatus})`, left, y);
   y += 6;
   doc.text(`Order Status: ${order.orderStatus}`, left, y);
   if (order.upiReference) {
@@ -129,51 +127,51 @@ const generateReceiptPDF = (order, user) => {
   y += 10;
 
   const addr = order.shippingAddress || {};
-  doc.setFont(undefined, "bold");
-  doc.text("Billed / Shipped To:", left, y);
-  doc.setFont(undefined, "normal");
+  doc.setFont(undefined, 'bold');
+  doc.text('Billed / Shipped To:', left, y);
+  doc.setFont(undefined, 'normal');
   y += 6;
-  doc.text(`${addr.fullName || user?.name || ""}`, left, y);
+  doc.text(`${addr.fullName || user?.name || ''}`, left, y);
   y += 6;
   if (user?.email) {
     doc.text(`${user.email}`, left, y);
     y += 6;
   }
-  doc.text(`${addr.addressLine || ""}`, left, y);
+  doc.text(`${addr.addressLine || ''}`, left, y);
   y += 6;
   doc.text(
-    `${addr.city || ""}${addr.state ? ", " + addr.state : ""} - ${
-      addr.pincode || ""
+    `${addr.city || ''}${addr.state ? ', ' + addr.state : ''} - ${
+      addr.pincode || ''
     }`,
     left,
     y
   );
   y += 6;
-  doc.text(`Phone: ${addr.phone || ""}`, left, y);
+  doc.text(`Phone: ${addr.phone || ''}`, left, y);
   y += 10;
 
   // Items table header
-  doc.setFont(undefined, "bold");
-  doc.text("Item", left, y);
-  doc.text("Qty", 120, y);
-  doc.text("Unit (Rs.)", 140, y);
-  doc.text("Total (Rs.)", 172, y);
-  doc.setFont(undefined, "normal");
+  doc.setFont(undefined, 'bold');
+  doc.text('Item', left, y);
+  doc.text('Qty', 120, y);
+  doc.text('Unit (Rs.)', 140, y);
+  doc.text('Total (Rs.)', 172, y);
+  doc.setFont(undefined, 'normal');
   y += 3;
   doc.line(left, y, 195, y);
   y += 6;
 
   (order.items || []).forEach((item) => {
     const name =
-      item.name.length > 40 ? item.name.slice(0, 37) + "..." : item.name;
+      item.name.length > 40 ? item.name.slice(0, 37) + '...' : item.name;
     const lineTotal = item.price * item.quantity;
     doc.text(name, left, y);
-    doc.text(String(item.quantity), 122, y, { align: "center" });
-    doc.text(Number(item.price).toLocaleString("en-IN"), 150, y, {
-      align: "right",
+    doc.text(String(item.quantity), 122, y, { align: 'center' });
+    doc.text(Number(item.price).toLocaleString('en-IN'), 150, y, {
+      align: 'right',
     });
-    doc.text(Number(lineTotal).toLocaleString("en-IN"), 188, y, {
-      align: "right",
+    doc.text(Number(lineTotal).toLocaleString('en-IN'), 188, y, {
+      align: 'right',
     });
     y += 7;
     if (y > 270) {
@@ -185,37 +183,34 @@ const generateReceiptPDF = (order, user) => {
   y += 2;
   doc.line(left, y, 195, y);
   y += 8;
-  doc.setFont(undefined, "bold");
+  doc.setFont(undefined, 'bold');
   doc.setFontSize(12);
-  doc.text("Grand Total:", 140, y);
-  doc.text(
-    "Rs. " + Number(order.itemsTotal).toLocaleString("en-IN"),
-    188,
-    y,
-    { align: "right" }
-  );
-  doc.setFont(undefined, "normal");
+  doc.text('Grand Total:', 140, y);
+  doc.text('Rs. ' + Number(order.itemsTotal).toLocaleString('en-IN'), 188, y, {
+    align: 'right',
+  });
+  doc.setFont(undefined, 'normal');
 
   y += 14;
   doc.setFontSize(9);
-  doc.text(
-    "Thank you for shopping with Samridhi Enterprises.",
-    105,
-    y,
-    { align: "center" }
-  );
+  doc.text('Thank you for shopping with Samridhi Enterprises.', 105, y, {
+    align: 'center',
+  });
 
   doc.save(`receipt-${order._id}.pdf`);
 };
 
 const getTrackingUrl = (carrier, trackingNumber) => {
   if (!trackingNumber) return null;
-  const c = (carrier || "").toLowerCase();
-  if (c.includes("blue dart")) return `https://www.bluedart.com/tracking?trackNumber=${trackingNumber}`;
-  if (c.includes("dtdc")) return `https://www.dtdc.in/tracking/shipment-tracking.asp`;
-  if (c.includes("delhivery")) return `https://www.delhivery.com/track/package/${trackingNumber}`;
-  if (c.includes("india post")) return `https://www.indiapost.gov.in/`;
-  return `https://www.google.com/search?q=${encodeURIComponent((carrier || "") + " tracking " + trackingNumber)}`;
+  const c = (carrier || '').toLowerCase();
+  if (c.includes('blue dart'))
+    return `https://www.bluedart.com/tracking?trackNumber=${trackingNumber}`;
+  if (c.includes('dtdc'))
+    return `https://www.dtdc.in/tracking/shipment-tracking.asp`;
+  if (c.includes('delhivery'))
+    return `https://www.delhivery.com/track/package/${trackingNumber}`;
+  if (c.includes('india post')) return `https://www.indiapost.gov.in/`;
+  return `https://www.google.com/search?q=${encodeURIComponent((carrier || '') + ' tracking ' + trackingNumber)}`;
 };
 
 const OrderHistory = () => {
@@ -235,7 +230,7 @@ const OrderHistory = () => {
     setCancellingId(id);
     dispatch(cancelMyOrder(id))
       .unwrap()
-      .then(() => toast.success("Order cancelled successfully"))
+      .then(() => toast.success('Order cancelled successfully'))
       .catch(() => {}) // errors surface via the error effect below
       .finally(() => setCancellingId(null));
   };
@@ -253,17 +248,17 @@ const OrderHistory = () => {
 
   const handleDownloadInvoice = async (orderId) => {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem('token');
       const response = await fetch(`/api/orders/${orderId}/invoice`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (!response.ok) throw new Error("Failed to fetch invoice");
+      if (!response.ok) throw new Error('Failed to fetch invoice');
       const htmlStr = await response.text();
-      const win = window.open("", "_blank");
+      const win = window.open('', '_blank');
       win.document.write(htmlStr);
       win.document.close();
     } catch (err) {
-      toast.error("Failed to download invoice");
+      toast.error('Failed to download invoice');
     }
   };
 
@@ -300,8 +295,8 @@ const OrderHistory = () => {
         <div className="space-y-6">
           {myOrders.map((order) => {
             const canDownload =
-              order.orderStatus !== "Cancelled" &&
-              order.orderStatus !== "Pending Verification";
+              order.orderStatus !== 'Cancelled' &&
+              order.orderStatus !== 'Pending Verification';
             const canCancel = CUSTOMER_CANCELLABLE.includes(order.orderStatus);
             return (
               <motion.div
@@ -312,7 +307,9 @@ const OrderHistory = () => {
               >
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                   <div>
-                    <p className="text-xs text-gray-400 dark:text-gray-500">Order ID</p>
+                    <p className="text-xs text-gray-400 dark:text-gray-500">
+                      Order ID
+                    </p>
                     <p className="font-mono text-sm text-gray-700 dark:text-gray-200 break-all">
                       {order._id}
                     </p>
@@ -344,8 +341,8 @@ const OrderHistory = () => {
                 {/* Customer order tracker — only for orders on the normal
                     fulfilment path. Cancelled and not-yet-confirmed orders
                     don't show a progress bar. */}
-                {order.orderStatus !== "Cancelled" &&
-                  order.orderStatus !== "Pending Verification" && (
+                {order.orderStatus !== 'Cancelled' &&
+                  order.orderStatus !== 'Pending Verification' && (
                     <OrderTracker orderStatus={order.orderStatus} />
                   )}
 
@@ -357,13 +354,22 @@ const OrderHistory = () => {
                         Shipment Tracking
                       </p>
                       <p className="text-sm text-gray-700 dark:text-gray-200">
-                        {order.carrier && <span className="font-semibold">{order.carrier}: </span>}
-                        <span className="font-mono">{order.trackingNumber || "N/A"}</span>
+                        {order.carrier && (
+                          <span className="font-semibold">
+                            {order.carrier}:{' '}
+                          </span>
+                        )}
+                        <span className="font-mono">
+                          {order.trackingNumber || 'N/A'}
+                        </span>
                       </p>
                     </div>
                     {order.trackingNumber && (
                       <a
-                        href={getTrackingUrl(order.carrier, order.trackingNumber)}
+                        href={getTrackingUrl(
+                          order.carrier,
+                          order.trackingNumber
+                        )}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs rounded-xl shadow transition"
@@ -382,9 +388,14 @@ const OrderHistory = () => {
                     </p>
                     <div className="space-y-1.5 text-xs">
                       {order.statusHistory.map((sh, idx) => (
-                        <div key={idx} className="flex justify-between text-gray-600 dark:text-gray-300">
+                        <div
+                          key={idx}
+                          className="flex justify-between text-gray-600 dark:text-gray-300"
+                        >
                           <span className="font-medium">• {sh.status}</span>
-                          <span className="text-gray-400">{formatDate(sh.changedAt)}</span>
+                          <span className="text-gray-400">
+                            {formatDate(sh.changedAt)}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -398,8 +409,10 @@ const OrderHistory = () => {
                       className="flex justify-between items-center text-sm"
                     >
                       <span className="text-gray-700 dark:text-gray-200 pr-2">
-                        {item.name}{" "}
-                        <span className="text-gray-400 dark:text-gray-500">x{item.quantity}</span>
+                        {item.name}{' '}
+                        <span className="text-gray-400 dark:text-gray-500">
+                          x{item.quantity}
+                        </span>
                       </span>
                       <span className="font-semibold text-gray-900 dark:text-gray-100 whitespace-nowrap">
                         ₹{(item.price * item.quantity).toLocaleString()}
@@ -427,8 +440,8 @@ const OrderHistory = () => {
                         title="Cancel this order"
                       >
                         {cancellingId === order._id
-                          ? "Cancelling..."
-                          : "Cancel Order"}
+                          ? 'Cancelling...'
+                          : 'Cancel Order'}
                       </button>
                     )}
                     <button
@@ -437,8 +450,8 @@ const OrderHistory = () => {
                       className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-indigo-600 text-white font-semibold text-sm shadow hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                       title={
                         canDownload
-                          ? "Download HTML Invoice"
-                          : "Invoice available after order is confirmed"
+                          ? 'Download HTML Invoice'
+                          : 'Invoice available after order is confirmed'
                       }
                     >
                       Download Invoice
@@ -449,8 +462,8 @@ const OrderHistory = () => {
                       className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold text-sm shadow hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                       title={
                         canDownload
-                          ? "Download receipt"
-                          : "Receipt available after the order is confirmed"
+                          ? 'Download receipt'
+                          : 'Receipt available after the order is confirmed'
                       }
                     >
                       Download Receipt
@@ -470,7 +483,7 @@ const OrderHistory = () => {
           message={
             cancelTarget
               ? `Order ${cancelTarget._id} will be cancelled and any reserved stock released. This action cannot be undone. If you have already paid, our team will process your refund as per policy.`
-              : ""
+              : ''
           }
         />
       </div>

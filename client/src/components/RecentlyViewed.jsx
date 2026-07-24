@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
-export const RECENTLY_VIEWED_KEY = "recentlyViewed";
+export const RECENTLY_VIEWED_KEY = 'recentlyViewed';
 
 const RecentlyViewed = () => {
   const [items, setItems] = useState([]);
@@ -19,7 +19,7 @@ const RecentlyViewed = () => {
       }
       setItems([]);
     } catch (error) {
-      console.error("Failed to load recently viewed products", error);
+      console.error('Failed to load recently viewed products', error);
       setItems([]);
     }
   };
@@ -31,10 +31,16 @@ const RecentlyViewed = () => {
       loadRecentlyViewed();
     };
 
-    window.addEventListener("recently-viewed-updated", handleRecentlyViewedUpdate);
+    window.addEventListener(
+      'recently-viewed-updated',
+      handleRecentlyViewedUpdate
+    );
 
     return () => {
-      window.removeEventListener("recently-viewed-updated", handleRecentlyViewedUpdate);
+      window.removeEventListener(
+        'recently-viewed-updated',
+        handleRecentlyViewedUpdate
+      );
     };
   }, []);
 
@@ -42,9 +48,9 @@ const RecentlyViewed = () => {
     try {
       localStorage.removeItem(RECENTLY_VIEWED_KEY);
       setItems([]);
-      window.dispatchEvent(new Event("recently-viewed-updated"));
+      window.dispatchEvent(new Event('recently-viewed-updated'));
     } catch (error) {
-      console.error("Failed to clear recently viewed products", error);
+      console.error('Failed to clear recently viewed products', error);
     }
   };
 
@@ -77,14 +83,14 @@ const RecentlyViewed = () => {
           >
             <div className="relative h-40 overflow-hidden">
               <img
-                src={item.image || "/images/placeholder.jpg"}
-                alt={item.name || "Recently viewed product"}
+                src={item.image || '/images/placeholder.jpg'}
+                alt={item.name || 'Recently viewed product'}
                 className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
               />
             </div>
             <div className="p-4 space-y-2">
               <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 min-h-[2.75rem]">
-                {item.name || "Product"}
+                {item.name || 'Product'}
               </h3>
               <p className="text-blue-600 font-bold">
                 ₹{Number(item.price || 0).toLocaleString()}

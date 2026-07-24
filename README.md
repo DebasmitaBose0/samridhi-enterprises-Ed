@@ -26,6 +26,7 @@
 ## 🚀 Features
 
 ### 👤 User Features
+
 - **Authentication:** Secure login and registration using JWT.
 - **Product Browsing:** Search and filter vehicle parts by brand and model.
 - **Cart Management:** Add/remove items and manage quantities.
@@ -33,10 +34,12 @@
 - **Profile Management:** Update personal information and view order history.
 
 ### 🏪 Seller Features
+
 - **Inventory Management:** Add and update stock levels for parts.
 - **Product Listings:** Manage detailed listings including images and specifications.
 
 ### 🛡️ Admin Features
+
 - **Dashboard:** Comprehensive overview of site activity and sales.
 - **User Management:** Manage user roles and permissions.
 - **Product Moderation:** Review and approve product listings.
@@ -46,14 +49,14 @@
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React.js, Vite, Redux Toolkit, Tailwind CSS, Framer Motion, Axios |
-| Backend | Node.js, Express.js |
-| Database | MongoDB, Mongoose |
-| Image Storage | Cloudinary |
-| Email Service | Brevo (formerly Sendinblue) |
-| Deployment | Vercel (Frontend + Backend) |
+| Layer         | Technology                                                        |
+| ------------- | ----------------------------------------------------------------- |
+| Frontend      | React.js, Vite, Redux Toolkit, Tailwind CSS, Framer Motion, Axios |
+| Backend       | Node.js, Express.js                                               |
+| Database      | MongoDB, Mongoose                                                 |
+| Image Storage | Cloudinary                                                        |
+| Email Service | Brevo (formerly Sendinblue)                                       |
+| Deployment    | Vercel (Frontend + Backend)                                       |
 
 ---
 
@@ -100,11 +103,11 @@ New contributors can start with [`docs/README.md`](./docs/README.md) for an inde
 
 Make sure the following are installed before you begin:
 
-| Tool | Version | Download |
-|---|---|---|
-| Node.js | v18 or higher | https://nodejs.org |
-| Git | Any recent version | https://git-scm.com |
-| MongoDB | Local or Atlas | https://mongodb.com |
+| Tool    | Version            | Download            |
+| ------- | ------------------ | ------------------- |
+| Node.js | v18 or higher      | https://nodejs.org  |
+| Git     | Any recent version | https://git-scm.com |
+| MongoDB | Local or Atlas     | https://mongodb.com |
 
 ---
 
@@ -174,27 +177,27 @@ The application will be available at **http://localhost:5173**.
 
 ### Frontend — `client/.env`
 
-| Variable | Description | Example |
-|---|---|---|
+| Variable           | Description                            | Example                 |
+| ------------------ | -------------------------------------- | ----------------------- |
 | `VITE_BACKEND_URL` | Full URL of the running backend server | `http://localhost:5000` |
 
 ---
 
 ### Backend — `server/.env`
 
-| Variable | Description | Where to get it |
-|---|---|---|
-| `PORT` | Port the Express server listens on | Any free port, default `5000` |
-| `MONGODB_URL` | MongoDB connection string | MongoDB Atlas → Connect → Drivers |
-| `FRONTEND_URL` | Production URL of your frontend | Your Vercel frontend URL |
-| `FRONTEND_WWW_URL` | `www.` variant of the frontend URL (for CORS) | Same as above with `www.` prefix |
-| `JWT_SECRET` | Secret key used to sign JWT tokens | Any long random string (min 32 chars) |
-| `JWT_EXPIRE` | JWT token expiry duration | `5d` (5 days) |
-| `COOKIE_EXPIRE` | Cookie expiry in days | `7` |
-| `BREVO_API_KEY` | API key for Brevo email service | Brevo dashboard → API Keys |
-| `CLOUDINARY_NAME` | Your Cloudinary cloud name | Cloudinary dashboard → Settings |
-| `CLOUDINARY_API_KEY` | Cloudinary API key | Cloudinary dashboard → API Keys |
-| `CLOUDINARY_API_SECRET` | Cloudinary API secret | Cloudinary dashboard → API Keys |
+| Variable                | Description                                   | Where to get it                       |
+| ----------------------- | --------------------------------------------- | ------------------------------------- |
+| `PORT`                  | Port the Express server listens on            | Any free port, default `5000`         |
+| `MONGODB_URL`           | MongoDB connection string                     | MongoDB Atlas → Connect → Drivers     |
+| `FRONTEND_URL`          | Production URL of your frontend               | Your Vercel frontend URL              |
+| `FRONTEND_WWW_URL`      | `www.` variant of the frontend URL (for CORS) | Same as above with `www.` prefix      |
+| `JWT_SECRET`            | Secret key used to sign JWT tokens            | Any long random string (min 32 chars) |
+| `JWT_EXPIRE`            | JWT token expiry duration                     | `5d` (5 days)                         |
+| `COOKIE_EXPIRE`         | Cookie expiry in days                         | `7`                                   |
+| `BREVO_API_KEY`         | API key for Brevo email service               | Brevo dashboard → API Keys            |
+| `CLOUDINARY_NAME`       | Your Cloudinary cloud name                    | Cloudinary dashboard → Settings       |
+| `CLOUDINARY_API_KEY`    | Cloudinary API key                            | Cloudinary dashboard → API Keys       |
+| `CLOUDINARY_API_SECRET` | Cloudinary API secret                         | Cloudinary dashboard → API Keys       |
 
 > ⚠️ **Never commit your `.env` file.** It is already listed in `.gitignore`. Only commit `.env.example` with placeholder values.
 

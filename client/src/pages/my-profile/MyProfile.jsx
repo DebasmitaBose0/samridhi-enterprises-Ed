@@ -1,12 +1,12 @@
-import { useState, useRef, useEffect } from "react";
-import { User, ShoppingBag, Lock, MapPin } from "lucide-react";
-import { NavLink } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, useRef, useEffect } from 'react';
+import { User, ShoppingBag, Lock, MapPin } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import { getSingleDetail } from "@/store/auth-slice/user";
-import MetaData from "../../extras/MetaData";
-import Loader from "../../extras/Loader";
+import { motion, AnimatePresence } from 'framer-motion';
+import { getSingleDetail } from '@/store/auth-slice/user';
+import MetaData from '../../extras/MetaData';
+import Loader from '../../extras/Loader';
 
 const MyProfile = () => {
   const fileInputRef = useRef(null);
@@ -14,7 +14,7 @@ const MyProfile = () => {
   const { user, loading } = useSelector((state) => state.auth);
 
   const [profileImage, setProfileImage] = useState(
-    user?.avatar || "https://placehold.co/150x150"
+    user?.avatar || 'https://placehold.co/150x150'
   );
 
   useEffect(() => {
@@ -27,14 +27,14 @@ const MyProfile = () => {
     }
   }, [user]);
 
-  const displayFields = ["name", "email", "mobile"];
+  const displayFields = ['name', 'email', 'mobile'];
 
   const containerVariants = {
     hidden: { opacity: 0, scale: 0.95 },
     visible: {
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.6, ease: "easeOut", staggerChildren: 0.15 },
+      transition: { duration: 0.6, ease: 'easeOut', staggerChildren: 0.15 },
     },
   };
 
@@ -72,9 +72,12 @@ const MyProfile = () => {
                 ⚠️
               </span>
               <div>
-                <p className="font-semibold text-sm sm:text-base">Security Recommendation</p>
+                <p className="font-semibold text-sm sm:text-base">
+                  Security Recommendation
+                </p>
                 <p className="text-xs sm:text-sm text-amber-700/80 dark:text-amber-400/80">
-                  Your current password does not meet our updated security requirements. Please update it to protect your account.
+                  Your current password does not meet our updated security
+                  requirements. Please update it to protect your account.
                 </p>
               </div>
             </div>
@@ -126,13 +129,13 @@ const MyProfile = () => {
             className="text-2xl font-serif font-bold text-blue-500 capitalize"
             variants={itemVariants}
           >
-            {loading && !user ? "Loading..." : user?.name || "Guest"}
+            {loading && !user ? 'Loading...' : user?.name || 'Guest'}
           </motion.h2>
           <motion.p
             className="text-blue-400 text-sm font-medium"
             variants={itemVariants}
           >
-            {loading && !user ? "Loading..." : user?.role || "N/A"}
+            {loading && !user ? 'Loading...' : user?.role || 'N/A'}
           </motion.p>
 
           <motion.div
@@ -157,7 +160,9 @@ const MyProfile = () => {
                     {field.charAt(0).toUpperCase() + field.slice(1)}
                   </span>
                   <p className="font-medium text-blue-500 text-base">
-                    {loading && !user ? "Loading..." : user?.[field] || "Not provided"}
+                    {loading && !user
+                      ? 'Loading...'
+                      : user?.[field] || 'Not provided'}
                   </p>
                 </motion.div>
               ))}
@@ -206,35 +211,35 @@ const MyProfile = () => {
                 className="mt-6 text-3xl font-serif font-bold text-blue-500 capitalize"
                 variants={itemVariants}
               >
-                {loading && !user ? "Loading..." : user?.name || "Guest"}
+                {loading && !user ? 'Loading...' : user?.name || 'Guest'}
               </motion.h2>
               <motion.p
                 className="text-blue-400 text-sm font-medium mt-2"
                 variants={itemVariants}
               >
-                {loading && !user ? "Loading..." : user?.role || "N/A"}
+                {loading && !user ? 'Loading...' : user?.role || 'N/A'}
               </motion.p>
             </div>
 
             <nav className="mt-8 flex flex-col space-y-4">
               {[
                 {
-                  to: "/my-profile",
+                  to: '/my-profile',
                   icon: User,
-                  label: "Profile Info",
+                  label: 'Profile Info',
                   active: true,
                 },
-                { to: "/my-orders", icon: ShoppingBag, label: "My Orders" },
+                { to: '/my-orders', icon: ShoppingBag, label: 'My Orders' },
                 {
-                  to: "/update-password",
+                  to: '/update-password',
                   icon: Lock,
-                  label: "Update Password",
+                  label: 'Update Password',
                 },
-                { to: "/my-addresses", icon: MapPin, label: "Saved Address" },
+                { to: '/my-addresses', icon: MapPin, label: 'Saved Address' },
                 {
-                  to: "/update-profile",
+                  to: '/update-profile',
                   icon: User,
-                  label: "Update Profile",
+                  label: 'Update Profile',
                 },
               ].map((link) => (
                 <motion.div key={link.to} variants={itemVariants}>
@@ -243,8 +248,8 @@ const MyProfile = () => {
                     className={({ isActive }) =>
                       `block px-6 py-3 rounded-xl font-semibold transition-all duration-300 text-center ${
                         isActive || link.active
-                          ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg"
-                          : "text-blue-500 hover:bg-blue-50"
+                          ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg'
+                          : 'text-blue-500 hover:bg-blue-50'
                       }`
                     }
                   >
@@ -285,7 +290,9 @@ const MyProfile = () => {
                     {field.charAt(0).toUpperCase() + field.slice(1)}
                   </span>
                   <p className="font-medium text-blue-500 text-base">
-                    {loading && !user ? "Loading..." : user?.[field] || "Not provided"}
+                    {loading && !user
+                      ? 'Loading...'
+                      : user?.[field] || 'Not provided'}
                   </p>
                 </motion.div>
               ))}
@@ -295,18 +302,20 @@ const MyProfile = () => {
 
         <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 shadow-2xl py-6 flex justify-around border-t border-blue-200 dark:border-blue-800 z-50">
           {[
-            { to: "/my-profile", icon: User, label: "Profile" },
-            { to: "/my-orders", icon: ShoppingBag, label: "Orders" },
-            { to: "/update-password", icon: Lock, label: "Password" },
-            { to: "/my-addresses", icon: MapPin, label: "Address" },
-            { to: "/update-profile", icon: User, label: "Edit" },
+            { to: '/my-profile', icon: User, label: 'Profile' },
+            { to: '/my-orders', icon: ShoppingBag, label: 'Orders' },
+            { to: '/update-password', icon: Lock, label: 'Password' },
+            { to: '/my-addresses', icon: MapPin, label: 'Address' },
+            { to: '/update-profile', icon: User, label: 'Edit' },
           ].map((link) => (
             <NavLink
               key={link.to}
               to={link.to}
               className={({ isActive }) =>
                 `flex flex-col items-center text-xs transition-all duration-300 ${
-                  isActive ? "text-blue-500" : "text-gray-500 dark:text-gray-400"
+                  isActive
+                    ? 'text-blue-500'
+                    : 'text-gray-500 dark:text-gray-400'
                 }`
               }
             >

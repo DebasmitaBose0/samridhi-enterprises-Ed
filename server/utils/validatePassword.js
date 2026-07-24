@@ -14,7 +14,12 @@ export const validatePassword = (password) => {
   const minLength = 8;
   const maxLength = 128;
 
-  if (!password || typeof password !== "string" || password.length < minLength || password.length > maxLength) {
+  if (
+    !password ||
+    typeof password !== 'string' ||
+    password.length < minLength ||
+    password.length > maxLength
+  ) {
     return {
       isValid: false,
       message: `Password must be between ${minLength} and ${maxLength} characters long.`,
@@ -29,25 +34,25 @@ export const validatePassword = (password) => {
   if (!hasUppercase) {
     return {
       isValid: false,
-      message: "Password must contain at least one uppercase letter.",
+      message: 'Password must contain at least one uppercase letter.',
     };
   }
   if (!hasLowercase) {
     return {
       isValid: false,
-      message: "Password must contain at least one lowercase letter.",
+      message: 'Password must contain at least one lowercase letter.',
     };
   }
   if (!hasDigit) {
     return {
       isValid: false,
-      message: "Password must contain at least one numeric digit.",
+      message: 'Password must contain at least one numeric digit.',
     };
   }
   if (!hasSpecial) {
     return {
       isValid: false,
-      message: "Password must contain at least one special character.",
+      message: 'Password must contain at least one special character.',
     };
   }
 

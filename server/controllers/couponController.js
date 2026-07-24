@@ -1,26 +1,33 @@
-import Coupon from "../models/couponModel.js";
-import Cart from "../models/cartModel.js";
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import ErrorHandler from "../utils/errorHandler.js";
+import Coupon from '../models/couponModel.js';
+import Cart from '../models/cartModel.js';
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import ErrorHandler from '../utils/errorHandler.js';
 
 // Shared validation for create/update. Mirrors the model constraints and adds
 // the business rule that a PERCENTAGE discount can never exceed 100.
 const validateCouponPayload = ({ discountType, discountValue }, partial) => {
-  if (discountType !== undefined && !["PERCENTAGE", "FIXED"].includes(discountType)) {
-    return "Discount type must be either PERCENTAGE or FIXED";
+  if (
+    discountType !== undefined &&
+    !['PERCENTAGE', 'FIXED'].includes(discountType)
+  ) {
+    return 'Discount type must be either PERCENTAGE or FIXED';
   }
   if (discountValue !== undefined) {
-    if (typeof discountValue !== "number" || Number.isNaN(discountValue) || discountValue < 0) {
-      return "Discount value must be a non-negative number";
+    if (
+      typeof discountValue !== 'number' ||
+      Number.isNaN(discountValue) ||
+      discountValue < 0
+    ) {
+      return 'Discount value must be a non-negative number';
     }
-    if (discountType === "PERCENTAGE" && discountValue > 100) {
-      return "A percentage discount cannot exceed 100";
+    if (discountType === 'PERCENTAGE' && discountValue > 100) {
+      return 'A percentage discount cannot exceed 100';
     }
   }
   // On a partial update we may receive discountValue without discountType; in
   // that case the caller resolves the effective type before calling this.
   if (!partial && discountValue === undefined) {
-    return "Discount value is required";
+    return 'Discount value is required';
   }
   return null;
 };
@@ -40,24 +47,29 @@ export const createCoupon = catchAsyncErrors(async (req, res, next) => {
   } = req.body;
 
   if (!code || !String(code).trim()) {
-    return next(new ErrorHandler("Coupon code is required", 400));
+    return next(new ErrorHandler('Coupon code is required', 400));
   }
   if (!discountType) {
-    return next(new ErrorHandler("Discount type is required", 400));
+    return next(new ErrorHandler('Discount type is required', 400));
   }
 
-  const payloadError = validateCouponPayload({ discountType, discountValue }, false);
+  const payloadError = validateCouponPayload(
+    { discountType, discountValue },
+    false
+  );
   if (payloadError) return next(new ErrorHandler(payloadError, 400));
 
   const normalizedCode = String(code).trim().toUpperCase();
   const existing = await Coupon.findOne({ code: normalizedCode });
   if (existing) {
-    return next(new ErrorHandler("A coupon with this code already exists", 400));
+    return next(
+      new ErrorHandler('A coupon with this code already exists', 400)
+    );
   }
 
   const coupon = await Coupon.create({
     code: normalizedCode,
-    description: description || "",
+    description: description || '',
     discountType,
     discountValue,
     minOrderAmount: minOrderAmount ?? 0,
@@ -79,7 +91,7 @@ export const getAllCoupons = catchAsyncErrors(async (req, res) => {
 // ── Admin: update a coupon ────────────────────────────────────────────────
 export const updateCoupon = catchAsyncErrors(async (req, res, next) => {
   const coupon = await Coupon.findById(req.params.id);
-  if (!coupon) return next(new ErrorHandler("Coupon not found", 404));
+  if (!coupon) return next(new ErrorHandler('Coupon not found', 404));
 
   const {
     code,
@@ -107,7 +119,9 @@ export const updateCoupon = catchAsyncErrors(async (req, res, next) => {
     if (normalizedCode !== coupon.code) {
       const clash = await Coupon.findOne({ code: normalizedCode });
       if (clash) {
-        return next(new ErrorHandler("A coupon with this code already exists", 400));
+        return next(
+          new ErrorHandler('A coupon with this code already exists', 400)
+        );
       }
       coupon.code = normalizedCode;
     }
@@ -129,9 +143,9 @@ export const updateCoupon = catchAsyncErrors(async (req, res, next) => {
 // ── Admin: delete a coupon ────────────────────────────────────────────────
 export const deleteCoupon = catchAsyncErrors(async (req, res, next) => {
   const coupon = await Coupon.findById(req.params.id);
-  if (!coupon) return next(new ErrorHandler("Coupon not found", 404));
+  if (!coupon) return next(new ErrorHandler('Coupon not found', 404));
   await coupon.deleteOne();
-  res.status(200).json({ success: true, message: "Coupon deleted" });
+  res.status(200).json({ success: true, message: 'Coupon deleted' });
 });
 
 // ── User: validate a coupon against the current cart ──────────────────────
@@ -141,14 +155,14 @@ export const deleteCoupon = catchAsyncErrors(async (req, res, next) => {
 export const validateCoupon = catchAsyncErrors(async (req, res, next) => {
   const { code } = req.body;
   if (!code || !String(code).trim()) {
-    return next(new ErrorHandler("Please enter a coupon code", 400));
+    return next(new ErrorHandler('Please enter a coupon code', 400));
   }
 
   const coupon = await Coupon.findOne({
     code: String(code).trim().toUpperCase(),
   });
   if (!coupon) {
-    return next(new ErrorHandler("Invalid coupon code", 404));
+    return next(new ErrorHandler('Invalid coupon code', 404));
   }
 
   const redeemable = coupon.isRedeemable();
@@ -158,7 +172,7 @@ export const validateCoupon = catchAsyncErrors(async (req, res, next) => {
 
   const cart = await Cart.findOne({ user: req.user._id });
   if (!cart || cart.items.length === 0) {
-    return next(new ErrorHandler("Your cart is empty", 400));
+    return next(new ErrorHandler('Your cart is empty', 400));
   }
 
   const subtotal = cart.total || 0;
@@ -173,7 +187,9 @@ export const validateCoupon = catchAsyncErrors(async (req, res, next) => {
 
   const discount = coupon.computeDiscount(subtotal);
   if (discount <= 0) {
-    return next(new ErrorHandler("This coupon does not apply to your cart", 400));
+    return next(
+      new ErrorHandler('This coupon does not apply to your cart', 400)
+    );
   }
 
   res.status(200).json({
@@ -191,12 +207,17 @@ export const validateCoupon = catchAsyncErrors(async (req, res, next) => {
 });
 
 // Added for #345: Validate and increment coupon usage atomically
-import { verifyCouponLimitAtomic } from "../utils/couponUsageLock.js";
+import { verifyCouponLimitAtomic } from '../utils/couponUsageLock.js';
 export const validateCouponAtomic = catchAsyncErrors(async (req, res, next) => {
   const { code } = req.body;
-  const coupon = await verifyCouponLimitAtomic(Coupon, code.toUpperCase().trim());
+  const coupon = await verifyCouponLimitAtomic(
+    Coupon,
+    code.toUpperCase().trim()
+  );
   if (!coupon) {
-    return next(new ErrorHandler("Coupon invalid or usage limit reached", 400));
+    return next(new ErrorHandler('Coupon invalid or usage limit reached', 400));
   }
-  res.status(200).json({ success: true, message: "Coupon applied successfully", coupon });
+  res
+    .status(200)
+    .json({ success: true, message: 'Coupon applied successfully', coupon });
 });

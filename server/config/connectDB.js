@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import { MongoMemoryServer } from "mongodb-memory-server";
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 
 dotenv.config();
 
@@ -11,10 +11,13 @@ async function connectDB() {
     if (process.env.MONGODB_URL) {
       try {
         await mongoose.connect(process.env.MONGODB_URL);
-        console.log("connect DB");
+        console.log('connect DB');
         return;
       } catch (atlasError) {
-        console.log("Atlas connection failed, falling back to local memory DB", atlasError.message);
+        console.log(
+          'Atlas connection failed, falling back to local memory DB',
+          atlasError.message
+        );
       }
     }
 
@@ -24,9 +27,9 @@ async function connectDB() {
 
     const uri = mongoServer.getUri();
     await mongoose.connect(uri);
-    console.log("connect DB (memory)");
+    console.log('connect DB (memory)');
   } catch (error) {
-    console.log("Mongodb connect error", error);
+    console.log('Mongodb connect error', error);
   }
 }
 

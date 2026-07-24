@@ -1,17 +1,17 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   fetchCart,
   updateCartItem,
   removeFromCart,
   clearError,
   clearWarnings,
-} from "../store/cart/cartSlice";
-import { toast } from "react-toastify";
-import { Link, useNavigate } from "react-router-dom";
-import Loader from "../extras/Loader";
+} from '../store/cart/cartSlice';
+import { toast } from 'react-toastify';
+import { Link, useNavigate } from 'react-router-dom';
+import Loader from '../extras/Loader';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Cart = () => {
   const dispatch = useDispatch();
@@ -21,10 +21,10 @@ const Cart = () => {
 
   const handleProceedToCheckout = () => {
     if (!isAuthenticated) {
-      toast.info("Please log in to proceed to checkout");
-      navigate("/login?redirect=checkout");
+      toast.info('Please log in to proceed to checkout');
+      navigate('/login?redirect=checkout');
     } else {
-      navigate("/checkout");
+      navigate('/checkout');
     }
   };
 
@@ -42,18 +42,18 @@ const Cart = () => {
   const handleUpdateQuantity = (partId, quantity, stock) => {
     // Ignore empty / non-numeric input (e.g. while the field is mid-edit or
     // cleared) silently — don't error or dispatch, so the user can keep typing.
-    if (quantity === "" || quantity === null || Number.isNaN(quantity)) {
+    if (quantity === '' || quantity === null || Number.isNaN(quantity)) {
       return;
     }
 
     // Only whole numbers are valid quantities.
     if (!Number.isInteger(quantity)) {
-      toast.error("Quantity must be a whole number");
+      toast.error('Quantity must be a whole number');
       return;
     }
 
     if (stock <= 0) {
-      toast.error("This item is out of stock");
+      toast.error('This item is out of stock');
       return;
     }
 
@@ -63,32 +63,34 @@ const Cart = () => {
     let nextQuantity = quantity;
     if (quantity < 1) {
       nextQuantity = 1;
-      toast.info("Minimum quantity is 1");
+      toast.info('Minimum quantity is 1');
     } else if (quantity > stock) {
       nextQuantity = stock;
       toast.info(`Only ${stock} in stock — quantity set to ${stock}`);
     }
 
-    dispatch(updateCartItem({ partId, quantity: nextQuantity })).then((result) => {
-      if (updateCartItem.fulfilled.match(result)) {
-        dispatch(fetchCart());
-      } else if (updateCartItem.rejected.match(result)) {
-        toast.error(result.payload || "Failed to update quantity");
+    dispatch(updateCartItem({ partId, quantity: nextQuantity })).then(
+      (result) => {
+        if (updateCartItem.fulfilled.match(result)) {
+          dispatch(fetchCart());
+        } else if (updateCartItem.rejected.match(result)) {
+          toast.error(result.payload || 'Failed to update quantity');
+        }
       }
-    });
+    );
   };
 
   const handleRemoveItem = (partId) => {
     if (!partId) {
-      toast.error("Cannot remove item: Invalid product ID");
+      toast.error('Cannot remove item: Invalid product ID');
       return;
     }
     dispatch(removeFromCart(partId)).then((result) => {
       if (removeFromCart.fulfilled.match(result)) {
-        toast.success("Item removed from cart!");
+        toast.success('Item removed from cart!');
         dispatch(fetchCart());
       } else if (removeFromCart.rejected.match(result)) {
-        toast.error(result.payload || "Failed to remove item");
+        toast.error(result.payload || 'Failed to remove item');
       }
     });
   };
@@ -123,7 +125,7 @@ const Cart = () => {
       scale: 0.9,
       transition: {
         duration: 0.4,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
   };
@@ -134,7 +136,7 @@ const Cart = () => {
       transition: {
         duration: 2,
         repeat: Infinity,
-        ease: "easeInOut",
+        ease: 'easeInOut',
       },
     },
   };
@@ -228,7 +230,13 @@ const Cart = () => {
               Or shop by category
             </p>
             <div className="flex flex-wrap justify-center gap-3">
-              {["Lighting Products", "Filters & Horn", "Gaskets", "Rear View Mirror", "Switches / Locks"].map((cat) => (
+              {[
+                'Lighting Products',
+                'Filters & Horn',
+                'Gaskets',
+                'Rear View Mirror',
+                'Switches / Locks',
+              ].map((cat) => (
                 <Link
                   key={cat}
                   to={`/products?search=${encodeURIComponent(cat)}`}
@@ -262,7 +270,7 @@ const Cart = () => {
             Shopping Cart
           </h1>
           <p className="text-base sm:text-lg text-gray-600 dark:text-gray-300">
-            {cart.items.length} {cart.items.length === 1 ? "item" : "items"} in
+            {cart.items.length} {cart.items.length === 1 ? 'item' : 'items'} in
             your cart
           </p>
         </motion.div>
@@ -303,8 +311,18 @@ const Cart = () => {
               className="text-amber-500 hover:text-amber-700 transition-colors p-1 flex-shrink-0"
               aria-label="Dismiss warnings"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </motion.div>
@@ -333,9 +351,9 @@ const Cart = () => {
                           <img
                             src={
                               item.part?.images?.[0]?.url ||
-                              "/images/placeholder.jpg"
+                              '/images/placeholder.jpg'
                             }
-                            alt={item.name || "Product Image"}
+                            alt={item.name || 'Product Image'}
                             className="w-full h-full object-cover"
                           />
                         </motion.div>
@@ -354,26 +372,26 @@ const Cart = () => {
                           className="block group-hover:text-blue-600 transition-colors duration-200"
                         >
                           <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2 line-clamp-2">
-                            {item.name || "Unknown Product"}
+                            {item.name || 'Unknown Product'}
                           </h3>
                         </Link>
 
                         <div className="flex items-center gap-4 mb-4">
                           <span className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
-                            ₹{item.price?.toLocaleString() || "0"}
+                            ₹{item.price?.toLocaleString() || '0'}
                           </span>
 
                           {item.part?._id && (
                             <span
                               className={`px-3 py-1 rounded-full text-sm font-medium ${
                                 item.part.stock > 0
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-red-100 text-red-800"
+                                  ? 'bg-green-100 text-green-800'
+                                  : 'bg-red-100 text-red-800'
                               }`}
                             >
                               {item.part.stock > 0
-                                ? "In Stock"
-                                : "Out of Stock"}
+                                ? 'In Stock'
+                                : 'Out of Stock'}
                             </span>
                           )}
                         </div>
@@ -394,7 +412,7 @@ const Cart = () => {
                                 disabled={
                                   item.quantity <= 1 || item.part.stock === 0
                                 }
-                                aria-label={`Decrease quantity of ${item.name || "item"}`}
+                                aria-label={`Decrease quantity of ${item.name || 'item'}`}
                                 className="w-10 h-10 bg-blue-500 text-white rounded-xl hover:bg-blue-600 disabled:bg-gray-300 transition-all duration-200 flex items-center justify-center font-bold"
                               >
                                 −
@@ -413,11 +431,11 @@ const Cart = () => {
                                   // without triggering a validation error.
                                   handleUpdateQuantity(
                                     item.part._id,
-                                    raw === "" ? "" : Number(raw),
+                                    raw === '' ? '' : Number(raw),
                                     item.part.stock
                                   );
                                 }}
-                                aria-label={`Quantity of ${item.name || "item"}`}
+                                aria-label={`Quantity of ${item.name || 'item'}`}
                                 className="w-16 h-10 text-center border-0 bg-transparent font-semibold text-lg focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-lg mx-2"
                                 disabled={item.part.stock === 0}
                               />
@@ -433,7 +451,7 @@ const Cart = () => {
                                   )
                                 }
                                 disabled={item.quantity >= item.part.stock}
-                                aria-label={`Increase quantity of ${item.name || "item"}`}
+                                aria-label={`Increase quantity of ${item.name || 'item'}`}
                                 className="w-10 h-10 bg-blue-500 text-white rounded-xl hover:bg-blue-600 disabled:bg-gray-300 transition-all duration-200 flex items-center justify-center font-bold"
                               >
                                 +
@@ -480,11 +498,15 @@ const Cart = () => {
                   Order Summary
                 </h3>
 
-                <div className="space-y-4 mb-8" aria-live="polite" aria-atomic="true">
+                <div
+                  className="space-y-4 mb-8"
+                  aria-live="polite"
+                  aria-atomic="true"
+                >
                   <div className="flex justify-between items-center text-lg">
                     <span className="text-gray-600 dark:text-gray-300">
-                      Subtotal ({cart.items.length}{" "}
-                      {cart.items.length === 1 ? "item" : "items"})
+                      Subtotal ({cart.items.length}{' '}
+                      {cart.items.length === 1 ? 'item' : 'items'})
                     </span>
                     <span className="font-semibold text-gray-900 dark:text-gray-100">
                       ₹{cart.total.toLocaleString()}
@@ -493,7 +515,9 @@ const Cart = () => {
 
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
                     <div className="flex justify-between items-center text-xl sm:text-2xl font-bold">
-                      <span className="text-gray-900 dark:text-gray-100">Total</span>
+                      <span className="text-gray-900 dark:text-gray-100">
+                        Total
+                      </span>
                       <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                         ₹{cart.total.toLocaleString()}
                       </span>

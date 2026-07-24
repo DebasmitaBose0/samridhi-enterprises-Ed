@@ -7,6 +7,7 @@ Welcome to the Samridhi Enterprises developer guide! This document outlines step
 ## Directory Overview
 
 The project is structured as a monorepo split into two primary folders:
+
 - **`client/`**: React Vite application styled with Tailwind CSS. State is managed via Redux Toolkit.
 - **`server/`**: Node.js Express server using Mongoose and MongoDB.
 
@@ -15,6 +16,7 @@ The project is structured as a monorepo split into two primary folders:
 ## Branching and Git Flow
 
 To keep the repository clean and ensure easy reviews:
+
 1. **Always Sync**: Before creating a branch, switch to `main`, pull the latest remote main:
    ```bash
    git checkout main
@@ -34,21 +36,27 @@ To keep the repository clean and ensure easy reviews:
 Before pushing your changes and opening a pull request, run the following verification steps:
 
 ### 1. Frontend Build Verification
+
 Make sure the client compiles without any bundling errors:
+
 ```bash
 cd client
 npm run build
 ```
 
 ### 2. Frontend Lint Check
+
 Run the ESLint suite to check for styling and runtime recommendations:
+
 ```bash
 cd client
 npm run lint
 ```
 
 ### 3. Backend Setup Verification
+
 Ensure all backend packages resolve cleanly:
+
 ```bash
 cd server
 npm install

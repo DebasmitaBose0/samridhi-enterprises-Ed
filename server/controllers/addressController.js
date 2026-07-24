@@ -1,10 +1,10 @@
 import { resolveDefaultStatus } from '../utils/defaultStatusResolver.js';
-import Address from "../models/addressModel.js";
-import User from "../models/userModel.js";
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import ErrorHandler from "../utils/errorHandler.js";
+import Address from '../models/addressModel.js';
+import User from '../models/userModel.js';
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import ErrorHandler from '../utils/errorHandler.js';
 
-const REQUIRED_FIELDS = ["fullName", "phone", "addressLine", "city", "pincode"];
+const REQUIRED_FIELDS = ['fullName', 'phone', 'addressLine', 'city', 'pincode'];
 
 const missingFields = (body) =>
   REQUIRED_FIELDS.filter((f) => !body[f] || !String(body[f]).trim());
@@ -20,13 +20,21 @@ export const getMyAddresses = catchAsyncErrors(async (req, res) => {
 
 // ── Add a new address ─────────────────────────────────────────────────────
 export const addAddress = catchAsyncErrors(async (req, res, next) => {
-  const { label, fullName, phone, addressLine, city, state, pincode, isDefault } =
-    req.body;
+  const {
+    label,
+    fullName,
+    phone,
+    addressLine,
+    city,
+    state,
+    pincode,
+    isDefault,
+  } = req.body;
 
   const missing = missingFields(req.body);
   if (missing.length > 0) {
     return next(
-      new ErrorHandler(`Missing required fields: ${missing.join(", ")}`, 400)
+      new ErrorHandler(`Missing required fields: ${missing.join(', ')}`, 400)
     );
   }
 
@@ -41,12 +49,12 @@ export const addAddress = catchAsyncErrors(async (req, res, next) => {
 
   const address = await Address.create({
     user: req.user._id,
-    label: label || "",
+    label: label || '',
     fullName,
     phone,
     addressLine,
     city,
-    state: state || "",
+    state: state || '',
     pincode,
     isDefault: makeDefault,
   });
@@ -62,15 +70,23 @@ export const addAddress = catchAsyncErrors(async (req, res, next) => {
 // ── Update an existing address ────────────────────────────────────────────
 export const updateAddress = catchAsyncErrors(async (req, res, next) => {
   const address = await Address.findById(req.params.id);
-  if (!address) return next(new ErrorHandler("Address not found", 404));
+  if (!address) return next(new ErrorHandler('Address not found', 404));
 
   // Ownership guard: a user may only edit their own addresses.
   if (address.user.toString() !== req.user._id.toString()) {
-    return next(new ErrorHandler("Not authorized to edit this address", 403));
+    return next(new ErrorHandler('Not authorized to edit this address', 403));
   }
 
-  const { label, fullName, phone, addressLine, city, state, pincode, isDefault } =
-    req.body;
+  const {
+    label,
+    fullName,
+    phone,
+    addressLine,
+    city,
+    state,
+    pincode,
+    isDefault,
+  } = req.body;
 
   // Validate only the fields that are being changed.
   for (const f of REQUIRED_FIELDS) {
@@ -103,10 +119,10 @@ export const updateAddress = catchAsyncErrors(async (req, res, next) => {
 // ── Delete an address ─────────────────────────────────────────────────────
 export const deleteAddress = catchAsyncErrors(async (req, res, next) => {
   const address = await Address.findById(req.params.id);
-  if (!address) return next(new ErrorHandler("Address not found", 404));
+  if (!address) return next(new ErrorHandler('Address not found', 404));
 
   if (address.user.toString() !== req.user._id.toString()) {
-    return next(new ErrorHandler("Not authorized to delete this address", 403));
+    return next(new ErrorHandler('Not authorized to delete this address', 403));
   }
 
   const wasDefault = address.isDefault;
@@ -129,16 +145,16 @@ export const deleteAddress = catchAsyncErrors(async (req, res, next) => {
     }
   }
 
-  res.status(200).json({ success: true, message: "Address deleted" });
+  res.status(200).json({ success: true, message: 'Address deleted' });
 });
 
 // ── Set an address as the default ─────────────────────────────────────────
 export const setDefaultAddress = catchAsyncErrors(async (req, res, next) => {
   const address = await Address.findById(req.params.id);
-  if (!address) return next(new ErrorHandler("Address not found", 404));
+  if (!address) return next(new ErrorHandler('Address not found', 404));
 
   if (address.user.toString() !== req.user._id.toString()) {
-    return next(new ErrorHandler("Not authorized to modify this address", 403));
+    return next(new ErrorHandler('Not authorized to modify this address', 403));
   }
 
   await Address.updateMany(

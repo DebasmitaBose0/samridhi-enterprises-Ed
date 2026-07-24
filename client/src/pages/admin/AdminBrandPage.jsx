@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   addBrand,
   fetchBrands,
   updateBrand,
   deleteBrand,
-} from "../../store/product/brandSlice";
-import { toast } from "react-toastify";
+} from '../../store/product/brandSlice';
+import { toast } from 'react-toastify';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import ConfirmationModal from "../../extras/ConfirmationModal";
+import { motion, AnimatePresence } from 'framer-motion';
+import ConfirmationModal from '../../extras/ConfirmationModal';
 
 export default function AdminBrandPage() {
   const dispatch = useDispatch();
@@ -17,7 +17,7 @@ export default function AdminBrandPage() {
     (state) => state.brand
   );
 
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
   const [image, setImage] = useState(null);
   const [editId, setEditId] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -30,7 +30,7 @@ export default function AdminBrandPage() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (success) toast.success("Added successfully!");
+    if (success) toast.success('Added successfully!');
     if (error) toast.error(error);
   }, [success, error]);
 
@@ -38,23 +38,23 @@ export default function AdminBrandPage() {
     e.preventDefault();
 
     const fieldErrors = {};
-    if (!name.trim()) fieldErrors.name = "Brand name is required";
-    if (!editId && !image) fieldErrors.image = "Image is required";
+    if (!name.trim()) fieldErrors.name = 'Brand name is required';
+    if (!editId && !image) fieldErrors.image = 'Image is required';
     setErrors(fieldErrors);
     if (Object.keys(fieldErrors).length > 0) return;
 
     const formData = new FormData();
-    formData.append("name", name);
+    formData.append('name', name);
 
     if (editId) {
-      if (image) formData.append("image", image);
+      if (image) formData.append('image', image);
       dispatch(updateBrand({ id: editId, formData }));
     } else {
-      formData.append("image", image);
+      formData.append('image', image);
       dispatch(addBrand(formData));
     }
 
-    setName("");
+    setName('');
     setImage(null);
     setEditId(null);
     setImagePreview(null);
@@ -93,7 +93,7 @@ export default function AdminBrandPage() {
   };
 
   const resetForm = () => {
-    setName("");
+    setName('');
     setImage(null);
     setEditId(null);
     setImagePreview(null);
@@ -106,9 +106,9 @@ export default function AdminBrandPage() {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.2
-      }
-    }
+        delayChildren: 0.2,
+      },
+    },
   };
 
   const itemVariants = {
@@ -117,11 +117,11 @@ export default function AdminBrandPage() {
       y: 0,
       opacity: 1,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 100,
-        damping: 10
-      }
-    }
+        damping: 10,
+      },
+    },
   };
 
   const cardVariants = {
@@ -130,34 +130,34 @@ export default function AdminBrandPage() {
       scale: 1,
       opacity: 1,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 120,
-        damping: 15
-      }
+        damping: 15,
+      },
     },
     hover: {
       y: -5,
       scale: 1.02,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 300,
-        damping: 20
-      }
-    }
+        damping: 20,
+      },
+    },
   };
 
   const buttonVariants = {
     hover: {
       scale: 1.05,
       transition: {
-        type: "spring",
+        type: 'spring',
         stiffness: 400,
-        damping: 10
-      }
+        damping: 10,
+      },
     },
     tap: {
-      scale: 0.95
-    }
+      scale: 0.95,
+    },
   };
 
   return (
@@ -166,7 +166,7 @@ export default function AdminBrandPage() {
         <motion.div
           initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, type: "spring", stiffness: 100 }}
+          transition={{ duration: 0.8, type: 'spring', stiffness: 100 }}
           className="text-center mb-12"
         >
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 bg-clip-text text-transparent mb-4">
@@ -174,7 +174,7 @@ export default function AdminBrandPage() {
           </h1>
           <motion.div
             initial={{ width: 0 }}
-            animate={{ width: "100px" }}
+            animate={{ width: '100px' }}
             transition={{ delay: 0.5, duration: 0.8 }}
             className="h-1 bg-gradient-to-r from-blue-400 to-blue-500 mx-auto rounded-full"
           />
@@ -190,7 +190,7 @@ export default function AdminBrandPage() {
             <motion.div
               className="bg-white/80 backdrop-blur-lg p-8 rounded-3xl shadow-2xl border border-blue-100"
               whileHover={{ scale: 1.01 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
               <motion.h2
                 initial={{ opacity: 0 }}
@@ -200,10 +200,10 @@ export default function AdminBrandPage() {
               >
                 <motion.div
                   animate={{ rotate: 360 }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
                   className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-blue-500"
                 />
-                {editId ? "Update Brand" : "Create Brand"}
+                {editId ? 'Update Brand' : 'Create Brand'}
               </motion.h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -219,12 +219,19 @@ export default function AdminBrandPage() {
                     type="text"
                     placeholder="Enter brand name..."
                     value={name}
-                    onChange={(e) => { setName(e.target.value); setErrors((prev) => ({ ...prev, name: "" })); }}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      setErrors((prev) => ({ ...prev, name: '' }));
+                    }}
                     className={`w-full px-6 py-4 border-2 rounded-2xl focus:outline-none focus:ring-4 transition-all duration-300 bg-white/70 backdrop-blur-sm text-blue-900 placeholder-blue-300 ${
-                      errors.name ? "border-red-400 focus:border-red-400 focus:ring-red-100" : "border-blue-200 focus:border-blue-400 focus:ring-blue-100"
+                      errors.name
+                        ? 'border-red-400 focus:border-red-400 focus:ring-red-100'
+                        : 'border-blue-200 focus:border-blue-400 focus:ring-blue-100'
                     }`}
                   />
-                  {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
+                  {errors.name && (
+                    <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+                  )}
                 </motion.div>
 
                 <motion.div
@@ -237,17 +244,22 @@ export default function AdminBrandPage() {
                   </label>
                   <div className="relative">
                     <input
-                      key={editId || "new"}
+                      key={editId || 'new'}
                       type="file"
                       accept="image/*"
-                      onChange={(e) => { handleImageChange(e); setErrors((prev) => ({ ...prev, image: "" })); }}
+                      onChange={(e) => {
+                        handleImageChange(e);
+                        setErrors((prev) => ({ ...prev, image: '' }));
+                      }}
                       className={`w-full px-6 py-4 border-2 border-dashed rounded-2xl focus:outline-none focus:border-blue-400 transition-all duration-300 bg-white/50 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-100 file:text-blue-600 file:font-semibold hover:file:bg-blue-200 ${
-                        errors.image ? "border-red-400" : "border-blue-300"
+                        errors.image ? 'border-red-400' : 'border-blue-300'
                       }`}
                     />
                   </div>
-                  {errors.image && <p className="mt-1 text-sm text-red-500">{errors.image}</p>}
-                  
+                  {errors.image && (
+                    <p className="mt-1 text-sm text-red-500">{errors.image}</p>
+                  )}
+
                   <AnimatePresence>
                     {imagePreview && (
                       <motion.div
@@ -282,18 +294,22 @@ export default function AdminBrandPage() {
                   >
                     <motion.div
                       className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -skew-x-12"
-                      initial={{ x: "-100%" }}
-                      whileHover={{ x: "100%" }}
+                      initial={{ x: '-100%' }}
+                      whileHover={{ x: '100%' }}
                       transition={{ duration: 0.6 }}
                     />
                     {loading ? (
                       <motion.div
                         animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          ease: 'linear',
+                        }}
                         className="w-6 h-6 border-2 border-white border-t-transparent rounded-full mx-auto"
                       />
                     ) : (
-                      `${editId ? "Update" : "Create"} Brand`
+                      `${editId ? 'Update' : 'Create'} Brand`
                     )}
                   </motion.button>
 
@@ -318,7 +334,7 @@ export default function AdminBrandPage() {
             <motion.div
               className="bg-white/80 backdrop-blur-lg p-8 rounded-3xl shadow-2xl border border-blue-100"
               whileHover={{ scale: 1.005 }}
-              transition={{ type: "spring", stiffness: 300 }}
+              transition={{ type: 'spring', stiffness: 300 }}
             >
               <motion.h3
                 initial={{ opacity: 0 }}
@@ -349,8 +365,12 @@ export default function AdminBrandPage() {
                     >
                       <div className="text-4xl text-blue-400">📦</div>
                     </motion.div>
-                    <p className="text-blue-400 text-xl font-semibold">No brands found</p>
-                    <p className="text-blue-300 mt-2">Create your first brand to get started</p>
+                    <p className="text-blue-400 text-xl font-semibold">
+                      No brands found
+                    </p>
+                    <p className="text-blue-300 mt-2">
+                      Create your first brand to get started
+                    </p>
                   </motion.div>
                 ) : (
                   <motion.div
@@ -367,14 +387,12 @@ export default function AdminBrandPage() {
                         layout
                         className="bg-gradient-to-br from-white to-blue-50 p-6 rounded-2xl shadow-lg hover:shadow-2xl border border-blue-100 group relative overflow-hidden"
                       >
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        />
-                        
+                        <motion.div className="absolute inset-0 bg-gradient-to-br from-blue-400/0 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
                         <div className="relative z-10 flex flex-col items-center text-center space-y-4">
                           <motion.div
                             whileHover={{ scale: 1.1, rotate: 5 }}
-                            transition={{ type: "spring", stiffness: 300 }}
+                            transition={{ type: 'spring', stiffness: 300 }}
                             className="relative"
                           >
                             {brand.images[0]?.url ? (
@@ -397,14 +415,14 @@ export default function AdminBrandPage() {
                               ✓
                             </motion.div>
                           </motion.div>
-                          
+
                           <motion.h4
                             className="text-xl font-bold text-blue-600 group-hover:text-blue-700 transition-colors"
                             whileHover={{ scale: 1.05 }}
                           >
                             {brand.name}
                           </motion.h4>
-                          
+
                           <motion.div
                             className="flex gap-3 w-full"
                             initial={{ opacity: 0 }}

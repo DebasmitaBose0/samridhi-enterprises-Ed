@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import { useLocation, useNavigate } from "react-router-dom";
-import { resendOtp, verifyEmailOtp } from "@/store/auth-slice/otpSlice";
-import { toast } from "react-toastify";
-import MetaData from "../../extras/MetaData";
+import { motion, AnimatePresence } from 'framer-motion';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { resendOtp, verifyEmailOtp } from '@/store/auth-slice/otpSlice';
+import { toast } from 'react-toastify';
+import MetaData from '../../extras/MetaData';
 
 const VerifyEmail = () => {
   const dispatch = useDispatch();
@@ -16,14 +16,18 @@ const VerifyEmail = () => {
     (state) => state.otp
   );
   const { user, isAuthenticated } = useSelector((state) => state.auth);
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState('');
 
-  const redirect = location.search ? location.search.split("=")[1] : (isAuthenticated ? "/" : "/login");
+  const redirect = location.search
+    ? location.search.split('=')[1]
+    : isAuthenticated
+      ? '/'
+      : '/login';
 
   useEffect(() => {
     if (!isAuthenticated) {
-      toast.error("Please log in to verify your email");
-      navigate("/login");
+      toast.error('Please log in to verify your email');
+      navigate('/login');
     }
   }, [isAuthenticated, navigate]);
 
@@ -36,8 +40,7 @@ const VerifyEmail = () => {
 
   const handleVerify = (e) => {
     e.preventDefault();
-    if (otp.length !== 6)
-      return toast.error("OTP must be 6 digits");
+    if (otp.length !== 6) return toast.error('OTP must be 6 digits');
     dispatch(verifyEmailOtp({ email: user?.email, otp }));
   };
 
@@ -52,7 +55,7 @@ const VerifyEmail = () => {
     visible: {
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.6, ease: "easeOut", staggerChildren: 0.15 },
+      transition: { duration: 0.6, ease: 'easeOut', staggerChildren: 0.15 },
     },
     exit: { opacity: 0, scale: 0.95, transition: { duration: 0.3 } },
   };
@@ -63,18 +66,22 @@ const VerifyEmail = () => {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { duration: 0.5, ease: "easeOut" },
+      transition: { duration: 0.5, ease: 'easeOut' },
     },
   };
 
   const buttonVariants = {
-    hover: { scale: 1.05, boxShadow: "0px 4px 20px rgba(59, 130, 246, 0.5)" },
+    hover: { scale: 1.05, boxShadow: '0px 4px 20px rgba(59, 130, 246, 0.5)' },
     tap: { scale: 0.98 },
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-blue-100 px-4 sm:px-6 lg:px-8">
-      <MetaData title="Verify Email | Samridhi Enterprises" description="Verify your email address to activate your Samridhi Enterprises account and start shopping for bike parts." keywords="verify email, email verification, Samridhi Enterprises activation, bike parts account" />
+      <MetaData
+        title="Verify Email | Samridhi Enterprises"
+        description="Verify your email address to activate your Samridhi Enterprises account and start shopping for bike parts."
+        keywords="verify email, email verification, Samridhi Enterprises activation, bike parts account"
+      />
       <AnimatePresence>
         <motion.div
           variants={containerVariants}
@@ -93,8 +100,8 @@ const VerifyEmail = () => {
             variants={itemVariants}
             className="text-blue-700 mb-6 sm:mb-8 text-sm sm:text-base"
           >
-            Enter the 6-digit OTP sent to{" "}
-            <strong>{user?.email || "your email"}</strong>
+            Enter the 6-digit OTP sent to{' '}
+            <strong>{user?.email || 'your email'}</strong>
           </motion.p>
 
           <form onSubmit={handleVerify}>
@@ -119,7 +126,10 @@ const VerifyEmail = () => {
             >
               {loading ? (
                 <span className="flex items-center justify-center">
-                  <svg className="animate-spin h-5 w-5 mr-2 sm:h-6 sm:w-6" viewBox="0 0 24 24">
+                  <svg
+                    className="animate-spin h-5 w-5 mr-2 sm:h-6 sm:w-6"
+                    viewBox="0 0 24 24"
+                  >
                     <circle
                       className="opacity-25"
                       cx="12"
@@ -138,7 +148,7 @@ const VerifyEmail = () => {
                   Verifying...
                 </span>
               ) : (
-                "Verify OTP"
+                'Verify OTP'
               )}
             </motion.button>
           </form>

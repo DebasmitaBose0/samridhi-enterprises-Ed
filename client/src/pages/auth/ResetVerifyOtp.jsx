@@ -1,23 +1,23 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { clearAuthState, verifyOtp } from "@/store/auth-slice/user";
-import { useNavigate } from "react-router-dom";
-import MetaData from "../../extras/MetaData";
-import { toast } from "react-toastify";
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { clearAuthState, verifyOtp } from '@/store/auth-slice/user';
+import { useNavigate } from 'react-router-dom';
+import MetaData from '../../extras/MetaData';
+import { toast } from 'react-toastify';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Key } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, Key } from 'lucide-react';
 
 const VerifyOtp = () => {
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
+  const [email, setEmail] = useState('');
+  const [otp, setOtp] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error, success } = useSelector((state) => state.auth);
 
   const handleVerifyOtp = () => {
     if (!email || !otp) {
-      toast.error("Please enter both email and OTP!");
+      toast.error('Please enter both email and OTP!');
       return;
     }
     dispatch(verifyOtp({ email, otp }));
@@ -25,11 +25,11 @@ const VerifyOtp = () => {
 
   useEffect(() => {
     if (success && otp) {
-      toast.success("OTP Verified! Redirecting to Reset Password.");
-      localStorage.setItem("resetEmail", email);
-      localStorage.setItem("resetOtp", otp);
+      toast.success('OTP Verified! Redirecting to Reset Password.');
+      localStorage.setItem('resetEmail', email);
+      localStorage.setItem('resetOtp', otp);
       setTimeout(() => {
-        navigate("/reset-password");
+        navigate('/reset-password');
         dispatch(clearAuthState());
       }, 2000);
     }
@@ -49,7 +49,7 @@ const VerifyOtp = () => {
     visible: {
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.6, ease: "easeOut", staggerChildren: 0.15 },
+      transition: { duration: 0.6, ease: 'easeOut', staggerChildren: 0.15 },
     },
     exit: { opacity: 0, scale: 0.95, transition: { duration: 0.3 } },
   };
@@ -60,12 +60,12 @@ const VerifyOtp = () => {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { duration: 0.5, ease: "easeOut" },
+      transition: { duration: 0.5, ease: 'easeOut' },
     },
   };
 
   const buttonVariants = {
-    hover: { scale: 1.05, boxShadow: "0px 4px 20px rgba(59, 130, 246, 0.5)" },
+    hover: { scale: 1.05, boxShadow: '0px 4px 20px rgba(59, 130, 246, 0.5)' },
     tap: { scale: 0.98 },
   };
 
@@ -75,7 +75,11 @@ const VerifyOtp = () => {
 
   return (
     <>
-      <MetaData title="Verify OTP | Samridhi Enterprises" description="Verify your password reset OTP to regain access to your Samridhi Enterprises account." keywords="verify OTP, password reset, Samridhi Enterprises, bike parts account" />
+      <MetaData
+        title="Verify OTP | Samridhi Enterprises"
+        description="Verify your password reset OTP to regain access to your Samridhi Enterprises account."
+        keywords="verify OTP, password reset, Samridhi Enterprises, bike parts account"
+      />
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-blue-100 px-4 sm:px-6 lg:px-8">
         <AnimatePresence>
           <motion.div
@@ -144,7 +148,7 @@ const VerifyOtp = () => {
               disabled={loading}
               className="w-full mt-6 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 text-sm sm:text-base"
             >
-              {loading ? "Verifying..." : "Verify OTP"}
+              {loading ? 'Verifying...' : 'Verify OTP'}
             </motion.button>
           </motion.div>
         </AnimatePresence>

@@ -1,27 +1,35 @@
-import Part from "../models/partModel.js";
-import Order from "../models/orderModel.js";
-import Cart from "../models/cartModel.js";
-import Wishlist from "../models/wishlistModel.js";
-import BikeModel from "../models/bikeModel.js";
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import ErrorHandler from "../utils/errorHandler.js";
-import { uploadImage, deleteImage } from "../utils/cloudinary.js";
-import { logAudit } from "../utils/auditLogger.js";
-
+import Part from '../models/partModel.js';
+import Order from '../models/orderModel.js';
+import Cart from '../models/cartModel.js';
+import Wishlist from '../models/wishlistModel.js';
+import BikeModel from '../models/bikeModel.js';
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import ErrorHandler from '../utils/errorHandler.js';
+import { uploadImage, deleteImage } from '../utils/cloudinary.js';
+import { logAudit } from '../utils/auditLogger.js';
 
 // Create a new part
 export const addPart = catchAsyncErrors(async (req, res, next) => {
-  const { product_id, name, description, price, stock, vehicleCompatibility, category, bestseller } = req.body;
+  const {
+    product_id,
+    name,
+    description,
+    price,
+    stock,
+    vehicleCompatibility,
+    category,
+    bestseller,
+  } = req.body;
 
   if (!req.files || req.files.length === 0) {
-    return next(new ErrorHandler("At least one image is required", 400));
+    return next(new ErrorHandler('At least one image is required', 400));
   }
 
   const images = [];
   for (const file of req.files) {
     const upload = await uploadImage(file);
     if (!upload?.secure_url) {
-      return next(new ErrorHandler("Image upload failed", 500));
+      return next(new ErrorHandler('Image upload failed', 500));
     }
     images.push({ public_id: upload.public_id, url: upload.secure_url });
   }
@@ -35,7 +43,7 @@ export const addPart = catchAsyncErrors(async (req, res, next) => {
     category,
     vehicleCompatibility: vehicleCompatibility || [],
     images,
-    bestseller: bestseller === "true" || bestseller === true,
+    bestseller: bestseller === 'true' || bestseller === true,
   });
 
   res.status(201).json({ success: true, part });
@@ -55,11 +63,16 @@ export const getAllParts = catchAsyncErrors(async (req, res) => {
 
   const isPaginated = page !== undefined || limit !== undefined;
   const pageNum = parseInt(page, 10) > 0 ? parseInt(page, 10) : 1;
-  const limitNum = limit !== undefined ? Math.max(1, parseInt(limit, 10) || 10) : (isPaginated ? 10 : (total || 10));
+  const limitNum =
+    limit !== undefined
+      ? Math.max(1, parseInt(limit, 10) || 10)
+      : isPaginated
+        ? 10
+        : total || 10;
   const skip = (pageNum - 1) * limitNum;
 
   const parts = await Part.find(filter)
-    .populate("vehicleCompatibility", "name")
+    .populate('vehicleCompatibility', 'name')
     .skip(skip)
     .limit(limitNum);
 
@@ -80,15 +93,14 @@ export const getAllParts = catchAsyncErrors(async (req, res) => {
   });
 });
 
-
 // Get single part
 export const getPartById = catchAsyncErrors(async (req, res, next) => {
   const part = await Part.findOne({
     _id: req.params.id,
     isDeleted: false,
-  }).populate("vehicleCompatibility", "name");
+  }).populate('vehicleCompatibility', 'name');
 
-  if (!part) return next(new ErrorHandler("Part not found", 404));
+  if (!part) return next(new ErrorHandler('Part not found', 404));
 
   // Count this as a product view for analytics. Fire-and-forget: a failed
   // counter update must never break the actual product response.
@@ -100,13 +112,24 @@ export const getPartById = catchAsyncErrors(async (req, res, next) => {
 // Update part
 export const updatePart = catchAsyncErrors(async (req, res, next) => {
   const part = await Part.findOne({ _id: req.params.id, isDeleted: false });
-  if (!part) return next(new ErrorHandler("Part not found", 404));
+  if (!part) return next(new ErrorHandler('Part not found', 404));
 
-
-  const fieldsToUpdate = ["product_id", "name", "description", "price", "stock", "category", "vehicleCompatibility", "bestseller"];
+  const fieldsToUpdate = [
+    'product_id',
+    'name',
+    'description',
+    'price',
+    'stock',
+    'category',
+    'vehicleCompatibility',
+    'bestseller',
+  ];
   fieldsToUpdate.forEach((field) => {
     if (req.body[field] !== undefined) {
-      part[field] = field === "bestseller" ? req.body[field] === "true" || req.body[field] === true : req.body[field];
+      part[field] =
+        field === 'bestseller'
+          ? req.body[field] === 'true' || req.body[field] === true
+          : req.body[field];
     }
   });
 
@@ -121,7 +144,7 @@ export const updatePart = catchAsyncErrors(async (req, res, next) => {
     for (const file of req.files) {
       const upload = await uploadImage(file);
       if (!upload?.secure_url) {
-        return next(new ErrorHandler("Image upload failed", 500));
+        return next(new ErrorHandler('Image upload failed', 500));
       }
       images.push({ public_id: upload.public_id, url: upload.secure_url });
     }
@@ -134,22 +157,20 @@ export const updatePart = catchAsyncErrors(async (req, res, next) => {
   logAudit({
     actorId: req.user._id,
     actorRole: req.user.role,
-    action: "PART_UPDATE",
-    entityType: "Part",
+    action: 'PART_UPDATE',
+    entityType: 'Part',
     entityId: part._id.toString(),
     metadata: { updatedFields: fieldsToUpdate },
   }).catch(() => {});
 
-  res.status(200).json({ success: true, message: "Part updated", part });
-
+  res.status(200).json({ success: true, message: 'Part updated', part });
 });
 
 // Delete part
 export const deletePart = catchAsyncErrors(async (req, res, next) => {
   const part = await Part.findById(req.params.id);
-  if (!part || part.isDeleted) return next(new ErrorHandler("Part not found", 404));
-
-
+  if (!part || part.isDeleted)
+    return next(new ErrorHandler('Part not found', 404));
 
   for (const img of part.images) {
     await deleteImage(img.public_id);
@@ -164,14 +185,13 @@ export const deletePart = catchAsyncErrors(async (req, res, next) => {
   logAudit({
     actorId: req.user._id,
     actorRole: req.user.role,
-    action: "PART_DELETE",
-    entityType: "Part",
+    action: 'PART_DELETE',
+    entityType: 'Part',
     entityId: part._id.toString(),
     metadata: {},
   }).catch(() => {});
 
-  res.status(200).json({ success: true, message: "Part soft-deleted" });
-
+  res.status(200).json({ success: true, message: 'Part soft-deleted' });
 });
 
 // Add or update review
@@ -179,12 +199,12 @@ export const createOrUpdateReview = catchAsyncErrors(async (req, res, next) => {
   const { rating, comment } = req.body;
   const part = await Part.findOne({ _id: req.params.id, isDeleted: false });
 
-  if (!part) return next(new ErrorHandler("Part not found", 404));
+  if (!part) return next(new ErrorHandler('Part not found', 404));
 
   const hasPurchased = await Order.exists({
     user: req.user._id,
-    "items.part": part._id,
-    orderStatus: "Delivered",
+    'items.part': part._id,
+    orderStatus: 'Delivered',
   });
   const verifiedPurchase = Boolean(hasPurchased);
 
@@ -212,7 +232,7 @@ export const createOrUpdateReview = catchAsyncErrors(async (req, res, next) => {
     : 0;
 
   await part.save();
-  res.status(200).json({ success: true, message: "Review submitted", part });
+  res.status(200).json({ success: true, message: 'Review submitted', part });
 });
 
 // Get similar / recommended parts for a given part.
@@ -226,8 +246,7 @@ export const getSimilarParts = catchAsyncErrors(async (req, res, next) => {
     _id: req.params.id,
     isDeleted: false,
   });
-  if (!current) return next(new ErrorHandler("Part not found", 404));
-
+  if (!current) return next(new ErrorHandler('Part not found', 404));
 
   const compatibilityIds = (current.vehicleCompatibility || []).map((v) =>
     v.toString()
@@ -247,9 +266,9 @@ export const getSimilarParts = catchAsyncErrors(async (req, res, next) => {
     _id: { $ne: current._id },
     $or: orConditions,
   })
-    .populate("vehicleCompatibility", "name")
+    .populate('vehicleCompatibility', 'name')
     .select(
-      "product_id name price stock category images ratings numOfReviews bestseller vehicleCompatibility"
+      'product_id name price stock category images ratings numOfReviews bestseller vehicleCompatibility'
     );
 
   // Score each candidate by how closely it matches the current product.
@@ -263,12 +282,11 @@ export const getSimilarParts = catchAsyncErrors(async (req, res, next) => {
     // Shared compatible vehicles (same fitment / brand). Capped so a part that
     // fits many vehicles can't dominate purely on overlap count.
     if (compatibilityIds.length > 0) {
-      const shared = (part.vehicleCompatibility || [])
-        .filter((v) => v && v._id && compatibilityIds.includes(v._id.toString()))
-        .length;
+      const shared = (part.vehicleCompatibility || []).filter(
+        (v) => v && v._id && compatibilityIds.includes(v._id.toString())
+      ).length;
       score += Math.min(shared, 3) * 2;
     }
-
 
     // Similar price range relative to the current product.
     if (price > 0) {
@@ -309,21 +327,17 @@ export const getSimilarParts = catchAsyncErrors(async (req, res, next) => {
 // something relevant instead of being empty.
 export const getFrequentlyBoughtTogether = catchAsyncErrors(
   async (req, res, next) => {
-    const limit = Math.min(
-      Math.max(parseInt(req.query.limit, 10) || 6, 1),
-      20
-    );
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 6, 1), 20);
 
     const targetId = req.params.id;
     const current = await Part.findOne({ _id: targetId, isDeleted: false });
-    if (!current) return next(new ErrorHandler("Part not found", 404));
-
+    if (!current) return next(new ErrorHandler('Part not found', 404));
 
     // All non-cancelled orders that include the target part.
     const orders = await Order.find({
-      orderStatus: { $ne: "Cancelled" },
-      "items.part": targetId,
-    }).select("items.part");
+      orderStatus: { $ne: 'Cancelled' },
+      'items.part': targetId,
+    }).select('items.part');
 
     // Tally co-occurrence counts for every other part.
     const counts = new Map();
@@ -353,9 +367,8 @@ export const getFrequentlyBoughtTogether = catchAsyncErrors(
         _id: { $in: rankedIds },
         isDeleted: false,
       }).select(
-        "product_id name price stock category images ratings numOfReviews bestseller"
+        'product_id name price stock category images ratings numOfReviews bestseller'
       );
-
 
       // Preserve the co-occurrence ranking order (Mongo doesn't guarantee it).
       const byId = new Map(found.map((p) => [p._id.toString(), p]));
@@ -374,7 +387,7 @@ export const getFrequentlyBoughtTogether = catchAsyncErrors(
       })
 
         .select(
-          "product_id name price stock category images ratings numOfReviews bestseller"
+          'product_id name price stock category images ratings numOfReviews bestseller'
         )
         .sort({ bestseller: -1, ratings: -1, numOfReviews: -1 })
         .limit(limit);
@@ -384,7 +397,7 @@ export const getFrequentlyBoughtTogether = catchAsyncErrors(
       success: true,
       count: parts.length,
       parts,
-      basedOn: rankedIds.length > 0 ? "purchase-history" : "category-fallback",
+      basedOn: rankedIds.length > 0 ? 'purchase-history' : 'category-fallback',
     });
   }
 );
@@ -414,10 +427,10 @@ export const getRecommendedForYou = catchAsyncErrors(async (req, res, next) => {
 
   // Gather the user's signal parts from cart, wishlist, and past orders.
   const [cart, wishlist, orders] = await Promise.all([
-    Cart.findOne({ user: userId }).select("items.part"),
-    Wishlist.findOne({ user: userId }).select("items.part"),
-    Order.find({ user: userId, orderStatus: { $ne: "Cancelled" } }).select(
-      "items.part"
+    Cart.findOne({ user: userId }).select('items.part'),
+    Wishlist.findOne({ user: userId }).select('items.part'),
+    Order.find({ user: userId, orderStatus: { $ne: 'Cancelled' } }).select(
+      'items.part'
     ),
   ]);
 
@@ -432,14 +445,16 @@ export const getRecommendedForYou = catchAsyncErrors(async (req, res, next) => {
 
   (cart?.items || []).forEach((i) => addPart(i.part));
   (wishlist?.items || []).forEach((i) => addPart(i.part));
-  (orders || []).forEach((o) => (o.items || []).forEach((i) => addPart(i.part)));
+  (orders || []).forEach((o) =>
+    (o.items || []).forEach((i) => addPart(i.part))
+  );
 
   // Resolve the signal parts to learn their categories and weight them.
   const categoryWeights = new Map();
   if (ownedIds.size > 0) {
     const signalParts = await Part.find({
       _id: { $in: [...ownedIds] },
-    }).select("category");
+    }).select('category');
     for (const p of signalParts) {
       if (p.category) {
         categoryWeights.set(
@@ -467,7 +482,7 @@ export const getRecommendedForYou = catchAsyncErrors(async (req, res, next) => {
     })
 
       .select(
-        "product_id name price stock category images ratings numOfReviews bestseller"
+        'product_id name price stock category images ratings numOfReviews bestseller'
       )
       .sort({ bestseller: -1, ratings: -1, numOfReviews: -1 })
       .limit(limit);
@@ -484,7 +499,7 @@ export const getRecommendedForYou = catchAsyncErrors(async (req, res, next) => {
     })
 
       .select(
-        "product_id name price stock category images ratings numOfReviews bestseller"
+        'product_id name price stock category images ratings numOfReviews bestseller'
       )
       .sort({ bestseller: -1, ratings: -1, numOfReviews: -1 })
       .limit(limit - parts.length);
@@ -512,7 +527,7 @@ export const trackRecommendationImpressions = catchAsyncErrors(
     const validIds = [
       ...new Set(
         ids.filter(
-          (id) => typeof id === "string" && /^[a-fA-F0-9]{24}$/.test(id)
+          (id) => typeof id === 'string' && /^[a-fA-F0-9]{24}$/.test(id)
         )
       ),
     ].slice(0, 50);
@@ -533,7 +548,7 @@ export const trackRecommendationImpressions = catchAsyncErrors(
 export const trackRecommendationClick = catchAsyncErrors(async (req, res) => {
   const { productId } = req.body || {};
 
-  if (typeof productId === "string" && /^[a-fA-F0-9]{24}$/.test(productId)) {
+  if (typeof productId === 'string' && /^[a-fA-F0-9]{24}$/.test(productId)) {
     await Part.updateOne(
       { _id: productId },
       { $inc: { recommendationClicks: 1 } }
@@ -562,7 +577,7 @@ export const adminGetRecommendationAnalytics = catchAsyncErrors(
 
         .sort({ viewCount: -1 })
         .limit(LIMIT)
-        .select("name category viewCount images"),
+        .select('name category viewCount images'),
 
       // Most recommended products (most impressions in recommendation rows),
       // with per-product CTR included (exclude soft-deleted).
@@ -571,7 +586,7 @@ export const adminGetRecommendationAnalytics = catchAsyncErrors(
         .sort({ recommendationImpressions: -1 })
         .limit(LIMIT)
         .select(
-          "name category recommendationImpressions recommendationClicks images"
+          'name category recommendationImpressions recommendationClicks images'
         ),
 
       // Catalogue-wide impression / click totals for the overall CTR figure.
@@ -579,9 +594,9 @@ export const adminGetRecommendationAnalytics = catchAsyncErrors(
         {
           $group: {
             _id: null,
-            totalImpressions: { $sum: "$recommendationImpressions" },
-            totalClicks: { $sum: "$recommendationClicks" },
-            totalViews: { $sum: "$viewCount" },
+            totalImpressions: { $sum: '$recommendationImpressions' },
+            totalClicks: { $sum: '$recommendationClicks' },
+            totalViews: { $sum: '$viewCount' },
           },
         },
       ]),
@@ -600,10 +615,10 @@ export const adminGetRecommendationAnalytics = catchAsyncErrors(
 
     const mostViewedOut = mostViewed.map((p) => ({
       _id: p._id,
-      name: p.name || "Unknown product",
+      name: p.name || 'Unknown product',
       category: p.category,
       viewCount: p.viewCount || 0,
-      image: p.images?.[0]?.url || "",
+      image: p.images?.[0]?.url || '',
     }));
 
     const mostRecommendedOut = mostRecommended.map((p) => {
@@ -611,12 +626,12 @@ export const adminGetRecommendationAnalytics = catchAsyncErrors(
       const clicks = p.recommendationClicks || 0;
       return {
         _id: p._id,
-        name: p.name || "Unknown product",
+        name: p.name || 'Unknown product',
         category: p.category,
         impressions,
         clicks,
         ctr: impressions > 0 ? clicks / impressions : 0,
-        image: p.images?.[0]?.url || "",
+        image: p.images?.[0]?.url || '',
       };
     });
 
@@ -640,9 +655,11 @@ export const adminGetRecommendationAnalytics = catchAsyncErrors(
 export const deleteReview = catchAsyncErrors(async (req, res, next) => {
   const part = await Part.findOne({ _id: req.params.id, isDeleted: false });
 
-  if (!part) return next(new ErrorHandler("Part not found", 404));
+  if (!part) return next(new ErrorHandler('Part not found', 404));
 
-  part.reviews = part.reviews.filter((r) => r.user.toString() !== req.user._id.toString());
+  part.reviews = part.reviews.filter(
+    (r) => r.user.toString() !== req.user._id.toString()
+  );
 
   part.numOfReviews = part.reviews.length;
   part.ratings = part.reviews.length
@@ -650,11 +667,11 @@ export const deleteReview = catchAsyncErrors(async (req, res, next) => {
     : 0;
 
   await part.save();
-res.status(200).json({ success: true, message: "Review removed", part });
+  res.status(200).json({ success: true, message: 'Review removed', part });
 });
 
 // Added for #351: Faceted Search aggregation
-import { buildSearchAggregation } from "../utils/searchQueryBuilder.js";
+import { buildSearchAggregation } from '../utils/searchQueryBuilder.js';
 export const getFacetedSearch = catchAsyncErrors(async (req, res, next) => {
   const { q, category, minPrice, maxPrice } = req.query;
   const pipeline = buildSearchAggregation(q, { category, minPrice, maxPrice });

@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
 
-const STORAGE_KEY = "recentSearches";
+const STORAGE_KEY = 'recentSearches';
 const MAX_ITEMS = 8;
 
 // Safely read the persisted search history from localStorage.
@@ -10,7 +10,7 @@ const readHistory = () => {
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter((item) => typeof item === "string");
+    return parsed.filter((item) => typeof item === 'string');
   } catch {
     return [];
   }
@@ -38,12 +38,12 @@ export default function useSearchHistory() {
     const onStorage = (e) => {
       if (e.key === STORAGE_KEY) setRecent(readHistory());
     };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
   }, []);
 
   const addSearch = useCallback((term) => {
-    const value = (term || "").trim();
+    const value = (term || '').trim();
     if (!value) return;
     setRecent((prev) => {
       // De-duplicate case-insensitively, newest first, capped at MAX_ITEMS.

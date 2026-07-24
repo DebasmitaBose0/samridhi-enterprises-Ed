@@ -1,24 +1,24 @@
 import { validateAndFetchFreshPrices } from '../utils/cartPricingValidator.js';
-import ErrorHandler from "../utils/errorHandler.js";
-import Order from "../models/orderModel.js";
-import Cart from "../models/cartModel.js";
-import Coupon from "../models/couponModel.js";
-import User from "../models/userModel.js";
-import Part from "../models/partModel.js";
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import { uploadImage } from "../utils/cloudinary.js";
-import sendEmail from "../config/sendEmail.js";
-import orderReceiptHtml from "../template/orderReceiptTemplate.js";
-import generateReceiptHTML from "../template/generateReceipt.js";
-import generateAdminNewOrderEmail from "../template/adminNewOrderTemplate.js";
-import notifyAdmins from "../utils/adminNotifier.js";
+import ErrorHandler from '../utils/errorHandler.js';
+import Order from '../models/orderModel.js';
+import Cart from '../models/cartModel.js';
+import Coupon from '../models/couponModel.js';
+import User from '../models/userModel.js';
+import Part from '../models/partModel.js';
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import { uploadImage } from '../utils/cloudinary.js';
+import sendEmail from '../config/sendEmail.js';
+import orderReceiptHtml from '../template/orderReceiptTemplate.js';
+import generateReceiptHTML from '../template/generateReceipt.js';
+import generateAdminNewOrderEmail from '../template/adminNewOrderTemplate.js';
+import notifyAdmins from '../utils/adminNotifier.js';
 
 const REQUIRED_ADDRESS_FIELDS = [
-  "fullName",
-  "phone",
-  "addressLine",
-  "city",
-  "pincode",
+  'fullName',
+  'phone',
+  'addressLine',
+  'city',
+  'pincode',
 ];
 
 // POST /api/orders/new  (auth, multipart: optional "paymentScreenshot")
@@ -27,12 +27,12 @@ const REQUIRED_ADDRESS_FIELDS = [
 // "Pending Verification" state until an admin approves them.
 export const createOrder = catchAsyncErrors(async (req, res, next) => {
   const cart = await Cart.findOne({ user: req.user._id }).populate(
-    "items.part",
-    "name price images stock"
+    'items.part',
+    'name price images stock'
   );
 
   if (!cart || cart.items.length === 0) {
-    return next(new ErrorHandler("Your cart is empty", 400));
+    return next(new ErrorHandler('Your cart is empty', 400));
   }
 
   const {
@@ -47,16 +47,30 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
   } = req.body;
   const paymentMethod = req.body.paymentMethod;
 
-  const shippingAddress = { fullName, phone, addressLine, city, state, pincode };
+  const shippingAddress = {
+    fullName,
+    phone,
+    addressLine,
+    city,
+    state,
+    pincode,
+  };
   const missing = REQUIRED_ADDRESS_FIELDS.filter(
     (field) => !shippingAddress[field] || !String(shippingAddress[field]).trim()
   );
   if (missing.length > 0) {
-    return next(new ErrorHandler(`Missing required address fields: ${missing.join(", ")}`, 400));
+    return next(
+      new ErrorHandler(
+        `Missing required address fields: ${missing.join(', ')}`,
+        400
+      )
+    );
   }
 
-  if (!["COD", "Online"].includes(paymentMethod)) {
-    return next(new ErrorHandler("Payment method must be either COD or Online", 400));
+  if (!['COD', 'Online'].includes(paymentMethod)) {
+    return next(
+      new ErrorHandler('Payment method must be either COD or Online', 400)
+    );
   }
 
   // Re-validate and deduct stock to prevent overselling
@@ -64,14 +78,14 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
     if (!item.part) {
       return res.status(400).json({
         success: false,
-        message: "A product in your cart is no longer available",
+        message: 'A product in your cart is no longer available',
       });
     }
     const part = await Part.findById(item.part._id);
     if (!part) {
       return res.status(400).json({
         success: false,
-        message: `Product ${item.name || "Item"} is no longer available`,
+        message: `Product ${item.name || 'Item'} is no longer available`,
       });
     }
     if (part.stock < item.quantity) {
@@ -94,7 +108,10 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
         { new: true }
       );
       if (!part) {
-        throw new ErrorHandler(`Insufficient stock for ${item.name || (item.part ? item.part.name : "Item")}`, 400);
+        throw new ErrorHandler(
+          `Insufficient stock for ${item.name || (item.part ? item.part.name : 'Item')}`,
+          400
+        );
       }
       updatedParts.push({ id: item.part._id, quantity: item.quantity });
     }
@@ -103,18 +120,18 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
     // record stays correct even if a part is later edited or removed.
     const items = cart.items.map((item) => {
       const unitPrice =
-        item.part && typeof item.part.price === "number"
+        item.part && typeof item.part.price === 'number'
           ? item.part.price
           : item.quantity > 0
-          ? item.price / item.quantity
-          : item.price;
+            ? item.price / item.quantity
+            : item.price;
       const image =
         item.part && item.part.images && item.part.images.length > 0
           ? item.part.images[0].url
-          : "";
+          : '';
       return {
         part: item.part ? item.part._id : undefined,
-        name: item.name || (item.part ? item.part.name : "Item"),
+        name: item.name || (item.part ? item.part.name : 'Item'),
         price: unitPrice,
         quantity: item.quantity,
         image,
@@ -129,14 +146,14 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
     );
 
     // Re-validate the coupon (if any) server-side — never trust client discount amount.
-    let appliedCouponCode = "";
+    let appliedCouponCode = '';
     let discount = 0;
     if (couponCode && String(couponCode).trim()) {
       const coupon = await Coupon.findOne({
         code: String(couponCode).trim().toUpperCase(),
       });
       if (!coupon) {
-        throw new ErrorHandler("Invalid coupon code", 400);
+        throw new ErrorHandler('Invalid coupon code', 400);
       }
       const redeemable = coupon.isRedeemable();
       if (!redeemable.ok) {
@@ -144,7 +161,7 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
       }
       const computed = coupon.computeDiscount(itemsTotal);
       if (computed <= 0) {
-        throw new ErrorHandler("This coupon does not apply to your order", 400);
+        throw new ErrorHandler('This coupon does not apply to your order', 400);
       }
       const claim = await Coupon.findOneAndUpdate(
         {
@@ -156,24 +173,24 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
           maxDiscount: coupon.maxDiscount,
           $and: [
             {
-              $or: [
-                { expiresAt: null },
-                { expiresAt: { $gt: new Date() } }
-              ]
+              $or: [{ expiresAt: null }, { expiresAt: { $gt: new Date() } }],
             },
             {
               $or: [
                 { usageLimit: 0 },
-                { $expr: { $lt: ["$usedCount", "$usageLimit"] } }
-              ]
-            }
-          ]
+                { $expr: { $lt: ['$usedCount', '$usageLimit'] } },
+              ],
+            },
+          ],
         },
         { $inc: { usedCount: 1 } },
         { new: true }
       );
       if (!claim) {
-        throw new ErrorHandler("This coupon is no longer valid or has reached its usage limit", 400);
+        throw new ErrorHandler(
+          'This coupon is no longer valid or has reached its usage limit',
+          400
+        );
       }
       couponClaimed = claim;
       appliedCouponCode = coupon.code;
@@ -182,28 +199,34 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
 
     const grandTotal = Math.max(0, itemsTotal - discount);
 
-    let paymentScreenshot = { public_id: "", url: "" };
+    let paymentScreenshot = { public_id: '', url: '' };
     let paymentStatus;
     let orderStatus;
 
-    if (paymentMethod === "Online") {
+    if (paymentMethod === 'Online') {
       if (!req.file) {
-        throw new ErrorHandler("A payment screenshot is required for online payments", 400);
+        throw new ErrorHandler(
+          'A payment screenshot is required for online payments',
+          400
+        );
       }
       const uploaded = await uploadImage(req.file);
       if (!uploaded || !uploaded.secure_url) {
-        throw new ErrorHandler("Payment screenshot upload failed. Please try again.", 500);
+        throw new ErrorHandler(
+          'Payment screenshot upload failed. Please try again.',
+          500
+        );
       }
       paymentScreenshot = {
         public_id: uploaded.public_id,
         url: uploaded.secure_url,
       };
-      paymentStatus = "Pending Verification";
-      orderStatus = "Pending Verification";
+      paymentStatus = 'Pending Verification';
+      orderStatus = 'Pending Verification';
     } else {
       // COD
-      paymentStatus = "Pending";
-      orderStatus = "Confirmed";
+      paymentStatus = 'Pending';
+      orderStatus = 'Confirmed';
     }
 
     const order = await Order.create({
@@ -218,7 +241,7 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
       paymentStatus,
       orderStatus,
       paymentScreenshot,
-      upiReference: upiReference || "",
+      upiReference: upiReference || '',
       statusHistory: [{ status: orderStatus, changedAt: new Date() }],
     });
 
@@ -233,64 +256,70 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
     cart.total = 0;
     await cart.save();
 
-  // Fire-and-forget email; a failure here must never break order creation.
-  try {
-    if (paymentMethod === "COD") {
-      await sendEmail({
-        sendTo: req.user.email,
-        subject: `Order Confirmed - ${order._id}`,
-        html: orderReceiptHtml(order, req.user),
-      });
-    } else {
-      await sendEmail({
-        sendTo: req.user.email,
-        subject: `Order Received - Pending Payment Verification`,
-        html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;">
+    // Fire-and-forget email; a failure here must never break order creation.
+    try {
+      if (paymentMethod === 'COD') {
+        await sendEmail({
+          sendTo: req.user.email,
+          subject: `Order Confirmed - ${order._id}`,
+          html: orderReceiptHtml(order, req.user),
+        });
+      } else {
+        await sendEmail({
+          sendTo: req.user.email,
+          subject: `Order Received - Pending Payment Verification`,
+          html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;">
           <h2 style="color:#111827;">Thank you for your order!</h2>
           <p style="color:#555;">We have received your order <strong>${order._id}</strong> and your payment screenshot.</p>
           <p style="color:#555;">Our team will verify your payment shortly. You will receive a confirmation email with your receipt once it is approved.</p>
-          ${discount > 0
-            ? `<p style="color:#555;">Subtotal: Rs. ${Number(itemsTotal).toLocaleString("en-IN")}</p>
-          <p style="color:#16a34a;">Discount (${appliedCouponCode}): -Rs. ${Number(discount).toLocaleString("en-IN")}</p>`
-            : ""}
+          ${
+            discount > 0
+              ? `<p style="color:#555;">Subtotal: Rs. ${Number(itemsTotal).toLocaleString('en-IN')}</p>
+          <p style="color:#16a34a;">Discount (${appliedCouponCode}): -Rs. ${Number(discount).toLocaleString('en-IN')}</p>`
+              : ''
+          }
           <p style="color:#555;">Order total: <strong>Rs. ${Number(
             grandTotal
-          ).toLocaleString("en-IN")}</strong></p>
+          ).toLocaleString('en-IN')}</strong></p>
         </div>`,
-      });
+        });
+      }
+    } catch (mailErr) {
+      console.error('Order email failed:', mailErr.message);
     }
-  } catch (mailErr) {
-    console.error("Order email failed:", mailErr.message);
-  }
 
-  // Notify store admins of the new order (best-effort, gated by the admin
-  // settings toggle) via the shared notifyAdmins helper. It runs isolated and
-  // never throws, so it cannot trigger the stock-rollback below.
-  await notifyAdmins({
-    preferenceKey: "notifyAdminsOnNewOrder",
-    subject:
-      paymentMethod === "Online"
-        ? `New Order (Payment Verification Needed) - ${order._id}`
-        : `New Order Received - ${order._id}`,
-    html: generateAdminNewOrderEmail(order, req.user),
-  });
+    // Notify store admins of the new order (best-effort, gated by the admin
+    // settings toggle) via the shared notifyAdmins helper. It runs isolated and
+    // never throws, so it cannot trigger the stock-rollback below.
+    await notifyAdmins({
+      preferenceKey: 'notifyAdminsOnNewOrder',
+      subject:
+        paymentMethod === 'Online'
+          ? `New Order (Payment Verification Needed) - ${order._id}`
+          : `New Order Received - ${order._id}`,
+      html: generateAdminNewOrderEmail(order, req.user),
+    });
 
     res.status(201).json({
       success: true,
       message:
-        paymentMethod === "COD"
-          ? "Order placed successfully"
-          : "Order placed. Payment is pending verification.",
+        paymentMethod === 'COD'
+          ? 'Order placed successfully'
+          : 'Order placed. Payment is pending verification.',
       order,
     });
   } catch (error) {
     // Rollback any stocks we already successfully deducted
     for (const updated of updatedParts) {
-      await Part.findByIdAndUpdate(updated.id, { $inc: { stock: updated.quantity } });
+      await Part.findByIdAndUpdate(updated.id, {
+        $inc: { stock: updated.quantity },
+      });
     }
     // Rollback coupon usedCount
     if (couponClaimed) {
-      await Coupon.findByIdAndUpdate(couponClaimed._id, { $inc: { usedCount: -1 } });
+      await Coupon.findByIdAndUpdate(couponClaimed._id, {
+        $inc: { usedCount: -1 },
+      });
     }
     return next(error);
   }
@@ -308,10 +337,10 @@ export const getMyOrders = catchAsyncErrors(async (req, res, next) => {
 export const getOrderById = catchAsyncErrors(async (req, res, next) => {
   const order = await Order.findById(req.params.id);
   if (!order) {
-    return next(new ErrorHandler("Order not found", 404));
+    return next(new ErrorHandler('Order not found', 404));
   }
   if (order.user.toString() !== req.user._id.toString()) {
-    return next(new ErrorHandler("Not authorized to view this order", 403));
+    return next(new ErrorHandler('Not authorized to view this order', 403));
   }
   res.status(200).json({ success: true, order });
 });
@@ -319,7 +348,7 @@ export const getOrderById = catchAsyncErrors(async (req, res, next) => {
 // A customer may cancel their own order only while it is still in an early,
 // reversible state. Once it is Processing / Shipped / Delivered it has entered
 // fulfilment and can no longer be self-cancelled.
-const CUSTOMER_CANCELLABLE_STATUSES = ["Pending Verification", "Confirmed"];
+const CUSTOMER_CANCELLABLE_STATUSES = ['Pending Verification', 'Confirmed'];
 
 // PUT /api/orders/:id/cancel  (auth, owner only)
 // Customer-initiated cancellation. Verifies ownership, enforces status-based
@@ -328,40 +357,42 @@ const CUSTOMER_CANCELLABLE_STATUSES = ["Pending Verification", "Confirmed"];
 export const cancelMyOrder = catchAsyncErrors(async (req, res, next) => {
   const order = await Order.findById(req.params.id);
   if (!order) {
-    return next(new ErrorHandler("Order not found", 404));
+    return next(new ErrorHandler('Order not found', 404));
   }
 
   // Ownership: a customer can only cancel an order that belongs to them.
   if (order.user.toString() !== req.user._id.toString()) {
-    return next(new ErrorHandler("Not authorized to cancel this order", 403));
+    return next(new ErrorHandler('Not authorized to cancel this order', 403));
   }
 
-  if (order.orderStatus === "Cancelled") {
-    return next(new ErrorHandler("This order is already cancelled", 400));
+  if (order.orderStatus === 'Cancelled') {
+    return next(new ErrorHandler('This order is already cancelled', 400));
   }
 
   if (!CUSTOMER_CANCELLABLE_STATUSES.includes(order.orderStatus)) {
     return next(
       new ErrorHandler(
         `This order is ${order.orderStatus} and can no longer be cancelled. Orders can only be cancelled while they are ${CUSTOMER_CANCELLABLE_STATUSES.join(
-          " or "
+          ' or '
         )}. Please contact support for assistance.`,
         400
       )
     );
   }
 
-  order.orderStatus = "Cancelled";
-  order.rejectionReason = "Cancelled by customer";
+  order.orderStatus = 'Cancelled';
+  order.rejectionReason = 'Cancelled by customer';
   if (!order.statusHistory) order.statusHistory = [];
-  order.statusHistory.push({ status: "Cancelled", changedAt: new Date() });
+  order.statusHistory.push({ status: 'Cancelled', changedAt: new Date() });
 
   // Restore stock once, guarded by stockRestored — identical to the restore
   // used by adminVerifyPayment (reject) and adminUpdateOrderStatus (Cancelled).
   if (!order.stockRestored) {
     for (const item of order.items) {
       if (item.part) {
-        await Part.findByIdAndUpdate(item.part, { $inc: { stock: item.quantity } });
+        await Part.findByIdAndUpdate(item.part, {
+          $inc: { stock: item.quantity },
+        });
       }
     }
     order.stockRestored = true;
@@ -372,14 +403,17 @@ export const cancelMyOrder = catchAsyncErrors(async (req, res, next) => {
   // Best-effort confirmation email — a mail failure must not fail the request.
   try {
     const itemsHtml = order.items
-      .map((item) => `<li><strong>${item.name}</strong> &times; ${item.quantity}</li>`)
-      .join("");
+      .map(
+        (item) =>
+          `<li><strong>${item.name}</strong> &times; ${item.quantity}</li>`
+      )
+      .join('');
     await sendEmail({
       sendTo: req.user.email,
       subject: `Order Cancelled - Order ${order._id}`,
       html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;">
         <h2 style="color:#e91e63;">Order Cancellation Confirmation</h2>
-        <p style="color:#555;">Dear ${req.user.name || "Customer"},</p>
+        <p style="color:#555;">Dear ${req.user.name || 'Customer'},</p>
         <p style="color:#555;">Your order <strong>${order._id}</strong> has been cancelled as requested.</p>
         <ul style="color:#555;">${itemsHtml}</ul>
         <p style="color:#555;">Any reserved stock has been released. If your payment was already completed, our team will process the refund as per policy.</p>
@@ -388,12 +422,12 @@ export const cancelMyOrder = catchAsyncErrors(async (req, res, next) => {
       </div>`,
     });
   } catch (mailErr) {
-    console.error("Cancellation email failed:", mailErr.message);
+    console.error('Cancellation email failed:', mailErr.message);
   }
 
   res.status(200).json({
     success: true,
-    message: "Order cancelled successfully",
+    message: 'Order cancelled successfully',
     order,
   });
 });
@@ -405,7 +439,7 @@ export const adminGetAllOrders = catchAsyncErrors(async (req, res, next) => {
     filter.orderStatus = req.query.status;
   }
   const orders = await Order.find(filter)
-    .populate("user", "name email")
+    .populate('user', 'name email')
     .sort({ createdAt: -1 });
   res.status(200).json({ success: true, count: orders.length, orders });
 });
@@ -414,29 +448,33 @@ export const adminGetAllOrders = catchAsyncErrors(async (req, res, next) => {
 export const adminVerifyPayment = catchAsyncErrors(async (req, res, next) => {
   const { action, rejectionReason } = req.body;
 
-  if (!["approve", "reject"].includes(action)) {
-    return next(new ErrorHandler("Action must be either 'approve' or 'reject'", 400));
+  if (!['approve', 'reject'].includes(action)) {
+    return next(
+      new ErrorHandler("Action must be either 'approve' or 'reject'", 400)
+    );
   }
 
   const order = await Order.findById(req.params.id).populate(
-    "user",
-    "name email"
+    'user',
+    'name email'
   );
   if (!order) {
-    return next(new ErrorHandler("Order not found", 404));
+    return next(new ErrorHandler('Order not found', 404));
   }
 
-  if (order.orderStatus === "Cancelled" || order.paymentStatus === "Failed") {
-    return next(new ErrorHandler("Order is already cancelled or payment rejected", 400));
+  if (order.orderStatus === 'Cancelled' || order.paymentStatus === 'Failed') {
+    return next(
+      new ErrorHandler('Order is already cancelled or payment rejected', 400)
+    );
   }
 
-  if (action === "approve") {
-    order.paymentStatus = "Success";
-    order.orderStatus = "Confirmed";
+  if (action === 'approve') {
+    order.paymentStatus = 'Success';
+    order.orderStatus = 'Confirmed';
     order.verifiedAt = new Date();
-    order.rejectionReason = "";
+    order.rejectionReason = '';
     if (!order.statusHistory) order.statusHistory = [];
-    order.statusHistory.push({ status: "Confirmed", changedAt: new Date() });
+    order.statusHistory.push({ status: 'Confirmed', changedAt: new Date() });
     await order.save();
 
     try {
@@ -446,28 +484,30 @@ export const adminVerifyPayment = catchAsyncErrors(async (req, res, next) => {
         html: orderReceiptHtml(order, order.user),
       });
     } catch (mailErr) {
-      console.error("Receipt email failed:", mailErr.message);
+      console.error('Receipt email failed:', mailErr.message);
     }
 
     return res.status(200).json({
       success: true,
-      message: "Payment approved and order confirmed",
+      message: 'Payment approved and order confirmed',
       order,
     });
   }
 
   // reject
-  order.paymentStatus = "Failed";
-  order.orderStatus = "Cancelled";
-  order.rejectionReason = rejectionReason || "Payment could not be verified";
+  order.paymentStatus = 'Failed';
+  order.orderStatus = 'Cancelled';
+  order.rejectionReason = rejectionReason || 'Payment could not be verified';
   if (!order.statusHistory) order.statusHistory = [];
-  order.statusHistory.push({ status: "Cancelled", changedAt: new Date() });
+  order.statusHistory.push({ status: 'Cancelled', changedAt: new Date() });
 
   // Restore stock if not already restored
   if (!order.stockRestored) {
     for (const item of order.items) {
       if (item.part) {
-        await Part.findByIdAndUpdate(item.part, { $inc: { stock: item.quantity } });
+        await Part.findByIdAndUpdate(item.part, {
+          $inc: { stock: item.quantity },
+        });
       }
     }
     order.stockRestored = true;
@@ -486,16 +526,15 @@ export const adminVerifyPayment = catchAsyncErrors(async (req, res, next) => {
       </div>`,
     });
   } catch (mailErr) {
-    console.error("Rejection email failed:", mailErr.message);
+    console.error('Rejection email failed:', mailErr.message);
   }
 
   res.status(200).json({
     success: true,
-    message: "Payment rejected and order cancelled",
+    message: 'Payment rejected and order cancelled',
     order,
   });
 });
-
 
 // PUT /api/orders/admin/status/:id  (auth, admin)  body: { orderStatus }
 // Advances an order through its fulfilment lifecycle (Confirmed -> Processing
@@ -504,20 +543,20 @@ export const adminVerifyPayment = catchAsyncErrors(async (req, res, next) => {
 // only accepts the post-confirmation statuses so a pending-verification order
 // cannot be pushed straight to Shipped without its payment being approved.
 const FULFILLMENT_STATUSES = [
-  "Confirmed",
-  "Processing",
-  "Shipped",
-  "Delivered",
-  "Cancelled",
+  'Confirmed',
+  'Processing',
+  'Shipped',
+  'Delivered',
+  'Cancelled',
 ];
 
 const VALID_TRANSITIONS = {
-  "Pending Verification": ["Confirmed", "Cancelled"],
-  "Confirmed": ["Processing", "Cancelled"],
-  "Processing": ["Shipped", "Cancelled"],
-  "Shipped": ["Delivered", "Cancelled"],
-  "Delivered": [],
-  "Cancelled": [],
+  'Pending Verification': ['Confirmed', 'Cancelled'],
+  Confirmed: ['Processing', 'Cancelled'],
+  Processing: ['Shipped', 'Cancelled'],
+  Shipped: ['Delivered', 'Cancelled'],
+  Delivered: [],
+  Cancelled: [],
 };
 
 export const adminUpdateOrderStatus = catchAsyncErrors(
@@ -526,30 +565,45 @@ export const adminUpdateOrderStatus = catchAsyncErrors(
     const targetStatus = orderStatus || status;
 
     if (!targetStatus || !FULFILLMENT_STATUSES.includes(targetStatus)) {
-      return next(new ErrorHandler(`orderStatus must be one of: ${FULFILLMENT_STATUSES.join(", ")}`, 400));
+      return next(
+        new ErrorHandler(
+          `orderStatus must be one of: ${FULFILLMENT_STATUSES.join(', ')}`,
+          400
+        )
+      );
     }
 
     const order = await Order.findById(req.params.id).populate(
-      "user",
-      "name email"
+      'user',
+      'name email'
     );
     if (!order) {
-      return next(new ErrorHandler("Order not found", 404));
+      return next(new ErrorHandler('Order not found', 404));
     }
 
     const currentStatus = order.orderStatus;
     const allowed = VALID_TRANSITIONS[currentStatus] || [];
     if (targetStatus !== currentStatus && !allowed.includes(targetStatus)) {
-      return next(new ErrorHandler(`Invalid status transition from ${currentStatus} to ${targetStatus}. Allowed transitions: ${allowed.join(", ") || "none"}`, 400));
+      return next(
+        new ErrorHandler(
+          `Invalid status transition from ${currentStatus} to ${targetStatus}. Allowed transitions: ${allowed.join(', ') || 'none'}`,
+          400
+        )
+      );
     }
 
     // Guard: an order whose payment has not succeeded should not be marked as
     // physically fulfilled. It can still be Cancelled.
     if (
-      order.paymentStatus !== "Success" &&
-      ["Processing", "Shipped", "Delivered"].includes(targetStatus)
+      order.paymentStatus !== 'Success' &&
+      ['Processing', 'Shipped', 'Delivered'].includes(targetStatus)
     ) {
-      return next(new ErrorHandler("Cannot advance fulfilment until the order's payment is verified", 400));
+      return next(
+        new ErrorHandler(
+          "Cannot advance fulfilment until the order's payment is verified",
+          400
+        )
+      );
     }
 
     const previousStatus = order.orderStatus;
@@ -563,33 +617,35 @@ export const adminUpdateOrderStatus = catchAsyncErrors(
       order.statusHistory.push({ status: targetStatus, changedAt: new Date() });
     }
 
-    if (targetStatus === "Cancelled" && !order.stockRestored) {
+    if (targetStatus === 'Cancelled' && !order.stockRestored) {
       // Restore stock
       for (const item of order.items) {
         if (item.part) {
-          await Part.findByIdAndUpdate(item.part, { $inc: { stock: item.quantity } });
+          await Part.findByIdAndUpdate(item.part, {
+            $inc: { stock: item.quantity },
+          });
         }
       }
       order.stockRestored = true;
     }
     await order.save();
 
-    if (carrier || trackingNumber || targetStatus === "Shipped") {
+    if (carrier || trackingNumber || targetStatus === 'Shipped') {
       try {
         await sendEmail({
           sendTo: order.user?.email,
           subject: `Shipment Update for Order #${order._id}`,
           html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;">
             <h2 style="color:#111827;">Order Shipment Update</h2>
-            <p style="color:#555;">Dear ${order.user?.name || "Customer"},</p>
+            <p style="color:#555;">Dear ${order.user?.name || 'Customer'},</p>
             <p style="color:#555;">Your order <strong>${order._id}</strong> status is now: <strong>${order.orderStatus}</strong>.</p>
-            ${order.carrier ? `<p style="color:#555;"><strong>Carrier:</strong> ${order.carrier}</p>` : ""}
-            ${order.trackingNumber ? `<p style="color:#555;"><strong>Tracking Number:</strong> ${order.trackingNumber}</p>` : ""}
+            ${order.carrier ? `<p style="color:#555;"><strong>Carrier:</strong> ${order.carrier}</p>` : ''}
+            ${order.trackingNumber ? `<p style="color:#555;"><strong>Tracking Number:</strong> ${order.trackingNumber}</p>` : ''}
             <p style="color:#555;">Thank you for shopping with Samridhi Enterprises!</p>
           </div>`,
         });
       } catch (mailErr) {
-        console.error("Shipment email failed:", mailErr.message);
+        console.error('Shipment email failed:', mailErr.message);
       }
     }
 
@@ -604,7 +660,7 @@ export const adminUpdateOrderStatus = catchAsyncErrors(
 // Added for #343: Update refund status for cancelled paid orders
 export const updateRefundStatus = catchAsyncErrors(async (req, res, next) => {
   const order = await Order.findById(req.params.id);
-  if (!order) return next(new ErrorHandler("Order not found", 404));
+  if (!order) return next(new ErrorHandler('Order not found', 404));
 
   const { refundStatus, refundTransactionId } = req.body;
   if (refundStatus) order.refundStatus = refundStatus;

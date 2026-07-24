@@ -1,5 +1,5 @@
-import React from "react";
-import PropTypes from "prop-types";
+import React from 'react';
+import PropTypes from 'prop-types';
 
 const ProductSkeleton = ({ count = 8 }) => {
   return (
@@ -11,7 +11,7 @@ const ProductSkeleton = ({ count = 8 }) => {
         >
           {/* Image placeholder */}
           <div className="w-full h-44 bg-gray-200" />
-          
+
           <div className="p-3 sm:p-4 flex-1">
             {/* Title & Badge */}
             <div className="flex items-start justify-between mb-2">
@@ -25,7 +25,7 @@ const ProductSkeleton = ({ count = 8 }) => {
                 <div className="h-3 bg-gray-200 rounded w-1/4" />
                 <div className="h-4 bg-gray-200 rounded w-1/3" />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="h-6 bg-gray-200 rounded w-1/4" />
                 <div className="h-5 bg-gray-200 rounded w-1/5" />

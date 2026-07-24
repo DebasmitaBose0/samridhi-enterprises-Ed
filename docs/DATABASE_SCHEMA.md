@@ -12,19 +12,19 @@ Image fields are stored as **Cloudinary** references:
 
 ### Collections at a glance
 
-| Model | File | Purpose |
-|-------|------|---------|
-| User | `userModel.js` | Accounts, auth, roles, OTP state |
-| Brand | `brandModel.js` | Vehicle brands |
-| BikeModel | `bikeModel.js` | Bike models (compatibility targets) |
-| Part | `partModel.js` | Spare-part products + reviews |
-| Cart | `cartModel.js` | One active cart per user |
-| Order | `orderModel.js` | Placed orders (cart snapshot) |
-| Coupon | `couponModel.js` | Discount coupons |
-| Address | `addressModel.js` | User shipping addresses |
-| PaymentSettings | `paymentSettingsModel.js` | Store UPI id + QR image (singleton) |
-| SupportTicket | `supportTicketModel.js` | Support tickets + message threads |
-| Garage | `garageModel.js` | User vehicle garage for compatibility lookups |
+| Model           | File                      | Purpose                                       |
+| --------------- | ------------------------- | --------------------------------------------- |
+| User            | `userModel.js`            | Accounts, auth, roles, OTP state              |
+| Brand           | `brandModel.js`           | Vehicle brands                                |
+| BikeModel       | `bikeModel.js`            | Bike models (compatibility targets)           |
+| Part            | `partModel.js`            | Spare-part products + reviews                 |
+| Cart            | `cartModel.js`            | One active cart per user                      |
+| Order           | `orderModel.js`           | Placed orders (cart snapshot)                 |
+| Coupon          | `couponModel.js`          | Discount coupons                              |
+| Address         | `addressModel.js`         | User shipping addresses                       |
+| PaymentSettings | `paymentSettingsModel.js` | Store UPI id + QR image (singleton)           |
+| SupportTicket   | `supportTicketModel.js`   | Support tickets + message threads             |
+| Garage          | `garageModel.js`          | User vehicle garage for compatibility lookups |
 
 ---
 
@@ -32,26 +32,26 @@ Image fields are stored as **Cloudinary** references:
 
 Registered as model `User`.
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `name` | String | Required |
-| `email` | String | Required, unique |
-| `password` | String | Required, bcrypt-hashed on save (`pre("save")`) |
-| `avatar` | String | Cloudinary URL, default `""` |
-| `mobile` | String | Default `null` |
-| `verifyEmail` | Boolean | Default `false` — set true after OTP verification |
-| `login_otp` | String | Email-verification OTP, default `null` |
-| `login_expiry` | Date | OTP expiry, default `null` |
-| `failedAttempts` | Number | Default `0` |
-| `lastLogin` | Date | Default `null` |
-| `status` | String enum | `Active` \| `Warning` \| `Suspended` (default `Active`) |
-| `addressDetails` | [ObjectId → `address`] | User's addresses |
-| `orderHistory` | [ObjectId → `Order`] | User's orders |
-| `forgot_password_otp` | String | Reset OTP, default `null` |
-| `forgot_password_expiry` | Date | Reset OTP expiry |
-| `resetPasswordToken` | String | Hashed reset token |
-| `resetPasswordExpire` | Date | Reset token expiry |
-| `role` | String enum | `ADMIN` \| `MANAGER` \| `USER` (default `USER`) |
+| Field                    | Type                   | Notes                                                   |
+| ------------------------ | ---------------------- | ------------------------------------------------------- |
+| `name`                   | String                 | Required                                                |
+| `email`                  | String                 | Required, unique                                        |
+| `password`               | String                 | Required, bcrypt-hashed on save (`pre("save")`)         |
+| `avatar`                 | String                 | Cloudinary URL, default `""`                            |
+| `mobile`                 | String                 | Default `null`                                          |
+| `verifyEmail`            | Boolean                | Default `false` — set true after OTP verification       |
+| `login_otp`              | String                 | Email-verification OTP, default `null`                  |
+| `login_expiry`           | Date                   | OTP expiry, default `null`                              |
+| `failedAttempts`         | Number                 | Default `0`                                             |
+| `lastLogin`              | Date                   | Default `null`                                          |
+| `status`                 | String enum            | `Active` \| `Warning` \| `Suspended` (default `Active`) |
+| `addressDetails`         | [ObjectId → `address`] | User's addresses                                        |
+| `orderHistory`           | [ObjectId → `Order`]   | User's orders                                           |
+| `forgot_password_otp`    | String                 | Reset OTP, default `null`                               |
+| `forgot_password_expiry` | Date                   | Reset OTP expiry                                        |
+| `resetPasswordToken`     | String                 | Hashed reset token                                      |
+| `resetPasswordExpire`    | Date                   | Reset token expiry                                      |
+| `role`                   | String enum            | `ADMIN` \| `MANAGER` \| `USER` (default `USER`)         |
 
 **Methods**
 
@@ -68,10 +68,10 @@ Registered as model `User`.
 
 Registered as model `Brand`.
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `name` | String | Required, unique |
-| `images` | [{ public_id, url }] | Brand logo(s) |
+| Field    | Type                 | Notes            |
+| -------- | -------------------- | ---------------- |
+| `name`   | String               | Required, unique |
+| `images` | [{ public_id, url }] | Brand logo(s)    |
 
 ---
 
@@ -79,14 +79,14 @@ Registered as model `Brand`.
 
 Registered as model `BikeModel`.
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `name` | String | Required |
-| `brand` | ObjectId → `Brand` | Required |
-| `yearStart` | Number | `min: 1900`, default `null` — empty = any year |
-| `yearEnd` | Number | `min: 1900`, default `null` — empty = any year |
-| `engineType` | String | Trimmed, default `""` — empty = any engine |
-| `images` | [{ public_id, url }] | Model image(s) |
+| Field        | Type                 | Notes                                          |
+| ------------ | -------------------- | ---------------------------------------------- |
+| `name`       | String               | Required                                       |
+| `brand`      | ObjectId → `Brand`   | Required                                       |
+| `yearStart`  | Number               | `min: 1900`, default `null` — empty = any year |
+| `yearEnd`    | Number               | `min: 1900`, default `null` — empty = any year |
+| `engineType` | String               | Trimmed, default `""` — empty = any engine     |
+| `images`     | [{ public_id, url }] | Model image(s)                                 |
 
 The optional year/engine fields make a model "universal" when left empty, so
 older records keep matching compatibility searches.
@@ -97,30 +97,30 @@ older records keep matching compatibility searches.
 
 Registered as model `Part`. This is the product catalogue.
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `product_id` | String | Required (business SKU) |
-| `name` | String | Required |
-| `description` | String | Optional |
-| `price` | Number | Required, `min: 0` |
-| `stock` | Number | Required, default `1`, `min: 0` |
-| `vehicleCompatibility` | [ObjectId → `BikeModel`] | Compatible bike models |
-| `ratings` | Number | `0–5`, default `0` (aggregate) |
-| `category` | String enum | One of the predefined catalogue categories (below) |
-| `images` | [{ public_id, url }] | Product images (up to 5) |
-| `numOfReviews` | Number | Default `0` |
-| `reviews` | [Review] | Embedded reviews (below) |
-| `bestseller` | Boolean | Default `false` |
+| Field                  | Type                     | Notes                                              |
+| ---------------------- | ------------------------ | -------------------------------------------------- |
+| `product_id`           | String                   | Required (business SKU)                            |
+| `name`                 | String                   | Required                                           |
+| `description`          | String                   | Optional                                           |
+| `price`                | Number                   | Required, `min: 0`                                 |
+| `stock`                | Number                   | Required, default `1`, `min: 0`                    |
+| `vehicleCompatibility` | [ObjectId → `BikeModel`] | Compatible bike models                             |
+| `ratings`              | Number                   | `0–5`, default `0` (aggregate)                     |
+| `category`             | String enum              | One of the predefined catalogue categories (below) |
+| `images`               | [{ public_id, url }]     | Product images (up to 5)                           |
+| `numOfReviews`         | Number                   | Default `0`                                        |
+| `reviews`              | [Review]                 | Embedded reviews (below)                           |
+| `bestseller`           | Boolean                  | Default `false`                                    |
 
 **Embedded review**
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `user` | ObjectId → `User` | Required |
-| `name` | String | Required (captured at post time) |
-| `rating` | Number | Required, `1–5` |
-| `comment` | String | Required |
-| `createdAt` | Date | Default now |
+| Field       | Type              | Notes                            |
+| ----------- | ----------------- | -------------------------------- |
+| `user`      | ObjectId → `User` | Required                         |
+| `name`      | String            | Required (captured at post time) |
+| `rating`    | Number            | Required, `1–5`                  |
+| `comment`   | String            | Required                         |
+| `createdAt` | Date              | Default now                      |
 
 **`category` enum**
 
@@ -143,20 +143,20 @@ Registered as model `Part`. This is the product catalogue.
 
 Registered as model `Cart`. One cart per user.
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `user` | ObjectId → `User` | Required |
-| `items` | [CartItem] | Lines (below) |
-| `total` | Number | Default `0`, `min: 0` |
+| Field   | Type              | Notes                 |
+| ------- | ----------------- | --------------------- |
+| `user`  | ObjectId → `User` | Required              |
+| `items` | [CartItem]        | Lines (below)         |
+| `total` | Number            | Default `0`, `min: 0` |
 
 **Cart item**
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `part` | ObjectId → `Part` | Required |
-| `quantity` | Number | Required, `min: 1` |
-| `price` | Number | Required, `min: 0` (unit price) |
-| `name` | String | Required (snapshot) |
+| Field      | Type              | Notes                           |
+| ---------- | ----------------- | ------------------------------- |
+| `part`     | ObjectId → `Part` | Required                        |
+| `quantity` | Number            | Required, `min: 1`              |
+| `price`    | Number            | Required, `min: 0` (unit price) |
+| `name`     | String            | Required (snapshot)             |
 
 ---
 
@@ -165,22 +165,22 @@ Registered as model `Cart`. One cart per user.
 Registered as model `Order`. Stores a **snapshot** of the cart so the order is
 unaffected by later changes to (or deletion of) the underlying parts.
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `user` | ObjectId → `User` | Required |
-| `items` | [OrderItem] | Snapshot lines: `{ part, name, price, quantity, image }` |
-| `shippingAddress` | Object | `{ fullName, phone, addressLine, city, state, pincode }` |
-| `itemsTotal` | Number | Required, `min: 0` |
-| `couponCode` | String | Default `""` |
-| `discount` | Number | Default `0`, `min: 0` |
-| `grandTotal` | Number | `itemsTotal − discount`, default `0` |
-| `paymentMethod` | String enum | `COD` \| `Online` (required) |
-| `paymentStatus` | String enum | `Pending` \| `Pending Verification` \| `Success` \| `Failed` (default `Pending`) |
-| `orderStatus` | String enum | `Pending Verification` \| `Confirmed` \| `Processing` \| `Shipped` \| `Delivered` \| `Cancelled` (default `Confirmed`) |
-| `paymentScreenshot` | { public_id, url } | Customer UPI proof (Online only) |
-| `upiReference` | String | Default `""` |
-| `verifiedAt` | Date | Default `null` |
-| `rejectionReason` | String | Default `""` |
+| Field               | Type               | Notes                                                                                                                  |
+| ------------------- | ------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `user`              | ObjectId → `User`  | Required                                                                                                               |
+| `items`             | [OrderItem]        | Snapshot lines: `{ part, name, price, quantity, image }`                                                               |
+| `shippingAddress`   | Object             | `{ fullName, phone, addressLine, city, state, pincode }`                                                               |
+| `itemsTotal`        | Number             | Required, `min: 0`                                                                                                     |
+| `couponCode`        | String             | Default `""`                                                                                                           |
+| `discount`          | Number             | Default `0`, `min: 0`                                                                                                  |
+| `grandTotal`        | Number             | `itemsTotal − discount`, default `0`                                                                                   |
+| `paymentMethod`     | String enum        | `COD` \| `Online` (required)                                                                                           |
+| `paymentStatus`     | String enum        | `Pending` \| `Pending Verification` \| `Success` \| `Failed` (default `Pending`)                                       |
+| `orderStatus`       | String enum        | `Pending Verification` \| `Confirmed` \| `Processing` \| `Shipped` \| `Delivered` \| `Cancelled` (default `Confirmed`) |
+| `paymentScreenshot` | { public_id, url } | Customer UPI proof (Online only)                                                                                       |
+| `upiReference`      | String             | Default `""`                                                                                                           |
+| `verifiedAt`        | Date               | Default `null`                                                                                                         |
+| `rejectionReason`   | String             | Default `""`                                                                                                           |
 
 ---
 
@@ -188,18 +188,18 @@ unaffected by later changes to (or deletion of) the underlying parts.
 
 Registered as model `Coupon`.
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `code` | String | Required, unique, uppercased, trimmed |
-| `description` | String | Default `""` |
-| `discountType` | String enum | `PERCENTAGE` \| `FIXED` (required) |
-| `discountValue` | Number | Required, `min: 0` (percent for PERCENTAGE, ₹ for FIXED) |
-| `minOrderAmount` | Number | Default `0` — minimum subtotal to apply |
-| `maxDiscount` | Number | Default `0` — caps ₹ discount for PERCENTAGE (`0` = no cap) |
-| `expiresAt` | Date | Default `null` |
-| `usageLimit` | Number | Default `0` — total redemptions allowed (`0` = unlimited) |
-| `usedCount` | Number | Default `0` |
-| `isActive` | Boolean | Default `true` |
+| Field            | Type        | Notes                                                       |
+| ---------------- | ----------- | ----------------------------------------------------------- |
+| `code`           | String      | Required, unique, uppercased, trimmed                       |
+| `description`    | String      | Default `""`                                                |
+| `discountType`   | String enum | `PERCENTAGE` \| `FIXED` (required)                          |
+| `discountValue`  | Number      | Required, `min: 0` (percent for PERCENTAGE, ₹ for FIXED)    |
+| `minOrderAmount` | Number      | Default `0` — minimum subtotal to apply                     |
+| `maxDiscount`    | Number      | Default `0` — caps ₹ discount for PERCENTAGE (`0` = no cap) |
+| `expiresAt`      | Date        | Default `null`                                              |
+| `usageLimit`     | Number      | Default `0` — total redemptions allowed (`0` = unlimited)   |
+| `usedCount`      | Number      | Default `0`                                                 |
+| `isActive`       | Boolean     | Default `true`                                              |
 
 ---
 
@@ -207,17 +207,17 @@ Registered as model `Coupon`.
 
 Registered as model `address`.
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `user` | ObjectId → `User` | Required |
-| `label` | String | Optional, max 40 chars (e.g. "Home") |
-| `fullName` | String | Required |
-| `phone` | String | Required |
-| `addressLine` | String | Required |
-| `city` | String | Required |
-| `state` | String | Default `""` |
-| `pincode` | String | Required |
-| `isDefault` | Boolean | Default `false` — exactly one default per user (enforced by the controller) |
+| Field         | Type              | Notes                                                                       |
+| ------------- | ----------------- | --------------------------------------------------------------------------- |
+| `user`        | ObjectId → `User` | Required                                                                    |
+| `label`       | String            | Optional, max 40 chars (e.g. "Home")                                        |
+| `fullName`    | String            | Required                                                                    |
+| `phone`       | String            | Required                                                                    |
+| `addressLine` | String            | Required                                                                    |
+| `city`        | String            | Required                                                                    |
+| `state`       | String            | Default `""`                                                                |
+| `pincode`     | String            | Required                                                                    |
+| `isDefault`   | Boolean           | Default `false` — exactly one default per user (enforced by the controller) |
 
 ---
 
@@ -226,9 +226,9 @@ Registered as model `address`.
 Registered as model `PaymentSettings`. Effectively a singleton holding the
 store's UPI payment details surfaced at checkout.
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `upiId` | String | Default `""` |
+| Field     | Type               | Notes        |
+| --------- | ------------------ | ------------ |
+| `upiId`   | String             | Default `""` |
 | `qrImage` | { public_id, url } | UPI QR image |
 
 ---
@@ -239,23 +239,23 @@ Registered as model `SupportTicket`, with an embedded message sub-schema.
 
 **Ticket**
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `user` | ObjectId → `User` | Required |
-| `subject` | String | Required, max 150 chars |
-| `category` | String enum | `Order` \| `Payment` \| `Product` \| `Shipping` \| `Account` \| `Other` (default `Other`) |
-| `status` | String enum | `Open` \| `In Progress` \| `Resolved` \| `Closed` (default `Open`) |
-| `priority` | String enum | `Low` \| `Medium` \| `High` (default `Medium`) |
-| `messages` | [TicketMessage] | Conversation thread (opening message pushed at creation) |
-| `lastActivityAt` | Date | Updated on each message/status change (admin sorting) |
+| Field            | Type              | Notes                                                                                     |
+| ---------------- | ----------------- | ----------------------------------------------------------------------------------------- |
+| `user`           | ObjectId → `User` | Required                                                                                  |
+| `subject`        | String            | Required, max 150 chars                                                                   |
+| `category`       | String enum       | `Order` \| `Payment` \| `Product` \| `Shipping` \| `Account` \| `Other` (default `Other`) |
+| `status`         | String enum       | `Open` \| `In Progress` \| `Resolved` \| `Closed` (default `Open`)                        |
+| `priority`       | String enum       | `Low` \| `Medium` \| `High` (default `Medium`)                                            |
+| `messages`       | [TicketMessage]   | Conversation thread (opening message pushed at creation)                                  |
+| `lastActivityAt` | Date              | Updated on each message/status change (admin sorting)                                     |
 
 **Ticket message**
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `sender` | String enum | `USER` \| `ADMIN` (required) |
-| `senderName` | String | Display name captured at post time |
-| `body` | String | Required |
+| Field        | Type        | Notes                              |
+| ------------ | ----------- | ---------------------------------- |
+| `sender`     | String enum | `USER` \| `ADMIN` (required)       |
+| `senderName` | String      | Display name captured at post time |
+| `body`       | String      | Required                           |
 
 ---
 
@@ -266,14 +266,14 @@ Registered as model `SupportTicket`, with an embedded message sub-schema.
 Registered as model `Garage`, holding vehicles a user has added for quick
 compatibility lookups.
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `user` | ObjectId → `User` | Required, indexed |
-| `bikeModel` | ObjectId → `BikeModel` | Required |
-| `year` | Number | Required, 1980–2030 |
-| `variant` | String | Optional, max 100 chars |
-| `features` | String | Optional, max 500 chars |
-| `isDefault` | Boolean | Default `false` — exactly one default per user (enforced by the controller) |
+| Field       | Type                   | Notes                                                                       |
+| ----------- | ---------------------- | --------------------------------------------------------------------------- |
+| `user`      | ObjectId → `User`      | Required, indexed                                                           |
+| `bikeModel` | ObjectId → `BikeModel` | Required                                                                    |
+| `year`      | Number                 | Required, 1980–2030                                                         |
+| `variant`   | String                 | Optional, max 100 chars                                                     |
+| `features`  | String                 | Optional, max 500 chars                                                     |
+| `isDefault` | Boolean                | Default `false` — exactly one default per user (enforced by the controller) |
 
 Indexes: `{ user: 1, isDefault: 1 }`, `{ user: 1, bikeModel: 1 }`. Maximum 10
 vehicles per user (enforced by the controller).

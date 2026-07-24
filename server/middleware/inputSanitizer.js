@@ -1,5 +1,5 @@
-import catchAsyncErrors from "./catchAsyncErrors.js";
-import ErrorHandler from "../utils/errorHandler.js";
+import catchAsyncErrors from './catchAsyncErrors.js';
+import ErrorHandler from '../utils/errorHandler.js';
 
 /**
  * XSS and HTML Input Sanitizer Middleware.
@@ -7,18 +7,18 @@ import ErrorHandler from "../utils/errorHandler.js";
  * from user input in req.body, req.query, and req.params.
  */
 const sanitizeInput = (val) => {
-  if (typeof val === "string") {
+  if (typeof val === 'string') {
     // Strip script tags, html tags, and potentially harmful event handlers
     return val
-      .replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, "")
-      .replace(/<[^>]*>/g, "")
-      .replace(/on\w+="[^"]*"/g, "")
+      .replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, '')
+      .replace(/<[^>]*>/g, '')
+      .replace(/on\w+="[^"]*"/g, '')
       .trim();
   }
   if (Array.isArray(val)) {
     return val.map((item) => sanitizeInput(item));
   }
-  if (typeof val === "object" && val !== null) {
+  if (typeof val === 'object' && val !== null) {
     const sanitized = {};
     for (const key in val) {
       if (Object.prototype.hasOwnProperty.call(val, key)) {

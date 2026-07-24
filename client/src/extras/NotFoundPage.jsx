@@ -1,7 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ArrowLeft, Coffee } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ArrowLeft, Coffee } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const NotFoundPage = () => {
         className="text-center max-w-2xl px-6 py-16 rounded-2xl backdrop-blur-sm bg-white/30 dark:bg-black/20 shadow-xl"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
+        transition={{ duration: 0.8, ease: 'easeOut' }}
       >
         <motion.div
           className="flex justify-center mb-8"
@@ -99,9 +99,9 @@ const NotFoundPage = () => {
           <motion.div className="w-full h-1 bg-amber-200 dark:bg-amber-900/30 rounded-full mt-3 overflow-hidden">
             <motion.div
               className="h-full bg-gradient-to-r from-amber-600 to-amber-500 dark:from-amber-500 dark:to-amber-700"
-              initial={{ width: "100%" }}
-              animate={{ width: "0%" }}
-              transition={{ duration: 10, ease: "linear" }}
+              initial={{ width: '100%' }}
+              animate={{ width: '0%' }}
+              transition={{ duration: 10, ease: 'linear' }}
             />
           </motion.div>
         </motion.div>

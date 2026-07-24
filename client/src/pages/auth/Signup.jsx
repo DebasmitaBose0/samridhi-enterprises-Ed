@@ -1,24 +1,36 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, User } from "lucide-react";
-import { useSelector, useDispatch } from "react-redux";
-import { toast } from "react-toastify";
-import { clearError, signupUser } from "@/store/auth-slice/user";
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail, Lock, Eye, EyeOff, User } from 'lucide-react';
+import { useSelector, useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import { clearError, signupUser } from '@/store/auth-slice/user';
 
 const passwordRequirements = [
-  { id: "length", label: "8+ characters", test: (pw) => pw.length >= 8 },
-  { id: "uppercase", label: "Uppercase letter (A-Z)", test: (pw) => /[A-Z]/.test(pw) },
-  { id: "lowercase", label: "Lowercase letter (a-z)", test: (pw) => /[a-z]/.test(pw) },
-  { id: "number", label: "Number (0-9)", test: (pw) => /\d/.test(pw) },
-  { id: "special", label: "Special character", test: (pw) => /[!@#$%^&*(),.?":{}|<>]/.test(pw) },
+  { id: 'length', label: '8+ characters', test: (pw) => pw.length >= 8 },
+  {
+    id: 'uppercase',
+    label: 'Uppercase letter (A-Z)',
+    test: (pw) => /[A-Z]/.test(pw),
+  },
+  {
+    id: 'lowercase',
+    label: 'Lowercase letter (a-z)',
+    test: (pw) => /[a-z]/.test(pw),
+  },
+  { id: 'number', label: 'Number (0-9)', test: (pw) => /\d/.test(pw) },
+  {
+    id: 'special',
+    label: 'Special character',
+    test: (pw) => /[!@#$%^&*(),.?":{}|<>]/.test(pw),
+  },
 ];
 
 const SignUp = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -28,19 +40,22 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name || !email || !password) {
-      toast.error("Please fill in all fields");
+      toast.error('Please fill in all fields');
       return;
     }
-    const isAllRequirementsMet = passwordRequirements.every((req) => req.test(password));
+    const isAllRequirementsMet = passwordRequirements.every((req) =>
+      req.test(password)
+    );
     if (!isAllRequirementsMet) {
-      toast.error("Password does not meet complexity requirements!");
+      toast.error('Password does not meet complexity requirements!');
       return;
     }
     try {
       await dispatch(signupUser({ name, email, password })).unwrap();
-      toast.success("Welcome to Samridhi Enterprises!");
-      navigate("/login");
-    } catch (err) { // eslint-disable-line no-unused-vars
+      toast.success('Welcome to Samridhi Enterprises!');
+      navigate('/login');
+    } catch (err) {
+      // eslint-disable-line no-unused-vars
       // Error is handled by the useEffect listening to state.auth.error
     }
   };
@@ -59,7 +74,7 @@ const SignUp = () => {
       scale: 1,
       transition: {
         duration: 0.6,
-        ease: "easeOut",
+        ease: 'easeOut',
         staggerChildren: 0.15,
       },
     },
@@ -72,12 +87,12 @@ const SignUp = () => {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { duration: 0.5, ease: "easeOut" },
+      transition: { duration: 0.5, ease: 'easeOut' },
     },
   };
 
   const buttonVariants = {
-    hover: { scale: 1.05, boxShadow: "0px 4px 20px rgba(59, 130, 246, 0.5)" },
+    hover: { scale: 1.05, boxShadow: '0px 4px 20px rgba(59, 130, 246, 0.5)' },
     tap: { scale: 0.98 },
   };
 
@@ -163,7 +178,7 @@ const SignUp = () => {
             <motion.input
               id="signup-password"
               variants={itemVariants}
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               autoComplete="new-password"
               placeholder="Create Password"
               value={password}
@@ -189,22 +204,34 @@ const SignUp = () => {
             {password && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
+                animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 className="mb-5 p-4 bg-blue-50/50 rounded-xl border border-blue-200 text-xs sm:text-sm text-blue-800 space-y-2 overflow-hidden"
               >
-                <p className="font-semibold text-blue-900 mb-1">Password requirements:</p>
+                <p className="font-semibold text-blue-900 mb-1">
+                  Password requirements:
+                </p>
                 <div className="grid grid-cols-2 gap-2">
                   {passwordRequirements.map((req) => {
                     const isMet = req.test(password);
                     return (
                       <div key={req.id} className="flex items-center gap-2">
-                        <span className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${
-                          isMet ? "bg-green-500 text-white" : "bg-blue-200/50 text-blue-400"
-                        }`}>
-                          {isMet ? "✓" : "✗"}
+                        <span
+                          className={`w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                            isMet
+                              ? 'bg-green-500 text-white'
+                              : 'bg-blue-200/50 text-blue-400'
+                          }`}
+                        >
+                          {isMet ? '✓' : '✗'}
                         </span>
-                        <span className={isMet ? "text-green-600 line-through decoration-green-400/50" : "text-blue-600/70"}>
+                        <span
+                          className={
+                            isMet
+                              ? 'text-green-600 line-through decoration-green-400/50'
+                              : 'text-blue-600/70'
+                          }
+                        >
                           {req.label}
                         </span>
                       </div>
@@ -248,7 +275,7 @@ const SignUp = () => {
                 Creating Account...
               </>
             ) : (
-              "Sign Up"
+              'Sign Up'
             )}
           </motion.button>
 

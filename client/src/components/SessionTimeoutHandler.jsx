@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { logoutUser } from "../store/auth-slice/user";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useState, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '../store/auth-slice/user';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const SessionTimeoutHandler = () => {
   const dispatch = useDispatch();
@@ -39,7 +39,13 @@ const SessionTimeoutHandler = () => {
     }
 
     // Event listeners to track activity
-    const activityEvents = ["mousedown", "mousemove", "keypress", "scroll", "touchstart"];
+    const activityEvents = [
+      'mousedown',
+      'mousemove',
+      'keypress',
+      'scroll',
+      'touchstart',
+    ];
     activityEvents.forEach((event) => {
       window.addEventListener(event, resetTimer);
     });
@@ -106,8 +112,8 @@ const SessionTimeoutHandler = () => {
   const handleLogout = () => {
     setShowWarning(false);
     dispatch(logoutUser()).then(() => {
-      toast.warning("You have been logged out due to inactivity.");
-      navigate("/login");
+      toast.warning('You have been logged out due to inactivity.');
+      navigate('/login');
     });
   };
 
@@ -136,15 +142,15 @@ const SessionTimeoutHandler = () => {
                 />
               </svg>
             </div>
-            
+
             <h3 className="text-2xl font-bold text-gray-900 mb-2">
               Are you still there?
             </h3>
-            
+
             <p className="text-gray-600 mb-6 leading-relaxed">
-              Your session will expire in{" "}
-              <span className="font-bold text-amber-600">{countdown}</span> seconds due
-              to inactivity.
+              Your session will expire in{' '}
+              <span className="font-bold text-amber-600">{countdown}</span>{' '}
+              seconds due to inactivity.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3">

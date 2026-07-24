@@ -1,5 +1,5 @@
-import jwt from "jsonwebtoken";
-import User from "../models/userModel.js";
+import jwt from 'jsonwebtoken';
+import User from '../models/userModel.js';
 
 const admin = async (req, res, next) => {
   try {
@@ -7,18 +7,19 @@ const admin = async (req, res, next) => {
 
     if (req.cookies && req.cookies.token) {
       token = req.cookies.token;
-    } 
-    else if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
-      token = req.headers.authorization.split(" ")[1];
-    } 
-    else if (req.headers.authorization) {
+    } else if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith('Bearer ')
+    ) {
+      token = req.headers.authorization.split(' ')[1];
+    } else if (req.headers.authorization) {
       token = req.headers.authorization;
     }
 
-    if (!token || token === "null") {
+    if (!token || token === 'null') {
       return res.status(401).json({
         success: false,
-        message: "Not Authorized Login Again",
+        message: 'Not Authorized Login Again',
       });
     }
 
@@ -26,21 +27,23 @@ const admin = async (req, res, next) => {
 
     const user = await User.findById(decodedData.id);
     if (!user) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: 'User not found' });
     }
 
-    if (user.status === "Suspended") {
+    if (user.status === 'Suspended') {
       return res.status(403).json({
         success: false,
-        message: "Your account is suspended",
+        message: 'Your account is suspended',
       });
     }
 
-    const isAdmin = user.role === "ADMIN" || user.role === "MANAGER";
+    const isAdmin = user.role === 'ADMIN' || user.role === 'MANAGER';
     if (!isAdmin) {
       return res.status(403).json({
         success: false,
-        message: "Forbidden: admin access revoked",
+        message: 'Forbidden: admin access revoked',
       });
     }
 

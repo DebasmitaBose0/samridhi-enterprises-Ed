@@ -17,24 +17,24 @@ root README) as the starting point.
 
 ## Backend — `server/.env`
 
-| Variable | Required | Used by | Description |
-|----------|----------|---------|-------------|
-| `PORT` | No | `index.js` | Port the API listens on. Defaults to `5000`. |
-| `MONGODB_URL` | **Yes** | `config/connectDB.js` | MongoDB connection string (e.g. a MongoDB Atlas SRV URI). |
-| `JWT_SECRET` | **Yes** | `utils/jwtToken.js`, `middleware/auth.js`, `middleware/Admin.js` | Secret used to sign and verify JWTs. |
-| `JWT_EXPIRE` | **Yes** | `models/userModel.js` (`getJWTToken`) | JWT lifetime, e.g. `7d`. |
-| `COOKIE_EXPIRE` | **Yes** | `utils/jwtToken.js` | Auth-cookie lifetime in **days** (used as `COOKIE_EXPIRE × 24h`). |
-| `NODE_ENV` | No | `utils/jwtToken.js` | `development` or `production`. In production the auth cookie is `secure` and `sameSite: "None"`. |
-| `FRONTEND_URL` | **Yes** | `index.js` (CORS) | Primary allowed browser origin for CORS. |
-| `FRONTEND_WWW_URL` | No | `index.js` (CORS) | Additional allowed origin (e.g. the `www.` variant). |
-| `CLOUDINARY_NAME` | **Yes** | `index.js` (Cloudinary config) | Cloudinary cloud name. |
-| `CLOUDINARY_API_KEY` | **Yes** | `index.js` (Cloudinary config) | Cloudinary API key. |
-| `CLOUDINARY_API_SECRET` | **Yes** | `index.js` (Cloudinary config) | Cloudinary API secret. |
-| `BREVO_API_KEY` | **Yes** | Email sending (`sib-api-v3-sdk`) | Brevo (Sendinblue) API key used to send OTP / transactional email. Set to `dummy` to bypass sending in development. |
-| `BREVO_SENDER_EMAIL` | No | `config/sendEmail.js` | From-address for transactional emails. Defaults to `noreply@samridhienterprises.com`. |
-| `BREVO_SENDER_NAME` | No | `config/sendEmail.js` | Display name for the sender. Defaults to `Samridhi Enterprises`. |
-| `OTP_MODE` | No | `controllers/userController.js` | `production` (default) sends OTPs via email; `dev` logs them to the console for local testing without Brevo. |
-| `TRUST_PROXY` | No | `index.js` | Set when deployed behind a trusted reverse proxy so rate limiter IP resolution works correctly. |
+| Variable                | Required | Used by                                                          | Description                                                                                                         |
+| ----------------------- | -------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `PORT`                  | No       | `index.js`                                                       | Port the API listens on. Defaults to `5000`.                                                                        |
+| `MONGODB_URL`           | **Yes**  | `config/connectDB.js`                                            | MongoDB connection string (e.g. a MongoDB Atlas SRV URI).                                                           |
+| `JWT_SECRET`            | **Yes**  | `utils/jwtToken.js`, `middleware/auth.js`, `middleware/Admin.js` | Secret used to sign and verify JWTs.                                                                                |
+| `JWT_EXPIRE`            | **Yes**  | `models/userModel.js` (`getJWTToken`)                            | JWT lifetime, e.g. `7d`.                                                                                            |
+| `COOKIE_EXPIRE`         | **Yes**  | `utils/jwtToken.js`                                              | Auth-cookie lifetime in **days** (used as `COOKIE_EXPIRE × 24h`).                                                   |
+| `NODE_ENV`              | No       | `utils/jwtToken.js`                                              | `development` or `production`. In production the auth cookie is `secure` and `sameSite: "None"`.                    |
+| `FRONTEND_URL`          | **Yes**  | `index.js` (CORS)                                                | Primary allowed browser origin for CORS.                                                                            |
+| `FRONTEND_WWW_URL`      | No       | `index.js` (CORS)                                                | Additional allowed origin (e.g. the `www.` variant).                                                                |
+| `CLOUDINARY_NAME`       | **Yes**  | `index.js` (Cloudinary config)                                   | Cloudinary cloud name.                                                                                              |
+| `CLOUDINARY_API_KEY`    | **Yes**  | `index.js` (Cloudinary config)                                   | Cloudinary API key.                                                                                                 |
+| `CLOUDINARY_API_SECRET` | **Yes**  | `index.js` (Cloudinary config)                                   | Cloudinary API secret.                                                                                              |
+| `BREVO_API_KEY`         | **Yes**  | Email sending (`sib-api-v3-sdk`)                                 | Brevo (Sendinblue) API key used to send OTP / transactional email. Set to `dummy` to bypass sending in development. |
+| `BREVO_SENDER_EMAIL`    | No       | `config/sendEmail.js`                                            | From-address for transactional emails. Defaults to `noreply@samridhienterprises.com`.                               |
+| `BREVO_SENDER_NAME`     | No       | `config/sendEmail.js`                                            | Display name for the sender. Defaults to `Samridhi Enterprises`.                                                    |
+| `OTP_MODE`              | No       | `controllers/userController.js`                                  | `production` (default) sends OTPs via email; `dev` logs them to the console for local testing without Brevo.        |
+| `TRUST_PROXY`           | No       | `index.js`                                                       | Set when deployed behind a trusted reverse proxy so rate limiter IP resolution works correctly.                     |
 
 > `http://localhost:5173` (the Vite dev origin) is always allowed by CORS in
 > addition to `FRONTEND_URL` / `FRONTEND_WWW_URL`, so local development works
@@ -44,9 +44,9 @@ root README) as the starting point.
 
 ## Frontend — `client/.env`
 
-| Variable | Required | Used by | Description |
-|----------|----------|---------|-------------|
-| `VITE_BACKEND_URL` | **Yes** | Axios API client | Base URL of the backend API the SPA calls. Vite only exposes variables prefixed with `VITE_` to client code. |
+| Variable           | Required | Used by          | Description                                                                                                  |
+| ------------------ | -------- | ---------------- | ------------------------------------------------------------------------------------------------------------ |
+| `VITE_BACKEND_URL` | **Yes**  | Axios API client | Base URL of the backend API the SPA calls. Vite only exposes variables prefixed with `VITE_` to client code. |
 
 For local development this is typically `http://localhost:5000`.
 

@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchBrands } from "../store/product/brandSlice";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchBrands } from '../store/product/brandSlice';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 
 export default function BrandList() {
   const dispatch = useDispatch();
@@ -34,18 +34,19 @@ export default function BrandList() {
     updateScrollButtons();
     const container = scrollRef.current;
     if (container) {
-      container.addEventListener("scroll", updateScrollButtons);
-      window.addEventListener("resize", updateScrollButtons);
+      container.addEventListener('scroll', updateScrollButtons);
+      window.addEventListener('resize', updateScrollButtons);
     }
     return () => {
       if (container) {
-        container.removeEventListener("scroll", updateScrollButtons);
-        window.removeEventListener("resize", updateScrollButtons);
+        container.removeEventListener('scroll', updateScrollButtons);
+        window.removeEventListener('resize', updateScrollButtons);
       }
     };
   }, [brands]);
 
-  if (loading) return <div className="text-center py-8 text-blue-500">Loading...</div>;
+  if (loading)
+    return <div className="text-center py-8 text-blue-500">Loading...</div>;
   if (error) return <div className="text-center text-red-500">{error}</div>;
 
   const sortedBrands = [...brands].sort((a, b) =>
@@ -58,8 +59,8 @@ export default function BrandList() {
     const container = scrollRef.current;
     if (container) {
       container.scrollBy({
-        left: direction === "left" ? -scrollBy : scrollBy,
-        behavior: "smooth",
+        left: direction === 'left' ? -scrollBy : scrollBy,
+        behavior: 'smooth',
       });
     }
   };
@@ -83,7 +84,7 @@ export default function BrandList() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           className="absolute left-2 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 text-blue-500 dark:text-blue-400 shadow-lg p-2 rounded-full z-10"
-          onClick={() => handleScroll("left")}
+          onClick={() => handleScroll('left')}
         >
           <ChevronLeft size={22} />
         </motion.button>
@@ -94,7 +95,7 @@ export default function BrandList() {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           className="absolute right-2 top-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 text-blue-500 dark:text-blue-400 shadow-lg p-2 rounded-full z-10"
-          onClick={() => handleScroll("right")}
+          onClick={() => handleScroll('right')}
         >
           <ChevronRight size={22} />
         </motion.button>

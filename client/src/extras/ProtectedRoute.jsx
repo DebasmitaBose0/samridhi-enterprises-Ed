@@ -1,12 +1,15 @@
-import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
-import { Navigate } from "react-router-dom";
-import Loader from "./Loader";
+import PropTypes from 'prop-types';
+import { useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
+import Loader from './Loader';
 
 const ProtectedRoute = ({ children, isAdmin = false }) => {
-  const { isAuthenticated, user, verifyEmail, loading } = useSelector((state) => state.auth);
-  const storedVerifyEmail = localStorage.getItem("verifyEmail") === "true";
-  const effectiveVerifyEmail = verifyEmail ?? storedVerifyEmail ?? user?.verifyEmail ?? false;
+  const { isAuthenticated, user, verifyEmail, loading } = useSelector(
+    (state) => state.auth
+  );
+  const storedVerifyEmail = localStorage.getItem('verifyEmail') === 'true';
+  const effectiveVerifyEmail =
+    verifyEmail ?? storedVerifyEmail ?? user?.verifyEmail ?? false;
   const hasExistingUser = Boolean(user);
 
   // Allow the route to render from the already stored user data while a refresh
@@ -28,7 +31,10 @@ const ProtectedRoute = ({ children, isAdmin = false }) => {
     return <Navigate to="/verify-email" replace />;
   }
 
-  if (isAdmin === true && !(user?.role === "ADMIN" || user?.role === "MANAGER")) {
+  if (
+    isAdmin === true &&
+    !(user?.role === 'ADMIN' || user?.role === 'MANAGER')
+  ) {
     return <Navigate to="/login" replace />;
   }
 

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 // A promotional coupon that customers can apply at checkout. The discount is
 // always recomputed server-side from these fields at validation and at order
@@ -7,19 +7,19 @@ const couponSchema = new mongoose.Schema(
   {
     code: {
       type: String,
-      required: [true, "Please enter a coupon code"],
+      required: [true, 'Please enter a coupon code'],
       unique: true,
       uppercase: true,
       trim: true,
     },
     description: {
       type: String,
-      default: "",
+      default: '',
       trim: true,
     },
     discountType: {
       type: String,
-      enum: ["PERCENTAGE", "FIXED"],
+      enum: ['PERCENTAGE', 'FIXED'],
       required: true,
     },
     // For PERCENTAGE this is a percent (0-100); for FIXED it is a rupee amount.
@@ -72,7 +72,7 @@ couponSchema.methods.computeDiscount = function (subtotal) {
   if (subtotal < this.minOrderAmount) return 0;
 
   let discount =
-    this.discountType === "PERCENTAGE"
+    this.discountType === 'PERCENTAGE'
       ? (subtotal * this.discountValue) / 100
       : this.discountValue;
 
@@ -86,14 +86,14 @@ couponSchema.methods.computeDiscount = function (subtotal) {
 
 // Whether the coupon is currently redeemable (active, not expired, under limit).
 couponSchema.methods.isRedeemable = function () {
-  if (!this.isActive) return { ok: false, reason: "This coupon is not active" };
+  if (!this.isActive) return { ok: false, reason: 'This coupon is not active' };
   if (this.expiresAt && this.expiresAt.getTime() < Date.now()) {
-    return { ok: false, reason: "This coupon has expired" };
+    return { ok: false, reason: 'This coupon has expired' };
   }
   if (this.usageLimit > 0 && this.usedCount >= this.usageLimit) {
-    return { ok: false, reason: "This coupon has reached its usage limit" };
+    return { ok: false, reason: 'This coupon has reached its usage limit' };
   }
-  return { ok: true, reason: "" };
+  return { ok: true, reason: '' };
 };
 
-export default mongoose.model("Coupon", couponSchema);
+export default mongoose.model('Coupon', couponSchema);

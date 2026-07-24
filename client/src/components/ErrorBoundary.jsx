@@ -1,7 +1,7 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { AlertTriangle, Home, RefreshCw } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import PropTypes from 'prop-types';
+import { AlertTriangle, Home, RefreshCw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -14,7 +14,7 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error("ErrorBoundary caught an error:", error, errorInfo);
+    console.error('ErrorBoundary caught an error:', error, errorInfo);
   }
 
   handleReload = () => {
@@ -22,7 +22,7 @@ class ErrorBoundary extends React.Component {
   };
 
   handleGoHome = () => {
-    this.props.navigate("/", { replace: true });
+    this.props.navigate('/', { replace: true });
     this.setState({ hasError: false, error: null });
   };
 
@@ -38,7 +38,8 @@ class ErrorBoundary extends React.Component {
               Something went wrong
             </h1>
             <p className="mt-3 text-base leading-7 text-gray-600">
-              An unexpected error occurred in the application. Please try reloading the page or go back to the homepage.
+              An unexpected error occurred in the application. Please try
+              reloading the page or go back to the homepage.
             </p>
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <button

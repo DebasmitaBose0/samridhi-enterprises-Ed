@@ -1,55 +1,61 @@
-import { useEffect, useState, useRef, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchParts, clearPartError } from "../../store/product/partsSlice";
-import { addToCompare, removeFromCompare } from "../../store/product/compareSlice";
-import { addToWishlist, removeFromWishlist } from "../../store/wishlist/wishlistSlice";
-import { fetchBikeModels } from "../../store/product/bikeSlice";
-import { toast } from "react-toastify";
+import { useEffect, useState, useRef, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchParts, clearPartError } from '../../store/product/partsSlice';
+import {
+  addToCompare,
+  removeFromCompare,
+} from '../../store/product/compareSlice';
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from '../../store/wishlist/wishlistSlice';
+import { fetchBikeModels } from '../../store/product/bikeSlice';
+import { toast } from 'react-toastify';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import Loader from "../../extras/Loader";
-import { Link, useSearchParams } from "react-router-dom";
-import { GitCompare, Check, Heart } from "lucide-react";
-import SEO from "../../components/SEO";
-import ProductSkeleton from "../../components/ProductSkeleton";
+import { motion, AnimatePresence } from 'framer-motion';
+import Loader from '../../extras/Loader';
+import { Link, useSearchParams } from 'react-router-dom';
+import { GitCompare, Check, Heart } from 'lucide-react';
+import SEO from '../../components/SEO';
+import ProductSkeleton from '../../components/ProductSkeleton';
 
 const categories = [
-  "Abs",
-  "Belt Drive",
-  "Bearing Kit",
-  "BSVI Products",
-  "Brake Switch",
-  "CDEI",
-  "C.D.I",
-  "Consumable Filters",
-  "Drum / Drum Plate / Coupling Hub / Wheel Rim",
-  "Electronic Relay",
-  "Filters & Horn",
-  "Footrest Bracket",
-  "Other Products (Cylinder Kit / Fuse Blade)",
-  "Flasher / Buzzer",
-  "Floor Set / Speedo Gear",
-  "Fuel Items",
-  "Lever & Yoke",
-  "Varroc Oil / Grease",
-  "Handle Bar Switch / Handle Bar Weigth",
-  "Ignition Coil",
-  "Insulator For Carburetor",
-  "Lighting Products",
-  "Magneto Assembly & Spares",
-  "Modular Switch",
-  "Oring",
-  "Other (Oil Pump Gear / Clutch Roller / Plug Cap)",
-  "Oil Seal Kit",
-  "Gaskets",
-  "Rear View Mirror",
-  "Regulator Rectifier (R.R.)",
-  "Rubber Items",
-  "Relay",
-  "Switches / Locks",
-  "Starter Moter & Spares",
-  "Speedo Gear",
-  "TPSR / Swing Arm Assly",
+  'Abs',
+  'Belt Drive',
+  'Bearing Kit',
+  'BSVI Products',
+  'Brake Switch',
+  'CDEI',
+  'C.D.I',
+  'Consumable Filters',
+  'Drum / Drum Plate / Coupling Hub / Wheel Rim',
+  'Electronic Relay',
+  'Filters & Horn',
+  'Footrest Bracket',
+  'Other Products (Cylinder Kit / Fuse Blade)',
+  'Flasher / Buzzer',
+  'Floor Set / Speedo Gear',
+  'Fuel Items',
+  'Lever & Yoke',
+  'Varroc Oil / Grease',
+  'Handle Bar Switch / Handle Bar Weigth',
+  'Ignition Coil',
+  'Insulator For Carburetor',
+  'Lighting Products',
+  'Magneto Assembly & Spares',
+  'Modular Switch',
+  'Oring',
+  'Other (Oil Pump Gear / Clutch Roller / Plug Cap)',
+  'Oil Seal Kit',
+  'Gaskets',
+  'Rear View Mirror',
+  'Regulator Rectifier (R.R.)',
+  'Rubber Items',
+  'Relay',
+  'Switches / Locks',
+  'Starter Moter & Spares',
+  'Speedo Gear',
+  'TPSR / Swing Arm Assly',
 ];
 
 // A bike model with no year range is treated as compatible with any year, so
@@ -64,8 +70,8 @@ const modelMatchesYear = (model, year) => {
 // An empty engine type means the model matches any engine.
 const modelMatchesEngine = (model, engine) => {
   if (!engine) return true;
-  const et = (model.engineType || "").trim();
-  return et === "" || et.toLowerCase() === engine.toLowerCase();
+  const et = (model.engineType || '').trim();
+  return et === '' || et.toLowerCase() === engine.toLowerCase();
 };
 
 const ProductsPage = () => {
@@ -89,16 +95,16 @@ const ProductsPage = () => {
 
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(
-    () => searchParams.get("search") || ""
+    () => searchParams.get('search') || ''
   );
-  const [filterCategory, setFilterCategory] = useState("");
+  const [filterCategory, setFilterCategory] = useState('');
   const [filterCompatibility, setFilterCompatibility] = useState([]);
-  const [filterBrand, setFilterBrand] = useState("");
-  const [filterYear, setFilterYear] = useState("");
-  const [filterEngine, setFilterEngine] = useState("");
-  const [filterStockStatus, setFilterStockStatus] = useState("");
+  const [filterBrand, setFilterBrand] = useState('');
+  const [filterYear, setFilterYear] = useState('');
+  const [filterEngine, setFilterEngine] = useState('');
+  const [filterStockStatus, setFilterStockStatus] = useState('');
   const [isFilterDropdownOpen, setIsFilterDropdownOpen] = useState(false);
-  const [sortBy, setSortBy] = useState("name");
+  const [sortBy, setSortBy] = useState('name');
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const filterDropdownRef = useRef(null);
   // Pagination state
@@ -110,10 +116,10 @@ const ProductsPage = () => {
     dispatch(fetchBikeModels());
   }, [dispatch]);
 
- // Keep the brand filter in sync with `?brand=` so links from the
+  // Keep the brand filter in sync with `?brand=` so links from the
   // homepage's Top Brands cards land on a pre-filtered products page.
   useEffect(() => {
-    const brandParam = searchParams.get("brand");
+    const brandParam = searchParams.get('brand');
     if (brandParam) setFilterBrand(brandParam);
   }, [searchParams]);
 
@@ -136,8 +142,8 @@ const ProductsPage = () => {
         setIsFilterDropdownOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Whenever any filter or sort changes, jump back to page 1 so the user
@@ -145,7 +151,17 @@ const ProductsPage = () => {
   // search, and the results now fit on 2 pages).
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, filterCategory, filterCompatibility, filterBrand, filterYear, filterEngine, filterStockStatus, sortBy, priceRange]);
+  }, [
+    searchTerm,
+    filterCategory,
+    filterCompatibility,
+    filterBrand,
+    filterYear,
+    filterEngine,
+    filterStockStatus,
+    sortBy,
+    priceRange,
+  ]);
 
   const handleFilterCompatibilityChange = (modelId) => {
     setFilterCompatibility((prev) =>
@@ -156,13 +172,13 @@ const ProductsPage = () => {
   };
 
   const clearAllFilters = () => {
-    setSearchTerm("");
-    setFilterCategory("");
+    setSearchTerm('');
+    setFilterCategory('');
     setFilterCompatibility([]);
-    setFilterBrand("");
-    setFilterYear("");
-    setFilterEngine("");
-    setFilterStockStatus("");
+    setFilterBrand('');
+    setFilterYear('');
+    setFilterEngine('');
+    setFilterStockStatus('');
     setPriceRange([0, 10000]);
     setCurrentPage(1);
   };
@@ -182,7 +198,7 @@ const ProductsPage = () => {
     const set = new Set();
     for (const model of bikeModels) {
       const brandName = model?.brand?.name;
-      if (brandName && brandName !== "N/A") set.add(brandName);
+      if (brandName && brandName !== 'N/A') set.add(brandName);
     }
     return Array.from(set).sort((a, b) => a.localeCompare(b));
   }, [bikeModels]);
@@ -190,7 +206,7 @@ const ProductsPage = () => {
   const engineOptions = useMemo(() => {
     const set = new Set();
     for (const model of bikeModels) {
-      const engine = (model?.engineType || "").trim();
+      const engine = (model?.engineType || '').trim();
       if (engine) set.add(engine);
     }
     return Array.from(set).sort((a, b) => a.localeCompare(b));
@@ -222,7 +238,7 @@ const ProductsPage = () => {
     e.preventDefault();
     e.stopPropagation();
     if (!isAuthenticated) {
-      toast.info("Please log in to use your wishlist");
+      toast.info('Please log in to use your wishlist');
       return;
     }
     if (isInWishlist(part._id)) {
@@ -237,7 +253,7 @@ const ProductsPage = () => {
       const matchesSearch =
         part.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         part.product_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (part.category || "").toLowerCase().includes(searchTerm.toLowerCase());
+        (part.category || '').toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = filterCategory
         ? part.category === filterCategory
         : true;
@@ -264,13 +280,13 @@ const ProductsPage = () => {
       const matchesPrice =
         part.price >= priceRange[0] && part.price <= priceRange[1];
       const matchesStockStatus = filterStockStatus
-        ? filterStockStatus === "inStock"
+        ? filterStockStatus === 'inStock'
           ? part.stock > 15
-          : filterStockStatus === "lowStock"
-          ? part.stock >= 5 && part.stock <= 15
-          : filterStockStatus === "outOfStock"
-          ? part.stock < 5
-          : true
+          : filterStockStatus === 'lowStock'
+            ? part.stock >= 5 && part.stock <= 15
+            : filterStockStatus === 'outOfStock'
+              ? part.stock < 5
+              : true
         : true;
       return (
         matchesSearch &&
@@ -283,13 +299,13 @@ const ProductsPage = () => {
     })
     .sort((a, b) => {
       switch (sortBy) {
-        case "price-low":
+        case 'price-low':
           return a.price - b.price;
-        case "price-high":
+        case 'price-high':
           return b.price - a.price;
-        case "stock":
+        case 'stock':
           return b.stock - a.stock;
-        case "newest":
+        case 'newest':
           return new Date(b.createdAt) - new Date(a.createdAt);
         default:
           return a.name.localeCompare(b.name);
@@ -304,7 +320,10 @@ const ProductsPage = () => {
   // Clamp currentPage in case filters just reduced the page count.
   const safePage = Math.min(currentPage, totalPages);
   const pageStart = (safePage - 1) * pageSize;
-  const paginatedParts = sortedAndFilteredParts.slice(pageStart, pageStart + pageSize);
+  const paginatedParts = sortedAndFilteredParts.slice(
+    pageStart,
+    pageStart + pageSize
+  );
 
   const activeFiltersCount = [
     searchTerm,
@@ -330,7 +349,11 @@ const ProductsPage = () => {
           <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
             Bike Spares Parts
           </h1>
-          <span className="text-sm text-gray-500 dark:text-gray-400" aria-live="polite" aria-atomic="true">
+          <span
+            className="text-sm text-gray-500 dark:text-gray-400"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             {totalFiltered} of {parts.length} parts
           </span>
         </div>
@@ -342,7 +365,9 @@ const ProductsPage = () => {
             <div className="flex flex-col gap-4">
               <div className="flex-1 max-w-md">
                 <div className="relative">
-                  <label htmlFor="parts-search" className="sr-only">Search parts</label>
+                  <label htmlFor="parts-search" className="sr-only">
+                    Search parts
+                  </label>
                   <input
                     id="parts-search"
                     type="text"
@@ -368,7 +393,9 @@ const ProductsPage = () => {
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                <label htmlFor="parts-sort" className="sr-only">Sort products</label>
+                <label htmlFor="parts-sort" className="sr-only">
+                  Sort products
+                </label>
                 <select
                   id="parts-sort"
                   value={sortBy}
@@ -414,7 +441,7 @@ const ProductsPage = () => {
                 >
                   {filterCompatibility.length > 0
                     ? `${filterCompatibility.length} model(s) selected`
-                    : "All Models"}
+                    : 'All Models'}
                 </div>
                 <AnimatePresence>
                   {isFilterDropdownOpen && (
@@ -498,7 +525,9 @@ const ProductsPage = () => {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer disabled:bg-gray-100 disabled:cursor-not-allowed"
                 >
                   <option value="">
-                    {engineOptions.length === 0 ? "No engine data" : "Any Engine"}
+                    {engineOptions.length === 0
+                      ? 'No engine data'
+                      : 'Any Engine'}
                   </option>
                   {engineOptions.map((eng) => (
                     <option key={eng} value={eng}>
@@ -571,9 +600,9 @@ const ProductsPage = () => {
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                 >
                   <option value="">All Stock Status</option>
-                  <option value="inStock">In Stock ({">"} 15)</option>
+                  <option value="inStock">In Stock ({'>'} 15)</option>
                   <option value="lowStock">Low Stock (5–15)</option>
-                  <option value="outOfStock">Out of Stock ({"<"} 5)</option>
+                  <option value="outOfStock">Out of Stock ({'<'} 5)</option>
                 </select>
               </div>
               <div className="flex items-end">
@@ -595,18 +624,25 @@ const ProductsPage = () => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 px-4 gap-2">
           <p className="text-sm text-gray-600 dark:text-gray-300">
             {totalFiltered === 0
-              ? "No parts found"
-              : `Showing ${pageStart + 1}–${Math.min(pageStart + pageSize, totalFiltered)} of ${totalFiltered} part${totalFiltered !== 1 ? "s" : ""}${totalFiltered < parts.length ? ` (filtered from ${parts.length})` : ""}`}
+              ? 'No parts found'
+              : `Showing ${pageStart + 1}–${Math.min(pageStart + pageSize, totalFiltered)} of ${totalFiltered} part${totalFiltered !== 1 ? 's' : ''}${totalFiltered < parts.length ? ` (filtered from ${parts.length})` : ''}`}
           </p>
           <div className="flex items-center gap-2">
-            <label className="text-sm text-gray-500 dark:text-gray-400">Per page:</label>
+            <label className="text-sm text-gray-500 dark:text-gray-400">
+              Per page:
+            </label>
             <select
               value={pageSize}
-              onChange={(e) => { setPageSize(Number(e.target.value)); setCurrentPage(1); }}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setCurrentPage(1);
+              }}
               className="text-sm border border-gray-300 dark:border-gray-600 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {[6, 12, 24, 48].map((n) => (
-                <option key={n} value={n}>{n}</option>
+                <option key={n} value={n}>
+                  {n}
+                </option>
               ))}
             </select>
           </div>
@@ -659,21 +695,21 @@ const ProductsPage = () => {
                     onClick={(e) => toggleWishlist(e, part)}
                     aria-label={
                       isInWishlist(part._id)
-                        ? "Remove from wishlist"
-                        : "Add to wishlist"
+                        ? 'Remove from wishlist'
+                        : 'Add to wishlist'
                     }
                     title={
                       isInWishlist(part._id)
-                        ? "Remove from wishlist"
-                        : "Add to wishlist"
+                        ? 'Remove from wishlist'
+                        : 'Add to wishlist'
                     }
                     className="absolute top-2 right-2 z-10 p-2 rounded-full bg-white/90 backdrop-blur shadow hover:bg-white transition"
                   >
                     <Heart
                       className={`w-5 h-5 transition ${
                         isInWishlist(part._id)
-                          ? "fill-red-500 text-red-500"
-                          : "text-gray-500"
+                          ? 'fill-red-500 text-red-500'
+                          : 'text-gray-500'
                       }`}
                     />
                   </button>
@@ -682,7 +718,7 @@ const ProductsPage = () => {
                       <motion.img
                         src={
                           part.images[0]?.url ||
-                          "https://via.placeholder.com/150"
+                          'https://via.placeholder.com/150'
                         }
                         alt={part.name}
                         loading="lazy"
@@ -705,7 +741,9 @@ const ProductsPage = () => {
                       </div>
                       <div className="space-y-2 mb-3 sm:mb-4">
                         <div className="flex items-center justify-between text-sm">
-                          <span className="text-gray-500 dark:text-gray-400">Product ID:</span>
+                          <span className="text-gray-500 dark:text-gray-400">
+                            Product ID:
+                          </span>
                           <span className="font-mono text-gray-900 dark:text-gray-100">
                             {part.product_id}
                           </span>
@@ -717,37 +755,37 @@ const ProductsPage = () => {
                           <span
                             className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                               part.stock > 15
-                                ? "bg-green-100 text-green-800"
+                                ? 'bg-green-100 text-green-800'
                                 : part.stock >= 5
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-red-100 text-red-800"
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-red-100 text-red-800'
                             }`}
                           >
                             {part.stock > 15
-                              ? "In Stock"
+                              ? 'In Stock'
                               : part.stock >= 5
-                              ? "Low Stock"
-                              : "Out of Stock"}
+                                ? 'Low Stock'
+                                : 'Out of Stock'}
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 dark:text-gray-300">
-                          <span className="font-medium">Category:</span>{" "}
+                          <span className="font-medium">Category:</span>{' '}
                           {part.category}
                         </div>
                         <div className="text-sm text-gray-600 dark:text-gray-300">
-                          <span className="font-medium">Compatible:</span>{" "}
+                          <span className="font-medium">Compatible:</span>{' '}
                           <span className="uppercase">
                             {part.vehicleCompatibility.length > 0
                               ? part.vehicleCompatibility
                                   .slice(0, 2)
                                   .map((v) => v.name || v)
-                                  .join(", ") +
+                                  .join(', ') +
                                 (part.vehicleCompatibility.length > 2
                                   ? ` +${
                                       part.vehicleCompatibility.length - 2
                                     } more`
-                                  : "")
-                              : "None specified"}
+                                  : '')
+                              : 'None specified'}
                           </span>
                         </div>
                       </div>
@@ -763,16 +801,16 @@ const ProductsPage = () => {
                       }
                       className={`w-full inline-flex items-center justify-center gap-2 text-sm font-medium px-3 py-2 rounded-lg border transition disabled:opacity-50 disabled:cursor-not-allowed ${
                         isInCompare(part._id)
-                          ? "bg-blue-600 border-blue-600 text-white hover:bg-blue-700"
-                          : "bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:border-blue-400 hover:text-blue-600"
+                          ? 'bg-blue-600 border-blue-600 text-white hover:bg-blue-700'
+                          : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:border-blue-400 hover:text-blue-600'
                       }`}
                       title={
                         !isInCompare(part._id) &&
                         compareItems.length >= compareMax
                           ? `You can compare up to ${compareMax} products`
                           : isInCompare(part._id)
-                          ? "Remove from comparison"
-                          : "Add to comparison"
+                            ? 'Remove from comparison'
+                            : 'Add to comparison'
                       }
                     >
                       {isInCompare(part._id) ? (
@@ -798,7 +836,10 @@ const ProductsPage = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => { setCurrentPage(1); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+              onClick={() => {
+                setCurrentPage(1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               disabled={safePage === 1}
               className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               aria-label="First page"
@@ -808,7 +849,10 @@ const ProductsPage = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => { setCurrentPage((p) => Math.max(1, p - 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+              onClick={() => {
+                setCurrentPage((p) => Math.max(1, p - 1));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               disabled={safePage === 1}
               className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               aria-label="Previous page"
@@ -824,14 +868,17 @@ const ProductsPage = () => {
                   key={n}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => { setCurrentPage(n); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                  onClick={() => {
+                    setCurrentPage(n);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                   className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
                     n === safePage
-                      ? "bg-blue-500 text-white border-blue-500 font-semibold"
-                      : "border-gray-300 dark:border-gray-600 hover:bg-gray-50"
+                      ? 'bg-blue-500 text-white border-blue-500 font-semibold'
+                      : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50'
                   }`}
                   aria-label={`Page ${n}`}
-                  aria-current={n === safePage ? "page" : undefined}
+                  aria-current={n === safePage ? 'page' : undefined}
                 >
                   {n}
                 </motion.button>
@@ -840,7 +887,10 @@ const ProductsPage = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => { setCurrentPage((p) => Math.min(totalPages, p + 1)); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+              onClick={() => {
+                setCurrentPage((p) => Math.min(totalPages, p + 1));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               disabled={safePage === totalPages}
               className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               aria-label="Next page"
@@ -850,7 +900,10 @@ const ProductsPage = () => {
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => { setCurrentPage(totalPages); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+              onClick={() => {
+                setCurrentPage(totalPages);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
               disabled={safePage === totalPages}
               className="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               aria-label="Last page"

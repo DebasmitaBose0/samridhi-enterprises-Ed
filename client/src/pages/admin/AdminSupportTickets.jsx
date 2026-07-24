@@ -1,17 +1,10 @@
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
-import {
-  ArrowLeft,
-  LifeBuoy,
-  Send,
-  Inbox,
-  Clock,
-  Filter,
-} from "lucide-react";
+import { motion } from 'framer-motion';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, LifeBuoy, Send, Inbox, Clock, Filter } from 'lucide-react';
 import {
   adminGetTickets,
   adminGetTicket,
@@ -19,35 +12,42 @@ import {
   adminReply,
   clearCurrentTicket,
   clearSupportError,
-} from "@/store/order/supportSlice";
-import Loader from "../../extras/Loader";
-import EmptyState from "../../components/EmptyState";
+} from '@/store/order/supportSlice';
+import Loader from '../../extras/Loader';
+import EmptyState from '../../components/EmptyState';
 
-const STATUSES = ["Open", "In Progress", "Resolved", "Closed"];
-const CATEGORIES = ["Order", "Payment", "Product", "Shipping", "Account", "Other"];
+const STATUSES = ['Open', 'In Progress', 'Resolved', 'Closed'];
+const CATEGORIES = [
+  'Order',
+  'Payment',
+  'Product',
+  'Shipping',
+  'Account',
+  'Other',
+];
 
 const statusStyle = (status) => {
   switch (status) {
-    case "Open":
-      return "bg-blue-100 text-blue-700";
-    case "In Progress":
-      return "bg-amber-100 text-amber-700";
-    case "Resolved":
-      return "bg-emerald-100 text-emerald-700";
-    case "Closed":
-      return "bg-gray-200 text-gray-600";
+    case 'Open':
+      return 'bg-blue-100 text-blue-700';
+    case 'In Progress':
+      return 'bg-amber-100 text-amber-700';
+    case 'Resolved':
+      return 'bg-emerald-100 text-emerald-700';
+    case 'Closed':
+      return 'bg-gray-200 text-gray-600';
     default:
-      return "bg-gray-100 text-gray-600";
+      return 'bg-gray-100 text-gray-600';
   }
 };
 
 const formatDateTime = (d) =>
-  new Date(d).toLocaleString("en-IN", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  new Date(d).toLocaleString('en-IN', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
 const AdminSupportTickets = () => {
@@ -56,10 +56,10 @@ const AdminSupportTickets = () => {
     (s) => s.support
   );
 
-  const [statusFilter, setStatusFilter] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [view, setView] = useState("list"); // "list" | "detail"
-  const [reply, setReply] = useState("");
+  const [statusFilter, setStatusFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [view, setView] = useState('list'); // "list" | "detail"
+  const [reply, setReply] = useState('');
   const threadEndRef = useRef(null);
 
   useEffect(() => {
@@ -76,43 +76,46 @@ const AdminSupportTickets = () => {
   }, [error, dispatch]);
 
   useEffect(() => {
-    if (view === "detail" && threadEndRef.current) {
-      threadEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (view === 'detail' && threadEndRef.current) {
+      threadEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [current, view]);
 
   const stats = useMemo(() => {
-    const open = tickets.filter((t) => t.status === "Open").length;
-    const inProgress = tickets.filter((t) => t.status === "In Progress").length;
+    const open = tickets.filter((t) => t.status === 'Open').length;
+    const inProgress = tickets.filter((t) => t.status === 'In Progress').length;
     const resolved = tickets.filter(
-      (t) => t.status === "Resolved" || t.status === "Closed"
+      (t) => t.status === 'Resolved' || t.status === 'Closed'
     ).length;
     return { total: tickets.length, open, inProgress, resolved };
   }, [tickets]);
 
   const openTicket = (id) => {
     dispatch(adminGetTicket(id));
-    setView("detail");
+    setView('detail');
   };
 
   const backToList = () => {
     dispatch(clearCurrentTicket());
-    setView("list");
-    dispatch(adminGetTickets({ status: statusFilter, category: categoryFilter }));
+    setView('list');
+    dispatch(
+      adminGetTickets({ status: statusFilter, category: categoryFilter })
+    );
   };
 
   const handleStatusChange = async (status) => {
     const res = await dispatch(adminUpdateStatus({ id: current._id, status }));
-    if (adminUpdateStatus.fulfilled.match(res)) toast.success(`Marked ${status}`);
+    if (adminUpdateStatus.fulfilled.match(res))
+      toast.success(`Marked ${status}`);
   };
 
   const handleReply = async () => {
     if (!reply.trim()) return;
     const res = await dispatch(adminReply({ id: current._id, body: reply }));
-    if (adminReply.fulfilled.match(res)) setReply("");
+    if (adminReply.fulfilled.match(res)) setReply('');
   };
 
-  if (loading && view === "list" && tickets.length === 0) return <Loader />;
+  if (loading && view === 'list' && tickets.length === 0) return <Loader />;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 pt-28 pb-16 px-4">
@@ -133,7 +136,9 @@ const AdminSupportTickets = () => {
             <LifeBuoy className="w-7 h-7 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Support Tickets</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Support Tickets
+            </h1>
             <p className="text-gray-600">
               Manage and respond to customer support requests
             </p>
@@ -141,22 +146,24 @@ const AdminSupportTickets = () => {
         </motion.div>
 
         {/* ── LIST VIEW ── */}
-        {view === "list" && (
+        {view === 'list' && (
           <>
             {/* Summary cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
               {[
-                { label: "Total", value: stats.total },
-                { label: "Open", value: stats.open },
-                { label: "In Progress", value: stats.inProgress },
-                { label: "Resolved", value: stats.resolved },
+                { label: 'Total', value: stats.total },
+                { label: 'Open', value: stats.open },
+                { label: 'In Progress', value: stats.inProgress },
+                { label: 'Resolved', value: stats.resolved },
               ].map((s) => (
                 <div
                   key={s.label}
                   className="bg-white/80 backdrop-blur-sm rounded-2xl shadow border border-white/20 p-5"
                 >
                   <p className="text-sm text-gray-500">{s.label}</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-1">{s.value}</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-1">
+                    {s.value}
+                  </p>
                 </div>
               ))}
             </div>
@@ -197,7 +204,11 @@ const AdminSupportTickets = () => {
               <EmptyState
                 icon="Inbox"
                 title="No tickets found"
-                message={tickets.length > 0 ? "No tickets match the current filters. Try adjusting your search criteria." : "No support tickets have been raised yet."}
+                message={
+                  tickets.length > 0
+                    ? 'No tickets match the current filters. Try adjusting your search criteria.'
+                    : 'No support tickets have been raised yet.'
+                }
               />
             ) : (
               <div className="space-y-3">
@@ -213,7 +224,7 @@ const AdminSupportTickets = () => {
                           {t.subject}
                         </p>
                         <p className="text-sm text-gray-500 mt-1">
-                          {t.user?.name || "Customer"} · {t.category} ·{" "}
+                          {t.user?.name || 'Customer'} · {t.category} ·{' '}
                           <span className="inline-flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {formatDateTime(t.lastActivityAt)}
@@ -236,7 +247,7 @@ const AdminSupportTickets = () => {
         )}
 
         {/* ── DETAIL VIEW ── */}
-        {view === "detail" && current && (
+        {view === 'detail' && current && (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -256,9 +267,10 @@ const AdminSupportTickets = () => {
                       {current.subject}
                     </h2>
                     <p className="text-sm text-gray-500 mt-0.5">
-                      {current.user?.name || "Customer"}
-                      {current.user?.email ? ` · ${current.user.email}` : ""} ·{" "}
-                      {current.category} · {current.priority} priority
+                      {current.user?.name || 'Customer'}
+                      {current.user?.email
+                        ? ` · ${current.user.email}`
+                        : ''} · {current.category} · {current.priority} priority
                     </p>
                   </div>
                   <span
@@ -280,8 +292,8 @@ const AdminSupportTickets = () => {
                       disabled={actionLoading || current.status === s}
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition disabled:opacity-100 ${
                         current.status === s
-                          ? "bg-blue-600 text-white border-blue-600"
-                          : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                       }`}
                     >
                       {s}
@@ -296,20 +308,20 @@ const AdminSupportTickets = () => {
                   <div
                     key={m._id || idx}
                     className={`flex ${
-                      m.sender === "ADMIN" ? "justify-end" : "justify-start"
+                      m.sender === 'ADMIN' ? 'justify-end' : 'justify-start'
                     }`}
                   >
                     <div
                       className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
-                        m.sender === "ADMIN"
-                          ? "bg-blue-600 text-white rounded-br-sm"
-                          : "bg-gray-100 text-gray-800 rounded-bl-sm"
+                        m.sender === 'ADMIN'
+                          ? 'bg-blue-600 text-white rounded-br-sm'
+                          : 'bg-gray-100 text-gray-800 rounded-bl-sm'
                       }`}
                     >
                       <p className="text-xs font-medium opacity-80 mb-0.5">
-                        {m.sender === "ADMIN"
-                          ? m.senderName || "Support Team"
-                          : m.senderName || "Customer"}
+                        {m.sender === 'ADMIN'
+                          ? m.senderName || 'Support Team'
+                          : m.senderName || 'Customer'}
                       </p>
                       <p className="whitespace-pre-wrap text-sm">{m.body}</p>
                       <p className="text-[10px] opacity-70 mt-1 text-right">

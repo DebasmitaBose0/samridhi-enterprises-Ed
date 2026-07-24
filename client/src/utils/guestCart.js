@@ -1,6 +1,6 @@
-import axiosInstance from "@/api";
+import axiosInstance from '@/api';
 
-const GUEST_CART_KEY = "guest_cart";
+const GUEST_CART_KEY = 'guest_cart';
 const EMPTY_CART = { items: [], total: 0 };
 
 const getItemPartId = (item) => item.part?._id || item.part || item.partId;
@@ -12,7 +12,7 @@ const getItemPartId = (item) => item.part?._id || item.part || item.partId;
 // `item.part.price` from evaluating to undefined and poisoning the cart total
 // with NaN.
 const getUnitPrice = (item) => {
-  if (typeof item.part?.price === "number") {
+  if (typeof item.part?.price === 'number') {
     return item.part.price;
   }
   const total = Number(item.price);
@@ -101,7 +101,9 @@ export const updateGuestCartItem = ({ partId, quantity }) => {
 
 export const removeGuestCartItem = (partId) => {
   const guestCart = getGuestCart();
-  guestCart.items = guestCart.items.filter((item) => getItemPartId(item) !== partId);
+  guestCart.items = guestCart.items.filter(
+    (item) => getItemPartId(item) !== partId
+  );
   saveGuestCart(guestCart);
   return getGuestCart();
 };
@@ -118,15 +120,12 @@ export const syncGuestCart = async () => {
     return { warnings: [] };
   }
 
-  const response = await axiosInstance.post(
-    "/api/cart/sync",
-    {
-      items: guestCart.items.map((item) => ({
-        partId: getItemPartId(item),
-        quantity: item.quantity,
-      })),
-    }
-  );
+  const response = await axiosInstance.post('/api/cart/sync', {
+    items: guestCart.items.map((item) => ({
+      partId: getItemPartId(item),
+      quantity: item.quantity,
+    })),
+  });
 
   const failedPartIds = new Set(
     (response.data.failedItems || []).map((item) => item.partId)

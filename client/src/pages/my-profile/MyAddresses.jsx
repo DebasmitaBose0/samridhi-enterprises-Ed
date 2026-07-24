@@ -1,17 +1,9 @@
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
-import {
-  MapPin,
-  Plus,
-  Pencil,
-  Trash2,
-  Star,
-  Check,
-  X,
-} from "lucide-react";
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { MapPin, Plus, Pencil, Trash2, Star, Check, X } from 'lucide-react';
 import {
   getMyAddresses,
   addAddress,
@@ -20,17 +12,17 @@ import {
   setDefaultAddress,
   clearAddressError,
   clearAddressSuccess,
-} from "@/store/order/addressSlice";
-import Loader from "../../extras/Loader";
+} from '@/store/order/addressSlice';
+import Loader from '../../extras/Loader';
 
 const EMPTY_FORM = {
-  label: "",
-  fullName: "",
-  phone: "",
-  addressLine: "",
-  city: "",
-  state: "",
-  pincode: "",
+  label: '',
+  fullName: '',
+  phone: '',
+  addressLine: '',
+  city: '',
+  state: '',
+  pincode: '',
   isDefault: false,
 };
 
@@ -44,7 +36,7 @@ const MyAddresses = () => {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [confirmDelete, setConfirmDelete] = useState(null);
-  const [formError, setFormError] = useState("");
+  const [formError, setFormError] = useState('');
 
   useEffect(() => {
     dispatch(getMyAddresses());
@@ -70,37 +62,37 @@ const MyAddresses = () => {
   const openCreate = () => {
     setEditingId(null);
     setForm(EMPTY_FORM);
-    setFormError("");
+    setFormError('');
     setShowModal(true);
   };
 
   const openEdit = (a) => {
     setEditingId(a._id);
     setForm({
-      label: a.label || "",
-      fullName: a.fullName || "",
-      phone: a.phone || "",
-      addressLine: a.addressLine || "",
-      city: a.city || "",
-      state: a.state || "",
-      pincode: a.pincode || "",
+      label: a.label || '',
+      fullName: a.fullName || '',
+      phone: a.phone || '',
+      addressLine: a.addressLine || '',
+      city: a.city || '',
+      state: a.state || '',
+      pincode: a.pincode || '',
       isDefault: a.isDefault || false,
     });
-    setFormError("");
+    setFormError('');
     setShowModal(true);
   };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
+    setForm((f) => ({ ...f, [name]: type === 'checkbox' ? checked : value }));
   };
 
   const handleSubmit = () => {
-    setFormError("");
-    const required = ["fullName", "phone", "addressLine", "city", "pincode"];
+    setFormError('');
+    const required = ['fullName', 'phone', 'addressLine', 'city', 'pincode'];
     const missing = required.filter((f) => !String(form[f]).trim());
     if (missing.length > 0) {
-      return setFormError("Please fill all required fields");
+      return setFormError('Please fill all required fields');
     }
     if (editingId) {
       dispatch(updateAddress({ id: editingId, payload: form }));
@@ -157,7 +149,9 @@ const MyAddresses = () => {
               <div
                 key={a._id}
                 className={`bg-white/80 backdrop-blur-sm rounded-2xl shadow border p-5 ${
-                  a.isDefault ? "border-blue-400 ring-1 ring-blue-200" : "border-white/20"
+                  a.isDefault
+                    ? 'border-blue-400 ring-1 ring-blue-200'
+                    : 'border-white/20'
                 }`}
               >
                 <div className="flex items-start justify-between gap-2 mb-2">
@@ -194,7 +188,7 @@ const MyAddresses = () => {
                 <p className="text-sm text-gray-600 mt-0.5">{a.phone}</p>
                 <p className="text-sm text-gray-600 mt-1">
                   {a.addressLine}, {a.city}
-                  {a.state ? `, ${a.state}` : ""} — {a.pincode}
+                  {a.state ? `, ${a.state}` : ''} — {a.pincode}
                 </p>
                 {!a.isDefault && (
                   <button
@@ -221,7 +215,7 @@ const MyAddresses = () => {
           >
             <div className="flex items-center justify-between px-6 py-4 border-b">
               <h2 className="text-xl font-bold text-gray-900">
-                {editingId ? "Edit Address" : "Add Address"}
+                {editingId ? 'Edit Address' : 'Add Address'}
               </h2>
               <button
                 onClick={() => setShowModal(false)}
@@ -350,7 +344,7 @@ const MyAddresses = () => {
                 disabled={actionLoading}
                 className="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold disabled:opacity-60"
               >
-                {editingId ? "Save Changes" : "Add Address"}
+                {editingId ? 'Save Changes' : 'Add Address'}
               </button>
             </div>
           </motion.div>
@@ -361,11 +355,13 @@ const MyAddresses = () => {
       {confirmDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-2">Delete address?</h3>
+            <h3 className="text-lg font-bold text-gray-900 mb-2">
+              Delete address?
+            </h3>
             <p className="text-gray-600 mb-6">
-              This will permanently delete the address for{" "}
-              <span className="font-semibold">{confirmDelete.fullName}</span>. This
-              action cannot be undone.
+              This will permanently delete the address for{' '}
+              <span className="font-semibold">{confirmDelete.fullName}</span>.
+              This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
               <button

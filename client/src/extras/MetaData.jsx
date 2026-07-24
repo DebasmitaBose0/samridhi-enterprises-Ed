@@ -1,13 +1,13 @@
-import { Helmet } from "react-helmet-async";
-import PropTypes from "prop-types";
+import { Helmet } from 'react-helmet-async';
+import PropTypes from 'prop-types';
 
 const MetaData = ({ title, description, keywords, image, url }) => {
-  const siteName = "Samridhi Enterprises";
+  const siteName = 'Samridhi Enterprises';
   const defaultTitle = `${siteName} - Premium Bike Parts & Accessories`;
   const defaultDescription =
-    "Your one-stop shop for premium motorcycle spare parts, accessories, and riding gear. Genuine products, fast shipping across India.";
+    'Your one-stop shop for premium motorcycle spare parts, accessories, and riding gear. Genuine products, fast shipping across India.';
   const defaultKeywords =
-    "Samridhi Enterprises, bike parts, motorcycle spare parts, auto parts, bike accessories, motorcycle accessories, two-wheeler parts, bike spare parts India";
+    'Samridhi Enterprises, bike parts, motorcycle spare parts, auto parts, bike accessories, motorcycle accessories, two-wheeler parts, bike spare parts India';
 
   return (
     <Helmet>
@@ -18,13 +18,19 @@ const MetaData = ({ title, description, keywords, image, url }) => {
       <meta name="keywords" content={keywords || defaultKeywords} />
       <meta name="robots" content="index, follow" />
       <meta property="og:title" content={title || defaultTitle} />
-      <meta property="og:description" content={description || defaultDescription} />
+      <meta
+        property="og:description"
+        content={description || defaultDescription}
+      />
       {url && <meta property="og:url" content={url} />}
       {image && <meta property="og:image" content={image} />}
       <meta property="og:type" content="website" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={title || defaultTitle} />
-      <meta name="twitter:description" content={description || defaultDescription} />
+      <meta
+        name="twitter:description"
+        content={description || defaultDescription}
+      />
     </Helmet>
   );
 };

@@ -1,12 +1,12 @@
-import Garage from "../models/garageModel.js";
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import ErrorHandler from "../utils/errorHandler.js";
+import Garage from '../models/garageModel.js';
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import ErrorHandler from '../utils/errorHandler.js';
 
 export const addVehicle = catchAsyncErrors(async (req, res, next) => {
   const { bikeModel, year, variant, features, isDefault } = req.body;
 
   if (!bikeModel || !year) {
-    return next(new ErrorHandler("Bike model and year are required", 400));
+    return next(new ErrorHandler('Bike model and year are required', 400));
   }
 
   if (isDefault) {
@@ -16,7 +16,7 @@ export const addVehicle = catchAsyncErrors(async (req, res, next) => {
   const existingCount = await Garage.countDocuments({ user: req.user._id });
   if (existingCount >= 10) {
     return next(
-      new ErrorHandler("Maximum 10 vehicles allowed in your garage", 400)
+      new ErrorHandler('Maximum 10 vehicles allowed in your garage', 400)
     );
   }
 
@@ -34,7 +34,7 @@ export const addVehicle = catchAsyncErrors(async (req, res, next) => {
 
 export const getVehicles = catchAsyncErrors(async (req, res, next) => {
   const vehicles = await Garage.find({ user: req.user._id })
-    .populate("bikeModel", "name yearStart yearEnd engineType images")
+    .populate('bikeModel', 'name yearStart yearEnd engineType images')
     .sort({ isDefault: -1, createdAt: -1 });
 
   res.status(200).json({ success: true, vehicles });
@@ -46,7 +46,7 @@ export const updateVehicle = catchAsyncErrors(async (req, res, next) => {
 
   const vehicle = await Garage.findOne({ _id: id, user: req.user._id });
   if (!vehicle) {
-    return next(new ErrorHandler("Vehicle not found in your garage", 404));
+    return next(new ErrorHandler('Vehicle not found in your garage', 404));
   }
 
   if (isDefault) {
@@ -73,7 +73,7 @@ export const deleteVehicle = catchAsyncErrors(async (req, res, next) => {
     user: req.user._id,
   });
   if (!vehicle) {
-    return next(new ErrorHandler("Vehicle not found in your garage", 404));
+    return next(new ErrorHandler('Vehicle not found in your garage', 404));
   }
 
   const remaining = await Garage.countDocuments({ user: req.user._id });
@@ -91,7 +91,9 @@ export const deleteVehicle = catchAsyncErrors(async (req, res, next) => {
     }
   }
 
-  res.status(200).json({ success: true, message: "Vehicle removed from garage" });
+  res
+    .status(200)
+    .json({ success: true, message: 'Vehicle removed from garage' });
 });
 
 export const setDefaultVehicle = catchAsyncErrors(async (req, res, next) => {
@@ -99,7 +101,7 @@ export const setDefaultVehicle = catchAsyncErrors(async (req, res, next) => {
 
   const vehicle = await Garage.findOne({ _id: id, user: req.user._id });
   if (!vehicle) {
-    return next(new ErrorHandler("Vehicle not found in your garage", 404));
+    return next(new ErrorHandler('Vehicle not found in your garage', 404));
   }
 
   await Garage.updateMany({ user: req.user._id }, { isDefault: false });

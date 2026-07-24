@@ -1,12 +1,12 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "@/api";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '@/api';
 
-const API_URL = "/api/address";
+const API_URL = '/api/address';
 
 const authConfig = () => ({});
 
 export const getMyAddresses = createAsyncThunk(
-  "address/getMy",
+  'address/getMy',
   async (_, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.get(`${API_URL}/my`, authConfig());
@@ -18,10 +18,14 @@ export const getMyAddresses = createAsyncThunk(
 );
 
 export const addAddress = createAsyncThunk(
-  "address/add",
+  'address/add',
   async (payload, { rejectWithValue }) => {
     try {
-      const res = await axiosInstance.post(`${API_URL}/add`, payload, authConfig());
+      const res = await axiosInstance.post(
+        `${API_URL}/add`,
+        payload,
+        authConfig()
+      );
       return res.data.address;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -30,7 +34,7 @@ export const addAddress = createAsyncThunk(
 );
 
 export const updateAddress = createAsyncThunk(
-  "address/update",
+  'address/update',
   async ({ id, payload }, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.put(
@@ -46,7 +50,7 @@ export const updateAddress = createAsyncThunk(
 );
 
 export const deleteAddress = createAsyncThunk(
-  "address/delete",
+  'address/delete',
   async (id, { rejectWithValue }) => {
     try {
       await axiosInstance.delete(`${API_URL}/delete/${id}`, authConfig());
@@ -58,7 +62,7 @@ export const deleteAddress = createAsyncThunk(
 );
 
 export const setDefaultAddress = createAsyncThunk(
-  "address/setDefault",
+  'address/setDefault',
   async (id, { rejectWithValue }) => {
     try {
       const res = await axiosInstance.put(
@@ -74,7 +78,7 @@ export const setDefaultAddress = createAsyncThunk(
 );
 
 const addressSlice = createSlice({
-  name: "address",
+  name: 'address',
   initialState: {
     addresses: [],
     loading: false,
@@ -158,7 +162,9 @@ const addressSlice = createSlice({
       .addCase(deleteAddress.fulfilled, (state, action) => {
         state.actionLoading = false;
         state.success = true;
-        state.addresses = state.addresses.filter((a) => a._id !== action.payload);
+        state.addresses = state.addresses.filter(
+          (a) => a._id !== action.payload
+        );
       })
       .addCase(deleteAddress.rejected, (state, action) => {
         state.actionLoading = false;

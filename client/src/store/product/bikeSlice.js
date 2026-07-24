@@ -1,16 +1,16 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "@/api";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '@/api';
 
-const API_URL = "/api/bike-model";
+const API_URL = '/api/bike-model';
 
 // Add BikeModel
 export const addBikeModel = createAsyncThunk(
-  "bikeModel/add",
+  'bikeModel/add',
   async (formData, { rejectWithValue }) => {
     try {
       const config = {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       };
       const response = await axiosInstance.post(
@@ -18,7 +18,7 @@ export const addBikeModel = createAsyncThunk(
         formData,
         config
       );
-      console.log("addBikeModel response:", response.data); // Debug
+      console.log('addBikeModel response:', response.data); // Debug
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -28,11 +28,11 @@ export const addBikeModel = createAsyncThunk(
 
 // Fetch All BikeModels
 export const fetchBikeModels = createAsyncThunk(
-  "bikeModel/fetchAll",
+  'bikeModel/fetchAll',
   async (_, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.get(`${API_URL}/get`);
-      console.log("fetchBikeModels response:", response.data); // Debug
+      console.log('fetchBikeModels response:', response.data); // Debug
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -42,12 +42,12 @@ export const fetchBikeModels = createAsyncThunk(
 
 // Update BikeModel
 export const updateBikeModel = createAsyncThunk(
-  "bikeModel/update",
+  'bikeModel/update',
   async ({ id, formData }, { rejectWithValue }) => {
     try {
       const config = {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       };
       const response = await axiosInstance.put(
@@ -55,7 +55,7 @@ export const updateBikeModel = createAsyncThunk(
         formData,
         config
       );
-      console.log("updateBikeModel response:", response.data); // Debug
+      console.log('updateBikeModel response:', response.data); // Debug
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -65,13 +65,11 @@ export const updateBikeModel = createAsyncThunk(
 
 // Delete BikeModel
 export const deleteBikeModel = createAsyncThunk(
-  "bikeModel/delete",
+  'bikeModel/delete',
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.delete(
-        `${API_URL}/delete/${id}`
-      );
-      console.log("deleteBikeModel response:", response.data); // Debug
+      const response = await axiosInstance.delete(`${API_URL}/delete/${id}`);
+      console.log('deleteBikeModel response:', response.data); // Debug
       return { id, ...response.data };
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -88,7 +86,7 @@ const initialState = {
 };
 
 const bikeModelSlice = createSlice({
-  name: "bikeModel",
+  name: 'bikeModel',
   initialState,
   reducers: {
     clearError: (state) => {
@@ -112,7 +110,7 @@ const bikeModelSlice = createSlice({
         state.bikeModels.push({
           ...model,
           images: Array.isArray(model.images) ? model.images : [],
-          brand: model.brand || { _id: "", name: "N/A" },
+          brand: model.brand || { _id: '', name: 'N/A' },
         });
         state.success = true;
       })
@@ -132,7 +130,7 @@ const bikeModelSlice = createSlice({
           ? action.payload.bikeModels.map((model) => ({
               ...model,
               images: Array.isArray(model.images) ? model.images : [],
-              brand: model.brand || { _id: "", name: "N/A" },
+              brand: model.brand || { _id: '', name: 'N/A' },
             }))
           : [];
       })
@@ -155,7 +153,7 @@ const bikeModelSlice = createSlice({
           state.bikeModels[index] = {
             ...model,
             images: Array.isArray(model.images) ? model.images : [],
-            brand: model.brand || { _id: "", name: "N/A" },
+            brand: model.brand || { _id: '', name: 'N/A' },
           };
         }
         state.success = true;

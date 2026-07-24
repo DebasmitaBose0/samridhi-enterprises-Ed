@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useState } from "react";
-import b1 from "../assets/1.png";
-import b2 from "../assets/2.png";
-import b3 from "../assets/3.png";
-import b4 from "../assets/4.png";
+import { useCallback, useEffect, useState } from 'react';
+import b1 from '../assets/1.png';
+import b2 from '../assets/2.png';
+import b3 from '../assets/3.png';
+import b4 from '../assets/4.png';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const BannerProduct = () => {
   const [currentImage, setCurrentImage] = useState(0);
@@ -87,10 +87,10 @@ const BannerProduct = () => {
     hover: {
       scale: 1.15,
       opacity: 1,
-      boxShadow: "0px 8px 20px rgba(0, 0, 0, 0.2)",
+      boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.2)',
       transition: {
         duration: 0.3,
-        type: "spring",
+        type: 'spring',
         stiffness: 300,
       },
     },
@@ -117,8 +117,8 @@ const BannerProduct = () => {
 
   const containerVariants = {
     hover: {
-      boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)",
-      borderColor: "rgba(217, 119, 6, 0.5)",
+      boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+      borderColor: 'rgba(217, 119, 6, 0.5)',
       transition: { duration: 0.3 },
     },
   };
@@ -132,7 +132,7 @@ const BannerProduct = () => {
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
         initial={{
-          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent z-[1] pointer-events-none"></div>
@@ -163,7 +163,6 @@ const BannerProduct = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.7 }}
-            
           >
             <Link
               to="/products"
@@ -176,8 +175,8 @@ const BannerProduct = () => {
               onClick={(e) => {
                 e.preventDefault();
                 document
-                  .getElementById("top-brands")
-                  ?.scrollIntoView({ behavior: "smooth" });
+                  .getElementById('top-brands')
+                  ?.scrollIntoView({ behavior: 'smooth' });
               }}
               className="px-5 sm:px-7 py-2 sm:py-2.5 bg-white/25 hover:bg-white/35 text-white rounded-full text-sm"
             >
@@ -217,9 +216,9 @@ const BannerProduct = () => {
               key={desktopImages[currentImage]}
               className="w-full h-full"
               variants={slideVariants}
-              initial={direction > 0 ? "hiddenRight" : "hiddenLeft"}
+              initial={direction > 0 ? 'hiddenRight' : 'hiddenLeft'}
               animate="visible"
-              exit={direction > 0 ? "exitLeft" : "exitRight"}
+              exit={direction > 0 ? 'exitLeft' : 'exitRight'}
               custom={direction}
             >
               <img
@@ -238,9 +237,9 @@ const BannerProduct = () => {
               key={mobileImages[currentImage]}
               className="w-full h-full"
               variants={slideVariants}
-              initial={direction > 0 ? "hiddenRight" : "hiddenLeft"}
+              initial={direction > 0 ? 'hiddenRight' : 'hiddenLeft'}
               animate="visible"
-              exit={direction > 0 ? "exitLeft" : "exitRight"}
+              exit={direction > 0 ? 'exitLeft' : 'exitRight'}
               custom={direction}
             >
               <img
@@ -265,13 +264,11 @@ const BannerProduct = () => {
             >
               <motion.div
                 className={`w-2.5 h-2.5 rounded-full ${
-                  currentImage === index
-                    ? "bg-blue-300"
-                    : "bg-gray-900/70"
+                  currentImage === index ? 'bg-blue-300' : 'bg-gray-900/70'
                 }`}
                 variants={dotVariants}
                 initial="inactive"
-                animate={currentImage === index ? "active" : "inactive"}
+                animate={currentImage === index ? 'active' : 'inactive'}
                 whileHover={{ scale: 1.2 }}
               />
             </motion.button>

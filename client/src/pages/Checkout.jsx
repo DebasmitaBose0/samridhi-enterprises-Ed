@@ -1,20 +1,24 @@
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { fetchCart } from "../store/cart/cartSlice";
+import { motion } from 'framer-motion';
+import { fetchCart } from '../store/cart/cartSlice';
 import {
   createOrder,
   clearOrderError,
   clearOrderSuccess,
-} from "../store/order/orderSlice";
-import { getPaymentSettings } from "../store/order/paymentSettingsSlice";
-import { validateCoupon, clearAppliedCoupon, clearCouponError } from "../store/order/couponSlice";
-import { getMyAddresses } from "../store/order/addressSlice";
-import { Tag, X, MapPin } from "lucide-react";
-import Loader from "../extras/Loader";
+} from '../store/order/orderSlice';
+import { getPaymentSettings } from '../store/order/paymentSettingsSlice';
+import {
+  validateCoupon,
+  clearAppliedCoupon,
+  clearCouponError,
+} from '../store/order/couponSlice';
+import { getMyAddresses } from '../store/order/addressSlice';
+import { Tag, X, MapPin } from 'lucide-react';
+import Loader from '../extras/Loader';
 
 const Checkout = () => {
   const dispatch = useDispatch();
@@ -26,25 +30,27 @@ const Checkout = () => {
   const { loading, error, success, lastCreatedOrder } = useSelector(
     (state) => state.order
   );
-  const { applied: appliedCoupon, loading: couponLoading, error: couponError } = useSelector(
-    (state) => state.coupon
-  );
+  const {
+    applied: appliedCoupon,
+    loading: couponLoading,
+    error: couponError,
+  } = useSelector((state) => state.coupon);
   const { addresses } = useSelector((state) => state.address);
-  const [couponInput, setCouponInput] = useState("");
-  const [selectedAddressId, setSelectedAddressId] = useState("");
+  const [couponInput, setCouponInput] = useState('');
+  const [selectedAddressId, setSelectedAddressId] = useState('');
 
   const [form, setForm] = useState({
-    fullName: "",
-    phone: "",
-    addressLine: "",
-    city: "",
-    state: "",
-    pincode: "",
+    fullName: '',
+    phone: '',
+    addressLine: '',
+    city: '',
+    state: '',
+    pincode: '',
   });
-  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [paymentMethod, setPaymentMethod] = useState('COD');
   const [screenshot, setScreenshot] = useState(null);
-  const [screenshotPreview, setScreenshotPreview] = useState("");
-  const [upiReference, setUpiReference] = useState("");
+  const [screenshotPreview, setScreenshotPreview] = useState('');
+  const [upiReference, setUpiReference] = useState('');
 
   useEffect(() => {
     dispatch(fetchCart());
@@ -54,19 +60,29 @@ const Checkout = () => {
 
   const fillFromAddress = (addr) => {
     if (!addr) return;
-    setForm({ fullName: addr.fullName || "", phone: addr.phone || "", addressLine: addr.addressLine || "", city: addr.city || "", state: addr.state || "", pincode: addr.pincode || "" });
+    setForm({
+      fullName: addr.fullName || '',
+      phone: addr.phone || '',
+      addressLine: addr.addressLine || '',
+      city: addr.city || '',
+      state: addr.state || '',
+      pincode: addr.pincode || '',
+    });
   };
 
   useEffect(() => {
     if (addresses.length > 0 && !selectedAddressId) {
       const def = addresses.find((a) => a.isDefault) || addresses[0];
-      if (def) { setSelectedAddressId(def._id); fillFromAddress(def); }
+      if (def) {
+        setSelectedAddressId(def._id);
+        fillFromAddress(def);
+      }
     }
   }, [addresses, selectedAddressId]);
 
   const handleSelectAddress = (id) => {
     setSelectedAddressId(id);
-    if (id === "") return;
+    if (id === '') return;
     fillFromAddress(addresses.find((a) => a._id === id));
   };
 
@@ -75,8 +91,8 @@ const Checkout = () => {
     if (user) {
       setForm((prev) => ({
         ...prev,
-        fullName: prev.fullName || user.name || "",
-        phone: prev.phone || user.mobile || "",
+        fullName: prev.fullName || user.name || '',
+        phone: prev.phone || user.mobile || '',
       }));
     }
   }, [user]);
@@ -92,13 +108,13 @@ const Checkout = () => {
   useEffect(() => {
     if (success && lastCreatedOrder) {
       toast.success(
-        paymentMethod === "COD"
-          ? "Order placed successfully!"
-          : "Order placed. Payment is pending verification."
+        paymentMethod === 'COD'
+          ? 'Order placed successfully!'
+          : 'Order placed. Payment is pending verification.'
       );
       dispatch(fetchCart());
       dispatch(clearOrderSuccess());
-      navigate("/my-orders");
+      navigate('/my-orders');
     }
   }, [success, lastCreatedOrder, paymentMethod, dispatch, navigate]);
 
@@ -113,7 +129,7 @@ const Checkout = () => {
   useEffect(() => {
     if (appliedCoupon && appliedCoupon.subtotal !== total) {
       dispatch(clearAppliedCoupon());
-      setCouponInput("");
+      setCouponInput('');
     }
   }, [appliedCoupon, total, dispatch]);
 
@@ -126,13 +142,16 @@ const Checkout = () => {
 
   const handleApplyCoupon = () => {
     const code = couponInput.trim();
-    if (!code) { toast.error("Please enter a coupon code"); return; }
+    if (!code) {
+      toast.error('Please enter a coupon code');
+      return;
+    }
     dispatch(validateCoupon(code));
   };
 
   const handleRemoveCoupon = () => {
     dispatch(clearAppliedCoupon());
-    setCouponInput("");
+    setCouponInput('');
   };
 
   const handleChange = (e) => {
@@ -148,36 +167,36 @@ const Checkout = () => {
 
   const handlePlaceOrder = () => {
     // Required address fields
-    const required = ["fullName", "phone", "addressLine", "city", "pincode"];
+    const required = ['fullName', 'phone', 'addressLine', 'city', 'pincode'];
     const missing = required.filter((f) => !String(form[f]).trim());
     if (missing.length > 0) {
-      toast.error("Please fill all required address fields");
+      toast.error('Please fill all required address fields');
       return;
     }
 
     if (!/^\d{10}$/.test(form.phone)) {
-      toast.error("Please enter a valid 10-digit phone number");
+      toast.error('Please enter a valid 10-digit phone number');
       return;
     }
-    if (paymentMethod === "Online" && !screenshot) {
-      toast.error("Please upload your payment screenshot");
+    if (paymentMethod === 'Online' && !screenshot) {
+      toast.error('Please upload your payment screenshot');
       return;
     }
 
     const fd = new FormData();
-    fd.append("fullName", form.fullName);
-    fd.append("phone", form.phone);
-    fd.append("addressLine", form.addressLine);
-    fd.append("city", form.city);
-    fd.append("state", form.state);
-    fd.append("pincode", form.pincode);
-    fd.append("paymentMethod", paymentMethod);
-    fd.append("upiReference", upiReference);
+    fd.append('fullName', form.fullName);
+    fd.append('phone', form.phone);
+    fd.append('addressLine', form.addressLine);
+    fd.append('city', form.city);
+    fd.append('state', form.state);
+    fd.append('pincode', form.pincode);
+    fd.append('paymentMethod', paymentMethod);
+    fd.append('upiReference', upiReference);
     if (discount > 0 && appliedCoupon?.code) {
-      fd.append("couponCode", appliedCoupon.code);
+      fd.append('couponCode', appliedCoupon.code);
     }
-    if (paymentMethod === "Online" && screenshot) {
-      fd.append("paymentScreenshot", screenshot);
+    if (paymentMethod === 'Online' && screenshot) {
+      fd.append('paymentScreenshot', screenshot);
     }
     dispatch(createOrder(fd));
   };
@@ -206,7 +225,7 @@ const Checkout = () => {
   }
 
   const inputClass =
-    "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white dark:bg-gray-800";
+    'w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white dark:bg-gray-800';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-gray-900 dark:to-gray-950 pt-28 pb-16">
@@ -231,21 +250,45 @@ const Checkout = () => {
               {addresses.length > 0 && (
                 <div className="mb-6">
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                    <span className="inline-flex items-center gap-1.5"><MapPin className="w-4 h-4" /> Deliver to a saved address</span>
+                    <span className="inline-flex items-center gap-1.5">
+                      <MapPin className="w-4 h-4" /> Deliver to a saved address
+                    </span>
                   </label>
                   <div className="grid grid-cols-1 gap-2">
                     {addresses.map((a) => (
-                      <button type="button" key={a._id} onClick={() => handleSelectAddress(a._id)}
-                        className={`text-left rounded-xl border px-4 py-3 transition ${selectedAddressId === a._id ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-200" : "border-gray-200 dark:border-gray-700 hover:border-gray-300"}`}>
+                      <button
+                        type="button"
+                        key={a._id}
+                        onClick={() => handleSelectAddress(a._id)}
+                        className={`text-left rounded-xl border px-4 py-3 transition ${selectedAddressId === a._id ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-200' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'}`}
+                      >
                         <div className="flex items-center justify-between gap-2">
-                          <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">{a.fullName}{a.label ? <span className="ml-2 text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500">{a.label}</span> : null}</span>
-                          {a.isDefault && <span className="text-xs font-medium text-blue-600 dark:text-blue-400">Default</span>}
+                          <span className="font-medium text-gray-900 dark:text-gray-100 text-sm">
+                            {a.fullName}
+                            {a.label ? (
+                              <span className="ml-2 text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500">
+                                {a.label}
+                              </span>
+                            ) : null}
+                          </span>
+                          {a.isDefault && (
+                            <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                              Default
+                            </span>
+                          )}
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{a.addressLine}, {a.city}{a.state ? `, ${a.state}` : ""} — {a.pincode} · {a.phone}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                          {a.addressLine}, {a.city}
+                          {a.state ? `, ${a.state}` : ''} — {a.pincode} ·{' '}
+                          {a.phone}
+                        </p>
                       </button>
                     ))}
-                    <button type="button" onClick={() => handleSelectAddress("")}
-                      className={`text-left rounded-xl border px-4 py-3 text-sm font-medium transition ${selectedAddressId === "" ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-200 text-blue-700 dark:text-blue-300" : "border-gray-200 dark:border-gray-700 hover:border-gray-300 text-gray-700 dark:text-gray-200"}`}>
+                    <button
+                      type="button"
+                      onClick={() => handleSelectAddress('')}
+                      className={`text-left rounded-xl border px-4 py-3 text-sm font-medium transition ${selectedAddressId === '' ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-200 text-blue-700 dark:text-blue-300' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 text-gray-700 dark:text-gray-200'}`}
+                    >
                       + Enter a new address
                     </button>
                   </div>
@@ -335,11 +378,11 @@ const Checkout = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                 <button
                   type="button"
-                  onClick={() => setPaymentMethod("COD")}
+                  onClick={() => setPaymentMethod('COD')}
                   className={`p-4 rounded-2xl border-2 text-left transition-all ${
-                    paymentMethod === "COD"
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                      : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                    paymentMethod === 'COD'
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                      : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
                   }`}
                 >
                   <div className="font-semibold text-gray-900 dark:text-gray-100">
@@ -351,11 +394,11 @@ const Checkout = () => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setPaymentMethod("Online")}
+                  onClick={() => setPaymentMethod('Online')}
                   className={`p-4 rounded-2xl border-2 text-left transition-all ${
-                    paymentMethod === "Online"
-                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
-                      : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                    paymentMethod === 'Online'
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                      : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'
                   }`}
                 >
                   <div className="font-semibold text-gray-900 dark:text-gray-100">
@@ -367,7 +410,7 @@ const Checkout = () => {
                 </button>
               </div>
 
-              {paymentMethod === "Online" && (
+              {paymentMethod === 'Online' && (
                 <div className="border-t border-gray-200 dark:border-gray-700 pt-6 space-y-5">
                   <div className="flex flex-col sm:flex-row gap-6 items-start">
                     <div className="flex-shrink-0">
@@ -384,9 +427,11 @@ const Checkout = () => {
                       )}
                     </div>
                     <div className="flex-1">
-                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">Pay to UPI ID</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
+                        Pay to UPI ID
+                      </p>
                       <p className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 break-all">
-                        {settings?.upiId || "Not configured"}
+                        {settings?.upiId || 'Not configured'}
                       </p>
                       <p className="text-sm text-gray-600 dark:text-gray-300">
                         Scan the QR or pay to the UPI ID above, then upload a
@@ -443,11 +488,16 @@ const Checkout = () => {
                     className="flex justify-between items-center text-sm"
                   >
                     <span className="text-gray-700 dark:text-gray-200 pr-2">
-                      {item.name}{" "}
-                      <span className="text-gray-400 dark:text-gray-500">x{item.quantity}</span>
+                      {item.name}{' '}
+                      <span className="text-gray-400 dark:text-gray-500">
+                        x{item.quantity}
+                      </span>
                     </span>
                     <span className="font-semibold text-gray-900 dark:text-gray-100 whitespace-nowrap">
-                      ₹{((item.price || 0) * (item.quantity || 1)).toLocaleString()}
+                      ₹
+                      {(
+                        (item.price || 0) * (item.quantity || 1)
+                      ).toLocaleString()}
                     </span>
                   </div>
                 ))}
@@ -456,36 +506,52 @@ const Checkout = () => {
                 {appliedCoupon && discount > 0 ? (
                   <div className="flex items-center justify-between bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2">
                     <span className="inline-flex items-center gap-2 text-sm font-medium text-emerald-700">
-                      <Tag className="w-4 h-4" />{appliedCoupon.code} applied
+                      <Tag className="w-4 h-4" />
+                      {appliedCoupon.code} applied
                     </span>
-                    <button onClick={handleRemoveCoupon} className="text-emerald-700 hover:text-emerald-900" title="Remove coupon">
+                    <button
+                      onClick={handleRemoveCoupon}
+                      className="text-emerald-700 hover:text-emerald-900"
+                      title="Remove coupon"
+                    >
                       <X className="w-4 h-4" />
                     </button>
                   </div>
                 ) : (
                   <div className="flex gap-2">
-                    <input value={couponInput} onChange={(e) => setCouponInput(e.target.value.toUpperCase())}
+                    <input
+                      value={couponInput}
+                      onChange={(e) =>
+                        setCouponInput(e.target.value.toUpperCase())
+                      }
                       placeholder="Coupon code"
                       className="flex-1 rounded-xl border border-gray-300 dark:border-gray-600 px-3 py-2 text-sm uppercase focus:ring-2 focus:ring-blue-400 outline-none"
                     />
-                    <button onClick={handleApplyCoupon} disabled={couponLoading}
-                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold disabled:opacity-60">
-                      {couponLoading ? "..." : "Apply"}
+                    <button
+                      onClick={handleApplyCoupon}
+                      disabled={couponLoading}
+                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold disabled:opacity-60"
+                    >
+                      {couponLoading ? '...' : 'Apply'}
                     </button>
                   </div>
                 )}
               </div>
               <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mb-6 space-y-2">
                 <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
-                  <span>Subtotal</span><span>₹{total.toLocaleString()}</span>
+                  <span>Subtotal</span>
+                  <span>₹{total.toLocaleString()}</span>
                 </div>
                 {discount > 0 && (
                   <div className="flex justify-between text-sm text-emerald-600">
-                    <span>Discount</span><span>-₹{discount.toLocaleString()}</span>
+                    <span>Discount</span>
+                    <span>-₹{discount.toLocaleString()}</span>
                   </div>
                 )}
                 <div className="flex justify-between items-center text-xl font-bold pt-2 border-t border-gray-100 dark:border-gray-700">
-                  <span className="text-gray-900 dark:text-gray-100">Total</span>
+                  <span className="text-gray-900 dark:text-gray-100">
+                    Total
+                  </span>
                   <span className="bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
                     ₹{payable.toLocaleString()}
                   </span>
@@ -496,7 +562,7 @@ const Checkout = () => {
                 disabled={loading}
                 className="w-full py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold text-lg rounded-2xl shadow-xl hover:shadow-2xl disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-300"
               >
-                {loading ? "Placing Order..." : "Place Order"}
+                {loading ? 'Placing Order...' : 'Place Order'}
               </button>
             </div>
           </div>

@@ -1,13 +1,13 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axiosInstance from "@/api";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axiosInstance from '@/api';
 
-const API_URL = "/api/coupon";
+const API_URL = '/api/coupon';
 
 const authConfig = () => ({});
 
 // ── User: validate a coupon against the current cart ──
 export const validateCoupon = createAsyncThunk(
-  "coupon/validate",
+  'coupon/validate',
   async (code, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(
@@ -24,10 +24,13 @@ export const validateCoupon = createAsyncThunk(
 
 // ── Admin: list coupons ──
 export const getAllCoupons = createAsyncThunk(
-  "coupon/getAll",
+  'coupon/getAll',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`${API_URL}/admin/get`, authConfig());
+      const response = await axiosInstance.get(
+        `${API_URL}/admin/get`,
+        authConfig()
+      );
       return response.data.coupons;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -37,7 +40,7 @@ export const getAllCoupons = createAsyncThunk(
 
 // ── Admin: create coupon ──
 export const createCoupon = createAsyncThunk(
-  "coupon/create",
+  'coupon/create',
   async (payload, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.post(
@@ -54,7 +57,7 @@ export const createCoupon = createAsyncThunk(
 
 // ── Admin: update coupon ──
 export const updateCoupon = createAsyncThunk(
-  "coupon/update",
+  'coupon/update',
   async ({ id, payload }, { rejectWithValue }) => {
     try {
       const response = await axiosInstance.put(
@@ -71,7 +74,7 @@ export const updateCoupon = createAsyncThunk(
 
 // ── Admin: delete coupon ──
 export const deleteCoupon = createAsyncThunk(
-  "coupon/delete",
+  'coupon/delete',
   async (id, { rejectWithValue }) => {
     try {
       await axiosInstance.delete(`${API_URL}/admin/delete/${id}`, authConfig());
@@ -83,7 +86,7 @@ export const deleteCoupon = createAsyncThunk(
 );
 
 const couponSlice = createSlice({
-  name: "coupon",
+  name: 'coupon',
   initialState: {
     coupons: [],
     // The coupon the customer has applied at checkout (display state).

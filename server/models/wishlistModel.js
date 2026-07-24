@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 // One wishlist document per user, holding references to saved parts. Part
 // details (name, price, images, stock) are populated on read, so a later edit
@@ -7,15 +7,15 @@ const wishlistSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: [true, "User is required"],
+      ref: 'User',
+      required: [true, 'User is required'],
       unique: true,
     },
     items: [
       {
         part: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "Part",
+          ref: 'Part',
           required: true,
         },
         addedAt: { type: Date, default: Date.now },
@@ -25,4 +25,4 @@ const wishlistSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Wishlist", wishlistSchema);
+export default mongoose.model('Wishlist', wishlistSchema);

@@ -1,22 +1,22 @@
-import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
-import { clearAuthState, forgotPassword } from "@/store/auth-slice/user";
-import MetaData from "../../extras/MetaData";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { clearAuthState, forgotPassword } from '@/store/auth-slice/user';
+import MetaData from '../../extras/MetaData';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import { Mail } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { Mail } from 'lucide-react';
 
 const ForgotPassword = () => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error, success } = useSelector((state) => state.auth);
 
   const handleForgotPassword = () => {
     if (!email) {
-      toast.error("Please enter a valid email!");
+      toast.error('Please enter a valid email!');
       return;
     }
     dispatch(forgotPassword(email));
@@ -24,9 +24,9 @@ const ForgotPassword = () => {
 
   useEffect(() => {
     if (success) {
-      toast.success("OTP sent! Please check your email.");
+      toast.success('OTP sent! Please check your email.');
       setTimeout(() => {
-        navigate("/verify-otp");
+        navigate('/verify-otp');
       }, 2000);
     }
     if (error) {
@@ -45,7 +45,7 @@ const ForgotPassword = () => {
     visible: {
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.6, ease: "easeOut", staggerChildren: 0.15 },
+      transition: { duration: 0.6, ease: 'easeOut', staggerChildren: 0.15 },
     },
     exit: { opacity: 0, scale: 0.95, transition: { duration: 0.3 } },
   };
@@ -56,12 +56,12 @@ const ForgotPassword = () => {
       opacity: 1,
       y: 0,
       scale: 1,
-      transition: { duration: 0.5, ease: "easeOut" },
+      transition: { duration: 0.5, ease: 'easeOut' },
     },
   };
 
   const buttonVariants = {
-    hover: { scale: 1.05, boxShadow: "0px 4px 20px rgba(59, 130, 246, 0.5)" },
+    hover: { scale: 1.05, boxShadow: '0px 4px 20px rgba(59, 130, 246, 0.5)' },
     tap: { scale: 0.98 },
   };
 
@@ -71,7 +71,11 @@ const ForgotPassword = () => {
 
   return (
     <>
-      <MetaData title="Forgot Password | Samridhi Enterprises" description="Reset your Samridhi Enterprises account password securely. Enter your registered email to receive a password reset OTP." keywords="forgot password, reset password, bike parts account recovery, Samridhi Enterprises password" />
+      <MetaData
+        title="Forgot Password | Samridhi Enterprises"
+        description="Reset your Samridhi Enterprises account password securely. Enter your registered email to receive a password reset OTP."
+        keywords="forgot password, reset password, bike parts account recovery, Samridhi Enterprises password"
+      />
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-blue-100 px-4 sm:px-6 lg:px-8">
         <AnimatePresence>
           <motion.div
@@ -91,7 +95,8 @@ const ForgotPassword = () => {
               variants={itemVariants}
               className="text-sm sm:text-base text-blue-700 text-center mb-6 sm:mb-8"
             >
-              Enter your email, and we'll send you an OTP to reset your password.
+              Enter your email, and we'll send you an OTP to reset your
+              password.
             </motion.p>
 
             <motion.div variants={itemVariants} className="mt-6 relative">
@@ -125,7 +130,7 @@ const ForgotPassword = () => {
               disabled={loading}
               className="w-full mt-6 py-3 sm:py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg shadow-lg hover:from-blue-600 hover:to-blue-700 disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-300 text-sm sm:text-base"
             >
-              {loading ? "Sending..." : "Send OTP"}
+              {loading ? 'Sending...' : 'Send OTP'}
             </motion.button>
           </motion.div>
         </AnimatePresence>

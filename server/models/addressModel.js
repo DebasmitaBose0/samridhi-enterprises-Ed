@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 // A saved delivery address belonging to a user. Field names mirror the order's
 // shippingAddress shape (fullName, phone, addressLine, city, state, pincode) so
@@ -8,15 +8,15 @@ const addressSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     // An optional friendly label for the address, e.g. "Home" or "Office".
     label: {
       type: String,
-      default: "",
+      default: '',
       trim: true,
-      maxlength: [40, "Label cannot exceed 40 characters"],
+      maxlength: [40, 'Label cannot exceed 40 characters'],
     },
     fullName: {
       type: String,
@@ -25,27 +25,27 @@ const addressSchema = new mongoose.Schema(
     },
     phone: {
       type: String,
-      required: [true, "Please enter a phone number"],
+      required: [true, 'Please enter a phone number'],
       trim: true,
     },
     addressLine: {
       type: String,
-      required: [true, "Please enter the address"],
+      required: [true, 'Please enter the address'],
       trim: true,
     },
     city: {
       type: String,
-      required: [true, "Please enter the city"],
+      required: [true, 'Please enter the city'],
       trim: true,
     },
     state: {
       type: String,
-      default: "",
+      default: '',
       trim: true,
     },
     pincode: {
       type: String,
-      required: [true, "Please enter the pincode"],
+      required: [true, 'Please enter the pincode'],
       trim: true,
     },
     // Exactly one address per user should be the default; the controller keeps
@@ -60,4 +60,4 @@ const addressSchema = new mongoose.Schema(
 
 addressSchema.index({ user: 1, createdAt: -1 });
 
-export default mongoose.model("address", addressSchema);
+export default mongoose.model('address', addressSchema);

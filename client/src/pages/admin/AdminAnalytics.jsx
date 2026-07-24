@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { motion } from 'framer-motion';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   TrendingUp,
   Package,
@@ -11,22 +11,22 @@ import {
   Eye,
   Sparkles,
   MousePointerClick,
-} from "lucide-react";
-import { adminGetSalesAnalytics } from "@/store/order/orderSlice";
-import { adminGetRecommendationAnalytics } from "@/store/product/partsSlice";
-import Loader from "../../extras/Loader";
+} from 'lucide-react';
+import { adminGetSalesAnalytics } from '@/store/order/orderSlice';
+import { adminGetRecommendationAnalytics } from '@/store/product/partsSlice';
+import Loader from '../../extras/Loader';
 
 // Indian-rupee formatter shared across the revenue figures on this page.
 const formatINR = (n) =>
-  new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
+  new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
     maximumFractionDigits: 0,
   }).format(n || 0);
 
 // Compact INR for axis labels (e.g. ₹1.2L, ₹45K) so the y-axis stays readable.
 const formatCompactINR = (n) => {
-  if (!n) return "₹0";
+  if (!n) return '₹0';
   if (n >= 10000000) return `₹${(n / 10000000).toFixed(1)}Cr`;
   if (n >= 100000) return `₹${(n / 100000).toFixed(1)}L`;
   if (n >= 1000) return `₹${(n / 1000).toFixed(1)}K`;
@@ -34,10 +34,10 @@ const formatCompactINR = (n) => {
 };
 
 const formatDate = (d) =>
-  new Date(d).toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
+  new Date(d).toLocaleDateString('en-IN', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
   });
 
 // CTR as a percentage with one decimal (e.g. 0.234 -> "23.4%").
@@ -45,20 +45,20 @@ const formatPct = (ratio) => `${((ratio || 0) * 100).toFixed(1)}%`;
 
 const statusColor = (status) => {
   switch (status) {
-    case "Success":
-    case "Confirmed":
-    case "Delivered":
-      return "bg-green-100 text-green-800";
-    case "Pending":
-    case "Pending Verification":
-    case "Processing":
-    case "Shipped":
-      return "bg-yellow-100 text-yellow-800";
-    case "Failed":
-    case "Cancelled":
-      return "bg-red-100 text-red-800";
+    case 'Success':
+    case 'Confirmed':
+    case 'Delivered':
+      return 'bg-green-100 text-green-800';
+    case 'Pending':
+    case 'Pending Verification':
+    case 'Processing':
+    case 'Shipped':
+      return 'bg-yellow-100 text-yellow-800';
+    case 'Failed':
+    case 'Cancelled':
+      return 'bg-red-100 text-red-800';
     default:
-      return "bg-gray-100 text-gray-800";
+      return 'bg-gray-100 text-gray-800';
   }
 };
 
@@ -168,8 +168,8 @@ const GrowthLineChart = ({ data }) => {
   });
 
   const linePath = points
-    .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
-    .join(" ");
+    .map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`)
+    .join(' ');
 
   const areaPath =
     `${linePath} L ${points[points.length - 1].x} ${padY + chartH}` +
@@ -246,13 +246,18 @@ const TopProductsChart = ({ data }) => {
     <div className="space-y-3">
       {data.map((p) => (
         <div key={p._id || p.name} className="flex items-center gap-3">
-          <div className="w-32 sm:w-40 shrink-0 truncate text-sm text-gray-700" title={p.name}>
+          <div
+            className="w-32 sm:w-40 shrink-0 truncate text-sm text-gray-700"
+            title={p.name}
+          >
             {p.name}
           </div>
           <div className="flex-1 bg-gray-100 rounded-full h-6 overflow-hidden">
             <div
               className="h-full rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 flex items-center justify-end pr-2"
-              style={{ width: `${Math.max((p.unitsSold / maxUnits) * 100, 6)}%` }}
+              style={{
+                width: `${Math.max((p.unitsSold / maxUnits) * 100, 6)}%`,
+              }}
             >
               <span className="text-xs font-semibold text-white">
                 {p.unitsSold}
@@ -371,7 +376,9 @@ const AdminAnalytics = () => {
                   <th className="py-3 pr-4 font-medium">Amount</th>
                   <th className="py-3 pr-4 font-medium">Payment</th>
                   <th className="py-3 pr-4 font-medium">Status</th>
-                  <th className="py-3 pr-4 font-medium whitespace-nowrap">Date</th>
+                  <th className="py-3 pr-4 font-medium whitespace-nowrap">
+                    Date
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -393,7 +400,9 @@ const AdminAnalytics = () => {
                     <td className="py-3 pr-4 font-semibold text-gray-800 whitespace-nowrap">
                       <span className="inline-flex items-center">
                         <IndianRupee className="w-3.5 h-3.5" />
-                        {new Intl.NumberFormat("en-IN").format(o.itemsTotal || 0)}
+                        {new Intl.NumberFormat('en-IN').format(
+                          o.itemsTotal || 0
+                        )}
                       </span>
                     </td>
                     <td className="py-3 pr-4 text-gray-600 whitespace-nowrap">
@@ -436,7 +445,7 @@ const AdminAnalytics = () => {
                 <span className="text-sm font-medium">Total Product Views</span>
               </div>
               <div className="text-2xl font-bold text-gray-900">
-                {new Intl.NumberFormat("en-IN").format(recoTotals.totalViews)}
+                {new Intl.NumberFormat('en-IN').format(recoTotals.totalViews)}
               </div>
             </div>
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
@@ -447,7 +456,7 @@ const AdminAnalytics = () => {
                 </span>
               </div>
               <div className="text-2xl font-bold text-gray-900">
-                {new Intl.NumberFormat("en-IN").format(
+                {new Intl.NumberFormat('en-IN').format(
                   recoTotals.totalImpressions
                 )}
               </div>
@@ -455,19 +464,17 @@ const AdminAnalytics = () => {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
               <div className="flex items-center gap-2 text-gray-500 mb-1">
                 <MousePointerClick className="w-4 h-4" />
-                <span className="text-sm font-medium">
-                  Recommendation CTR
-                </span>
+                <span className="text-sm font-medium">Recommendation CTR</span>
               </div>
               <div className="text-2xl font-bold text-gray-900">
                 {formatPct(recoTotals.overallCtr)}
               </div>
               <div className="text-xs text-gray-400 mt-1">
-                {new Intl.NumberFormat("en-IN").format(recoTotals.totalClicks)}{" "}
-                clicks /{" "}
-                {new Intl.NumberFormat("en-IN").format(
+                {new Intl.NumberFormat('en-IN').format(recoTotals.totalClicks)}{' '}
+                clicks /{' '}
+                {new Intl.NumberFormat('en-IN').format(
                   recoTotals.totalImpressions
-                )}{" "}
+                )}{' '}
                 impressions
               </div>
             </div>
@@ -487,7 +494,9 @@ const AdminAnalytics = () => {
                     <tr className="text-left text-gray-500 border-b border-gray-200">
                       <th className="py-2 pr-4 font-medium">Product</th>
                       <th className="py-2 pr-4 font-medium">Category</th>
-                      <th className="py-2 pr-4 font-medium text-right">Views</th>
+                      <th className="py-2 pr-4 font-medium text-right">
+                        Views
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -503,7 +512,7 @@ const AdminAnalytics = () => {
                           {p.category}
                         </td>
                         <td className="py-2 pr-4 text-right font-semibold text-gray-800">
-                          {new Intl.NumberFormat("en-IN").format(p.viewCount)}
+                          {new Intl.NumberFormat('en-IN').format(p.viewCount)}
                         </td>
                       </tr>
                     ))}
@@ -543,10 +552,10 @@ const AdminAnalytics = () => {
                           {p.name}
                         </td>
                         <td className="py-2 pr-4 text-right text-gray-700">
-                          {new Intl.NumberFormat("en-IN").format(p.impressions)}
+                          {new Intl.NumberFormat('en-IN').format(p.impressions)}
                         </td>
                         <td className="py-2 pr-4 text-right text-gray-700">
-                          {new Intl.NumberFormat("en-IN").format(p.clicks)}
+                          {new Intl.NumberFormat('en-IN').format(p.clicks)}
                         </td>
                         <td className="py-2 pr-4 text-right font-semibold text-gray-800">
                           {formatPct(p.ctr)}

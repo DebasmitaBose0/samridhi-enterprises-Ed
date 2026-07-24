@@ -1,13 +1,13 @@
 const generateReceiptHTML = (order) => {
   const { user, items, orderStatus, _id, createdAt } = order;
 
-  const formattedDate = new Date(createdAt).toLocaleString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
+  const formattedDate = new Date(createdAt).toLocaleString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
   const productList = (items || [])
@@ -15,7 +15,7 @@ const generateReceiptHTML = (order) => {
       const productImage =
         item.images && item.images.length > 0
           ? item.images[0].url
-          : "https://via.placeholder.com/50";
+          : 'https://via.placeholder.com/50';
 
       return `
       <tr>
@@ -24,14 +24,20 @@ const generateReceiptHTML = (order) => {
         </td>
         <td class="product-name">${item.name}</td>
         <td class="product-quantity">${item.quantity}</td>
-        <td class="product-price">Rs. ${Number(item.price * item.quantity).toLocaleString("en-IN")}</td>
+        <td class="product-price">Rs. ${Number(item.price * item.quantity).toLocaleString('en-IN')}</td>
       </tr>
     `;
     })
-    .join("");
+    .join('');
 
-  const totalItems = (items || []).reduce((sum, item) => sum + item.quantity, 0);
-  const grandTotal = (items || []).reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const totalItems = (items || []).reduce(
+    (sum, item) => sum + item.quantity,
+    0
+  );
+  const grandTotal = (items || []).reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
 
   return `
     <html>
@@ -118,7 +124,7 @@ const generateReceiptHTML = (order) => {
 
           <h2>Order Confirmation</h2>
 
-          <p>Dear <strong>${user?.name || "Customer"}</strong>,</p>
+          <p>Dear <strong>${user?.name || 'Customer'}</strong>,</p>
           <p>Thank you for choosing Samridhi Enterprises. Your order has been confirmed. Here are the details:</p>
 
           <div class="order-summary">
@@ -127,7 +133,7 @@ const generateReceiptHTML = (order) => {
             <p><span>Order Date:</span> <strong>${formattedDate}</strong></p>
             <p><span>Status:</span> <strong class="order-status">${orderStatus}</strong></p>
             <p><span>Total Items:</span> <strong>${totalItems}</strong></p>
-            <p><span>Grand Total:</span> <strong>Rs. ${grandTotal.toLocaleString("en-IN")}</strong></p>
+            <p><span>Grand Total:</span> <strong>Rs. ${grandTotal.toLocaleString('en-IN')}</strong></p>
           </div>
 
           <h3>Items Ordered</h3>

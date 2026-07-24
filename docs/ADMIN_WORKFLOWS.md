@@ -34,11 +34,13 @@ mutate operations are admin-only; read endpoints are public so the storefront
 can render without authentication.
 
 ### Brands — `/api/brand`
+
 - Create: `POST /add` (`image` file + `name`)
 - Update: `PUT /update/:id`
 - Delete: `DELETE /delete/:id`
 
 ### Bike Models — `/api/bike-model`
+
 - Create: `POST /add` (`image` file + `name`, `brand`, `engineType`, `yearStart`, `yearEnd`)
 - Update: `PUT /update/:id`
 - Delete: `DELETE /delete/:id`
@@ -47,6 +49,7 @@ Leaving `yearStart` / `yearEnd` / `engineType` empty marks a model as
 universally compatible (it matches any year / engine in compatibility search).
 
 ### Parts (products) — `/api/parts`
+
 - Create: `POST /add` (up to 5 `images` + product fields incl. `category` and `vehicleCompatibility`)
 - Update: `PUT /update/:id`
 - Delete: `DELETE /delete/:id`

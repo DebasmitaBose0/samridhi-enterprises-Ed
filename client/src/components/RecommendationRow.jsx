@@ -1,10 +1,15 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React from 'react';
+import { Link } from 'react-router-dom';
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 
-
-const RecommendationRow = ({ title, description, icon, products, onProductClick }) => {
+const RecommendationRow = ({
+  title,
+  description,
+  icon,
+  products,
+  onProductClick,
+}) => {
   if (!products || products.length === 0) return null;
 
   return (
@@ -35,13 +40,13 @@ const RecommendationRow = ({ title, description, icon, products, onProductClick 
             >
               <motion.div
                 whileHover={{ y: -4 }}
-                transition={{ type: "spring", stiffness: 300 }}
+                transition={{ type: 'spring', stiffness: 300 }}
                 className="h-full bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-lg transition-shadow duration-200 overflow-hidden"
               >
                 <div className="relative">
                   <img
-                    src={item.images?.[0]?.url || "/images/placeholder.jpg"}
-                    alt={item.name || "Product"}
+                    src={item.images?.[0]?.url || '/images/placeholder.jpg'}
+                    alt={item.name || 'Product'}
                     loading="lazy"
                     className="w-full h-40 object-cover"
                   />
@@ -53,24 +58,24 @@ const RecommendationRow = ({ title, description, icon, products, onProductClick 
                 </div>
                 <div className="p-4 space-y-2">
                   <h3 className="text-base font-semibold text-gray-900 line-clamp-2 capitalize min-h-[3rem]">
-                    {item.name || "Unknown Product"}
+                    {item.name || 'Unknown Product'}
                   </h3>
                   <div className="flex items-center justify-between">
                     <span className="text-xl font-bold text-blue-600">
-                      ₹{item.price?.toLocaleString() || "0"}
+                      ₹{item.price?.toLocaleString() || '0'}
                     </span>
                     <span
                       className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                         item.stock > 15
-                          ? "bg-green-100 text-green-800"
+                          ? 'bg-green-100 text-green-800'
                           : item.stock >= 5
-                          ? "bg-yellow-100 text-yellow-800"
-                          : item.stock > 0
-                          ? "bg-orange-100 text-orange-800"
-                          : "bg-red-100 text-red-800"
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : item.stock > 0
+                              ? 'bg-orange-100 text-orange-800'
+                              : 'bg-red-100 text-red-800'
                       }`}
                     >
-                      {item.stock > 0 ? "In Stock" : "Out of Stock"}
+                      {item.stock > 0 ? 'In Stock' : 'Out of Stock'}
                     </span>
                   </div>
                   <div className="text-sm text-gray-500 truncate">

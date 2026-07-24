@@ -38,9 +38,9 @@ export const IN_STOCK_THRESHOLD = 15;
 // ---------------------------------------------------------------------------
 
 export const STOCK_LABELS = {
-  IN_STOCK: "In Stock",
-  LOW_STOCK: "Low Stock",
-  OUT_OF_STOCK: "Out of Stock",
+  IN_STOCK: 'In Stock',
+  LOW_STOCK: 'Low Stock',
+  OUT_OF_STOCK: 'Out of Stock',
 };
 
 // ---------------------------------------------------------------------------
@@ -99,11 +99,11 @@ export const getStockBadge = (stock) => {
   const status = getStockStatus(stock);
   let badgeCls;
   if (status.isOutOfStock) {
-    badgeCls = "bg-red-100 text-red-800";
+    badgeCls = 'bg-red-100 text-red-800';
   } else if (status.isLowStock) {
-    badgeCls = "bg-yellow-100 text-yellow-800";
+    badgeCls = 'bg-yellow-100 text-yellow-800';
   } else {
-    badgeCls = "bg-green-100 text-green-800";
+    badgeCls = 'bg-green-100 text-green-800';
   }
   return { label: status.label, badgeCls };
 };
@@ -124,11 +124,11 @@ export const getCompareBadge = (stock) => {
   const status = getStockStatus(stock);
   let cls;
   if (status.isOutOfStock) {
-    cls = "text-red-700";
+    cls = 'text-red-700';
   } else if (status.isLowStock) {
-    cls = "text-yellow-700";
+    cls = 'text-yellow-700';
   } else {
-    cls = "text-green-700";
+    cls = 'text-green-700';
   }
   return { text: status.label, cls };
 };
@@ -162,13 +162,21 @@ export const getCompareBadge = (stock) => {
 export const getCustomerStockStatus = (stock) => {
   const n = Number(stock) || 0;
   if (n <= 0) {
-    return { text: "Out of Stock", color: "text-red-500", bg: "bg-red-50" };
+    return { text: 'Out of Stock', color: 'text-red-500', bg: 'bg-red-50' };
   }
   if (n <= LOW_STOCK_THRESHOLD) {
-    return { text: "Only few left!", color: "text-orange-500", bg: "bg-orange-50" };
+    return {
+      text: 'Only few left!',
+      color: 'text-orange-500',
+      bg: 'bg-orange-50',
+    };
   }
   if (n <= IN_STOCK_THRESHOLD) {
-    return { text: "Limited Stock", color: "text-yellow-600", bg: "bg-yellow-50" };
+    return {
+      text: 'Limited Stock',
+      color: 'text-yellow-600',
+      bg: 'bg-yellow-50',
+    };
   }
-  return { text: "In Stock", color: "text-emerald-500", bg: "bg-emerald-50" };
+  return { text: 'In Stock', color: 'text-emerald-500', bg: 'bg-emerald-50' };
 };

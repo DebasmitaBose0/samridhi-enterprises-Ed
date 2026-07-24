@@ -1,8 +1,8 @@
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { motion } from 'framer-motion';
+import { useEffect, useMemo, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import {
   Package,
   PackageCheck,
@@ -10,17 +10,17 @@ import {
   PackageX,
   ArrowLeft,
   Search,
-} from "lucide-react";
-import { toast } from "react-toastify";
-import { adminGetInventory, clearOrderError } from "@/store/order/orderSlice";
-import Loader from "../../extras/Loader";
-import EmptyState from "../../components/EmptyState";
+} from 'lucide-react';
+import { toast } from 'react-toastify';
+import { adminGetInventory, clearOrderError } from '@/store/order/orderSlice';
+import Loader from '../../extras/Loader';
+import EmptyState from '../../components/EmptyState';
 
 // Indian-rupee formatter shared by the stock-value figures on this page.
 const formatINR = (n) =>
-  new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
+  new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
     maximumFractionDigits: 0,
   }).format(n || 0);
 
@@ -29,23 +29,23 @@ const formatINR = (n) =>
 // for the status itself, so the UI never re-derives the threshold here.
 const statusPill = (status) => {
   switch (status) {
-    case "Out of Stock":
-      return "bg-red-100 text-red-800 border border-red-200";
-    case "Low Stock":
-      return "bg-amber-100 text-amber-800 border border-amber-200";
+    case 'Out of Stock':
+      return 'bg-red-100 text-red-800 border border-red-200';
+    case 'Low Stock':
+      return 'bg-amber-100 text-amber-800 border border-amber-200';
     default:
-      return "bg-green-100 text-green-800 border border-green-200";
+      return 'bg-green-100 text-green-800 border border-green-200';
   }
 };
 
-const STATUS_FILTERS = ["All", "In Stock", "Low Stock", "Out of Stock"];
+const STATUS_FILTERS = ['All', 'In Stock', 'Low Stock', 'Out of Stock'];
 
 const InventoryPage = () => {
   const dispatch = useDispatch();
   const { inventory, loading, error } = useSelector((state) => state.order);
 
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState('All');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     dispatch(adminGetInventory());
@@ -63,9 +63,9 @@ const InventoryPage = () => {
   // load instead of crashing on undefined.
   const stats = useMemo(() => {
     const list = inventory || [];
-    const inStock = list.filter((p) => p.status === "In Stock").length;
-    const lowStock = list.filter((p) => p.status === "Low Stock").length;
-    const outOfStock = list.filter((p) => p.status === "Out of Stock").length;
+    const inStock = list.filter((p) => p.status === 'In Stock').length;
+    const lowStock = list.filter((p) => p.status === 'Low Stock').length;
+    const outOfStock = list.filter((p) => p.status === 'Out of Stock').length;
     const stockValue = list.reduce(
       (sum, p) => sum + (Number(p.price) || 0) * (Number(p.stock) || 0),
       0
@@ -87,40 +87,40 @@ const InventoryPage = () => {
     const term = searchTerm.trim().toLowerCase();
     return list.filter((p) => {
       const matchesStatus =
-        statusFilter === "All" ? true : p.status === statusFilter;
+        statusFilter === 'All' ? true : p.status === statusFilter;
       const matchesSearch =
-        term === ""
+        term === ''
           ? true
-          : (p.name || "").toLowerCase().includes(term) ||
-            (p.category || "").toLowerCase().includes(term);
+          : (p.name || '').toLowerCase().includes(term) ||
+            (p.category || '').toLowerCase().includes(term);
       return matchesStatus && matchesSearch;
     });
   }, [inventory, statusFilter, searchTerm]);
 
   const cards = [
     {
-      title: "Total Products",
+      title: 'Total Products',
       value: stats.total,
       icon: <Package className="w-7 h-7 text-white" />,
-      color: "bg-blue-500",
+      color: 'bg-blue-500',
     },
     {
-      title: "In Stock",
+      title: 'In Stock',
       value: stats.inStock,
       icon: <PackageCheck className="w-7 h-7 text-white" />,
-      color: "bg-emerald-500",
+      color: 'bg-emerald-500',
     },
     {
-      title: "Low Stock",
+      title: 'Low Stock',
       value: stats.lowStock,
       icon: <AlertTriangle className="w-7 h-7 text-white" />,
-      color: "bg-amber-500",
+      color: 'bg-amber-500',
     },
     {
-      title: "Out of Stock",
+      title: 'Out of Stock',
       value: stats.outOfStock,
       icon: <PackageX className="w-7 h-7 text-white" />,
-      color: "bg-red-500",
+      color: 'bg-red-500',
     },
   ];
 
@@ -160,7 +160,7 @@ const InventoryPage = () => {
             </div>
             <div className="text-3xl font-bold">
               {loading && (!inventory || inventory.length === 0)
-                ? "…"
+                ? '…'
                 : card.value}
             </div>
           </motion.div>
@@ -183,7 +183,7 @@ const InventoryPage = () => {
           <PackageX className="w-5 h-5 shrink-0" />
           <span className="text-sm font-medium">
             {stats.outOfStock} product
-            {stats.outOfStock === 1 ? " is" : "s are"} out of stock and need
+            {stats.outOfStock === 1 ? ' is' : 's are'} out of stock and need
             immediate restocking.
           </span>
         </div>
@@ -193,7 +193,7 @@ const InventoryPage = () => {
           <AlertTriangle className="w-5 h-5 shrink-0" />
           <span className="text-sm font-medium">
             {stats.lowStock} product
-            {stats.lowStock === 1 ? " is" : "s are"} running low on stock.
+            {stats.lowStock === 1 ? ' is' : 's are'} running low on stock.
           </span>
         </div>
       )}
@@ -217,8 +217,8 @@ const InventoryPage = () => {
               onClick={() => setStatusFilter(s)}
               className={`px-3 py-2 text-sm rounded-lg border transition-colors ${
                 statusFilter === s
-                  ? "bg-blue-500 text-white border-blue-500 font-semibold"
-                  : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                  ? 'bg-blue-500 text-white border-blue-500 font-semibold'
+                  : 'border-gray-300 text-gray-700 hover:bg-gray-50'
               }`}
             >
               {s}
@@ -230,9 +230,9 @@ const InventoryPage = () => {
       {/* Result count */}
       <p className="mt-4 text-sm text-gray-600">
         {filteredInventory.length === 0
-          ? "No products match the current filter"
+          ? 'No products match the current filter'
           : `Showing ${filteredInventory.length} of ${stats.total} product${
-              stats.total !== 1 ? "s" : ""
+              stats.total !== 1 ? 's' : ''
             }`}
       </p>
 
@@ -291,7 +291,11 @@ const InventoryPage = () => {
           <EmptyState
             icon="Package"
             title="No products found"
-            message={inventory.length > 0 ? "No products match your current filter. Try adjusting your search criteria." : "Your inventory is empty. Add some products to get started."}
+            message={
+              inventory.length > 0
+                ? 'No products match your current filter. Try adjusting your search criteria.'
+                : 'Your inventory is empty. Add some products to get started.'
+            }
           />
         )}
       </div>

@@ -1,4 +1,4 @@
-import { motion as Motion } from "framer-motion";
+import { motion as Motion } from 'framer-motion';
 
 const WhatsAppButton = () => {
   return (
@@ -24,7 +24,7 @@ const WhatsAppButton = () => {
         className="relative"
         initial={{ rotate: 0 }}
         animate={{ rotate: 360 }}
-        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
       >
         <rect width="48" height="48" fill="url(#gold-gradient)" rx="24"></rect>
         <path

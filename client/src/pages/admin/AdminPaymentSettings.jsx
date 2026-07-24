@@ -1,15 +1,15 @@
-import { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { toast } from "react-toastify";
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 import {
   getPaymentSettings,
   adminUpdatePaymentSettings,
   clearPaymentSettingsError,
   clearPaymentSettingsSuccess,
-} from "../../store/order/paymentSettingsSlice";
-import Loader from "../../extras/Loader";
+} from '../../store/order/paymentSettingsSlice';
+import Loader from '../../extras/Loader';
 
 const AdminPaymentSettings = () => {
   const dispatch = useDispatch();
@@ -17,9 +17,9 @@ const AdminPaymentSettings = () => {
     (state) => state.paymentSettings
   );
 
-  const [upiId, setUpiId] = useState("");
+  const [upiId, setUpiId] = useState('');
   const [qrFile, setQrFile] = useState(null);
-  const [qrPreview, setQrPreview] = useState("");
+  const [qrPreview, setQrPreview] = useState('');
   const [notifyAdmins, setNotifyAdmins] = useState(true);
   const [notifyTickets, setNotifyTickets] = useState(true);
   const [formErrors, setFormErrors] = useState({});
@@ -30,7 +30,7 @@ const AdminPaymentSettings = () => {
 
   useEffect(() => {
     if (settings) {
-      setUpiId(settings.upiId || "");
+      setUpiId(settings.upiId || '');
       setNotifyAdmins(settings.notifyAdminsOnNewOrder !== false);
       setNotifyTickets(settings.notifyAdminsOnNewTicket !== false);
     }
@@ -45,10 +45,10 @@ const AdminPaymentSettings = () => {
 
   useEffect(() => {
     if (success) {
-      toast.success("Settings saved");
+      toast.success('Settings saved');
       dispatch(clearPaymentSettingsSuccess());
       setQrFile(null);
-      setQrPreview("");
+      setQrPreview('');
     }
   }, [success, dispatch]);
 
@@ -62,16 +62,16 @@ const AdminPaymentSettings = () => {
   const handleSave = () => {
     const fieldErrors = {};
     if (upiId.trim() && !/^[\w.-]+@[\w.-]+$/.test(upiId.trim())) {
-      fieldErrors.upiId = "Invalid UPI ID format (e.g. name@bank)";
+      fieldErrors.upiId = 'Invalid UPI ID format (e.g. name@bank)';
     }
     setFormErrors(fieldErrors);
     if (Object.keys(fieldErrors).length > 0) return;
 
     const fd = new FormData();
-    fd.append("upiId", upiId);
-    fd.append("notifyAdminsOnNewOrder", notifyAdmins);
-    fd.append("notifyAdminsOnNewTicket", notifyTickets);
-    if (qrFile) fd.append("qrImage", qrFile);
+    fd.append('upiId', upiId);
+    fd.append('notifyAdminsOnNewOrder', notifyAdmins);
+    fd.append('notifyAdminsOnNewTicket', notifyTickets);
+    if (qrFile) fd.append('qrImage', qrFile);
     dispatch(adminUpdatePaymentSettings(fd));
   };
 
@@ -95,11 +95,16 @@ const AdminPaymentSettings = () => {
             </label>
             <input
               value={upiId}
-              onChange={(e) => { setUpiId(e.target.value); setFormErrors((prev) => ({ ...prev, upiId: "" })); }}
-              className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white ${formErrors.upiId ? "border-red-400" : "border-gray-200"}`}
+              onChange={(e) => {
+                setUpiId(e.target.value);
+                setFormErrors((prev) => ({ ...prev, upiId: '' }));
+              }}
+              className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white ${formErrors.upiId ? 'border-red-400' : 'border-gray-200'}`}
               placeholder="e.g. samridhi@upi"
             />
-            {formErrors.upiId && <p className="mt-1 text-sm text-red-500">{formErrors.upiId}</p>}
+            {formErrors.upiId && (
+              <p className="mt-1 text-sm text-red-500">{formErrors.upiId}</p>
+            )}
           </div>
 
           <div>
@@ -161,12 +166,12 @@ const AdminPaymentSettings = () => {
                 aria-checked={notifyAdmins}
                 onClick={() => setNotifyAdmins((v) => !v)}
                 className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors ${
-                  notifyAdmins ? "bg-blue-600" : "bg-gray-300"
+                  notifyAdmins ? 'bg-blue-600' : 'bg-gray-300'
                 }`}
               >
                 <span
                   className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
-                    notifyAdmins ? "translate-x-5" : "translate-x-1"
+                    notifyAdmins ? 'translate-x-5' : 'translate-x-1'
                   }`}
                 />
               </button>
@@ -187,12 +192,12 @@ const AdminPaymentSettings = () => {
                 aria-checked={notifyTickets}
                 onClick={() => setNotifyTickets((v) => !v)}
                 className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors ${
-                  notifyTickets ? "bg-blue-600" : "bg-gray-300"
+                  notifyTickets ? 'bg-blue-600' : 'bg-gray-300'
                 }`}
               >
                 <span
                   className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
-                    notifyTickets ? "translate-x-5" : "translate-x-1"
+                    notifyTickets ? 'translate-x-5' : 'translate-x-1'
                   }`}
                 />
               </button>
@@ -204,7 +209,7 @@ const AdminPaymentSettings = () => {
             disabled={loading}
             className="w-full py-3.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl disabled:opacity-60 transition-all duration-300"
           >
-            {loading ? "Saving..." : "Save Settings"}
+            {loading ? 'Saving...' : 'Save Settings'}
           </button>
         </div>
       </motion.div>

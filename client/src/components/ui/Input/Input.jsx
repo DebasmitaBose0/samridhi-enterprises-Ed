@@ -1,16 +1,18 @@
 import React from 'react';
 
-const Input = ({ 
-  type = 'text', 
-  placeholder, 
-  label, 
-  error, 
-  className = '', 
-  ...props 
+const Input = ({
+  type = 'text',
+  placeholder,
+  label,
+  error,
+  className = '',
+  ...props
 }) => {
   return (
     <div className="w-full flex flex-col gap-1.5">
-      {label && <label className="text-sm font-medium text-[#0F172A]">{label}</label>}
+      {label && (
+        <label className="text-sm font-medium text-[#0F172A]">{label}</label>
+      )}
       <input
         type={type}
         placeholder={placeholder}
@@ -19,7 +21,9 @@ const Input = ({
         } ${className}`}
         {...props}
       />
-      {error && <span className="text-xs text-[#EF4444] font-medium">{error}</span>}
+      {error && (
+        <span className="text-xs text-[#EF4444] font-medium">{error}</span>
+      )}
     </div>
   );
 };

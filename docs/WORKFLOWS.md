@@ -34,7 +34,9 @@ stateDiagram-v2
 ### Flow Types
 
 #### A. Cash on Delivery (COD) Flow
+
 COD orders bypass payment verification.
+
 1. The customer places the order.
 2. The system checks stock, reserves inventory, snapshots the cart, and immediately marks the order as:
    - `paymentStatus`: `Pending`
@@ -43,7 +45,9 @@ COD orders bypass payment verification.
 4. The admin fulfills the order through standard states (`Processing` → `Shipped` → `Delivered`).
 
 #### B. Online (UPI) Flow
+
 Online orders require admin verification of payment screenshots.
+
 1. The customer uploads a screenshot of their UPI transaction and specifies their UPI reference number during checkout.
 2. The order is created as:
    - `paymentStatus`: `Pending Verification`
@@ -91,7 +95,7 @@ flowchart TD
     Screenshot -- Success --> Coupon[Validate & Claim Coupon]
     Coupon -- Success --> CreateOrder[Create Order & User Link]
     CreateOrder -- Success --> ClearCart[Clear Cart & Finish]
-    
+
     Error --> Rollback[Rollback: Re-increment Stock in updatedParts]
     Screenshot -- Fail --> Rollback
     Coupon -- Fail --> Rollback
@@ -99,14 +103,19 @@ flowchart TD
 ```
 
 In the `catch` block of [createOrder](file:///c:/Users/Rushabh%20Mahajan/Documents/GitHub/samridhi-enterprises/server/controllers/orderController.js#L24-L280), the code restores stock for all successfully deducted items:
+
 ```javascript
 // Rollback any stocks we already successfully deducted
 for (const updated of updatedParts) {
-  await Part.findByIdAndUpdate(updated.id, { $inc: { stock: updated.quantity } });
+  await Part.findByIdAndUpdate(updated.id, {
+    $inc: { stock: updated.quantity },
+  });
 }
 // Rollback coupon usedCount
 if (couponClaimed) {
-  await Coupon.findByIdAndUpdate(couponClaimed._id, { $inc: { usedCount: -1 } });
+  await Coupon.findByIdAndUpdate(couponClaimed._id, {
+    $inc: { usedCount: -1 },
+  });
 }
 ```
 
@@ -117,10 +126,13 @@ if (couponClaimed) {
 When an order is cancelled or its online payment is rejected, the reserved items must be returned to the store's inventory.
 
 ### Idempotency Safeguard
+
 To prevent returning stock multiple times for the same order (e.g., if an admin calls the cancel endpoint twice or triggers status changes concurrently), the `Order` schema defines a `stockRestored` boolean field (defaulting to `false`).
 
 ### Restoration Execution
+
 The stock restoration process:
+
 1. Verifies that `order.stockRestored` is falsy.
 2. Loops through `order.items`.
 3. Restores stock atomically:
@@ -128,7 +140,9 @@ The stock restoration process:
    if (!order.stockRestored) {
      for (const item of order.items) {
        if (item.part) {
-         await Part.findByIdAndUpdate(item.part, { $inc: { stock: item.quantity } });
+         await Part.findByIdAndUpdate(item.part, {
+           $inc: { stock: item.quantity },
+         });
        }
      }
      order.stockRestored = true;
@@ -137,6 +151,7 @@ The stock restoration process:
 4. Saves the order.
 
 This logic is executed in two places:
+
 - [adminVerifyPayment](file:///c:/Users/Rushabh%20Mahajan/Documents/GitHub/samridhi-enterprises/server/controllers/orderController.js#L363-L371) (when action is `reject`).
 - [adminUpdateOrderStatus](file:///c:/Users/Rushabh%20Mahajan/Documents/GitHub/samridhi-enterprises/server/controllers/orderController.js#L454-L462) (when status transitions to `Cancelled`).
 
@@ -172,14 +187,14 @@ Administrators cannot change order statuses arbitrarily. Transitions must follow
 
 The valid status paths are defined as follows:
 
-| Current Status | Allowed Next Statuses | Notes |
-| :--- | :--- | :--- |
-| **Pending Verification** | `Confirmed`, `Cancelled` | Awaiting admin review of the payment screenshot. |
-| **Confirmed** | `Processing`, `Cancelled` | Payment is verified (or COD), order is ready for packaging. |
-| **Processing** | `Shipped`, `Cancelled` | Order is packed and handed off to delivery/logistics. |
-| **Shipped** | `Delivered`, `Cancelled` | Package is in transit. |
-| **Delivered** | None (Terminal) | Order is successfully received. |
-| **Cancelled** | None (Terminal) | Order is terminated; stock is restored. |
+| Current Status           | Allowed Next Statuses     | Notes                                                       |
+| :----------------------- | :------------------------ | :---------------------------------------------------------- |
+| **Pending Verification** | `Confirmed`, `Cancelled`  | Awaiting admin review of the payment screenshot.            |
+| **Confirmed**            | `Processing`, `Cancelled` | Payment is verified (or COD), order is ready for packaging. |
+| **Processing**           | `Shipped`, `Cancelled`    | Order is packed and handed off to delivery/logistics.       |
+| **Shipped**              | `Delivered`, `Cancelled`  | Package is in transit.                                      |
+| **Delivered**            | None (Terminal)           | Order is successfully received.                             |
+| **Cancelled**            | None (Terminal)           | Order is terminated; stock is restored.                     |
 
 ### Operational Security Guards
 
@@ -189,10 +204,15 @@ The valid status paths are defined as follows:
    For online payment methods, administrators cannot advance order status to physical fulfillment states (`Processing`, `Shipped`, `Delivered`) unless the payment has been explicitly verified:
    ```javascript
    if (
-     order.paymentStatus !== "Success" &&
-     ["Processing", "Shipped", "Delivered"].includes(orderStatus)
+     order.paymentStatus !== 'Success' &&
+     ['Processing', 'Shipped', 'Delivered'].includes(orderStatus)
    ) {
-     return next(new ErrorHandler("Cannot advance fulfilment until the order's payment is verified", 400));
+     return next(
+       new ErrorHandler(
+         "Cannot advance fulfilment until the order's payment is verified",
+         400
+       )
+     );
    }
    ```
 3. **Order Re-validation**:

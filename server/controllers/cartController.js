@@ -1,14 +1,12 @@
-import Cart from "../models/cartModel.js";
-import Part from "../models/partModel.js";
-import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
-import ErrorHandler from "../utils/errorHandler.js";
-import mongoose from "mongoose";
+import Cart from '../models/cartModel.js';
+import Part from '../models/partModel.js';
+import catchAsyncErrors from '../middleware/catchAsyncErrors.js';
+import ErrorHandler from '../utils/errorHandler.js';
+import mongoose from 'mongoose';
 
 /*
   NOTE: getCart recalculates in-memory only and avoids unnecessary DB writes.
 */
-
-
 
 const getOrCreateCart = async (userId) => {
   let cart = await Cart.findOne({ user: userId });
@@ -25,10 +23,10 @@ const getOrCreateCart = async (userId) => {
 const addItemToCart = async (cart, partId, quantity) => {
   const part = await Part.findById(partId);
   if (!part) {
-    throw new ErrorHandler("Part not found", 404);
+    throw new ErrorHandler('Part not found', 404);
   }
   if (part.stock < quantity) {
-    throw new ErrorHandler("Insufficient stock", 400);
+    throw new ErrorHandler('Insufficient stock', 400);
   }
 
   const itemIndex = cart.items.findIndex(
@@ -71,11 +69,15 @@ export const syncCart = catchAsyncErrors(async (req, res) => {
     const partId = item.partId;
     const quantity = Number(item.quantity);
 
-    if (!mongoose.Types.ObjectId.isValid(partId) || !Number.isInteger(quantity) || quantity < 1) {
+    if (
+      !mongoose.Types.ObjectId.isValid(partId) ||
+      !Number.isInteger(quantity) ||
+      quantity < 1
+    ) {
       failedItems.push({
         partId,
         quantity: item.quantity,
-        reason: "Invalid cart item",
+        reason: 'Invalid cart item',
       });
       continue;
     }
@@ -86,7 +88,7 @@ export const syncCart = catchAsyncErrors(async (req, res) => {
       failedItems.push({
         partId,
         quantity,
-        reason: error.message || "Unable to sync item",
+        reason: error.message || 'Unable to sync item',
       });
     }
   }
@@ -95,13 +97,15 @@ export const syncCart = catchAsyncErrors(async (req, res) => {
   await cart.save();
 
   const syncedCart = await Cart.findOne({ user: userId }).populate(
-    "items.part",
-    "name price images stock"
+    'items.part',
+    'name price images stock'
   );
 
   res.status(200).json({
     success: true,
-    warnings: failedItems.map((item) => `Could not sync item ${item.partId}: ${item.reason}`),
+    warnings: failedItems.map(
+      (item) => `Could not sync item ${item.partId}: ${item.reason}`
+    ),
     failedItems,
     cart: syncedCart,
   });
@@ -129,7 +133,9 @@ const recalculateCart = ({ populatedItems }) => {
     // Stock-out -> remove from cart.
     if (part.stock <= 0) {
       removedItems = true;
-      warnings.push(`${part.name} is out of stock and has been removed from your cart.`);
+      warnings.push(
+        `${part.name} is out of stock and has been removed from your cart.`
+      );
       continue;
     }
 
@@ -140,7 +146,9 @@ const recalculateCart = ({ populatedItems }) => {
     if (part.stock < requestedQty) {
       finalQty = part.stock;
       quantityChangedAny = true;
-      warnings.push(`Quantity for ${part.name} has been adjusted to ${part.stock} due to limited stock.`);
+      warnings.push(
+        `Quantity for ${part.name} has been adjusted to ${part.stock} due to limited stock.`
+      );
     }
 
     // Compare stored unit price (based on stored total / quantity) with current unit price.
@@ -153,7 +161,7 @@ const recalculateCart = ({ populatedItems }) => {
     if (storedPaise !== currentPaise) {
       priceChangedAny = true;
       warnings.push(
-        `Price for ${part.name} has changed from ₹${storedUnitPrice.toLocaleString("en-IN")} to ₹${currentUnitPrice.toLocaleString("en-IN")}.`
+        `Price for ${part.name} has changed from ₹${storedUnitPrice.toLocaleString('en-IN')} to ₹${currentUnitPrice.toLocaleString('en-IN')}.`
       );
     }
 
@@ -173,11 +181,10 @@ const recalculateCart = ({ populatedItems }) => {
   return { warnings, adjustedItems, recomputedTotal, needsSave };
 };
 
-
 export const getCart = catchAsyncErrors(async (req, res, next) => {
   let cart = await Cart.findOne({ user: req.user._id }).populate(
-    "items.part",
-    "name price images stock"
+    'items.part',
+    'name price images stock'
   );
 
   if (!cart) {
@@ -190,12 +197,8 @@ export const getCart = catchAsyncErrors(async (req, res, next) => {
   }
 
   const populatedItems = Array.isArray(cart.items) ? cart.items : [];
-  const {
-    warnings,
-    adjustedItems,
-    recomputedTotal,
-    needsSave,
-  } = recalculateCart({ populatedItems });
+  const { warnings, adjustedItems, recomputedTotal, needsSave } =
+    recalculateCart({ populatedItems });
 
   // Apply in-memory changes regardless; we persist only if necessary.
   cart.items = adjustedItems;
@@ -208,7 +211,6 @@ export const getCart = catchAsyncErrors(async (req, res, next) => {
   return res.status(200).json({ success: true, warnings, cart });
 });
 
-
 export const updateCartItem = catchAsyncErrors(async (req, res, next) => {
   const { quantity } = req.body;
   const partId = req.params.partId;
@@ -217,22 +219,24 @@ export const updateCartItem = catchAsyncErrors(async (req, res, next) => {
   // API call could send 0, a negative (which makes price negative), or a
   // fractional quantity. The client clamps too, but the endpoint must validate.
   if (!Number.isInteger(quantity) || quantity < 1) {
-    return next(new ErrorHandler("Quantity must be a whole number of at least 1", 400));
+    return next(
+      new ErrorHandler('Quantity must be a whole number of at least 1', 400)
+    );
   }
 
   const cart = await Cart.findOne({ user: req.user._id });
-  if (!cart) return next(new ErrorHandler("Cart not found", 404));
+  if (!cart) return next(new ErrorHandler('Cart not found', 404));
 
   const itemIndex = cart.items.findIndex(
     (item) => item.part.toString() === partId
   );
   if (itemIndex < 0)
-    return next(new ErrorHandler("Item not found in cart", 404));
+    return next(new ErrorHandler('Item not found in cart', 404));
 
   const part = await Part.findById(partId);
-  if (!part) return next(new ErrorHandler("Product not found", 404));
+  if (!part) return next(new ErrorHandler('Product not found', 404));
   if (part.stock < quantity)
-    return next(new ErrorHandler("Insufficient stock", 400));
+    return next(new ErrorHandler('Insufficient stock', 400));
 
   cart.items[itemIndex].quantity = quantity;
   cart.items[itemIndex].price = part.price * quantity;
@@ -245,7 +249,7 @@ export const updateCartItem = catchAsyncErrors(async (req, res, next) => {
 export const removeFromCart = catchAsyncErrors(async (req, res, next) => {
   const { partId } = req.params;
   const cart = await Cart.findOne({ user: req.user._id });
-  if (!cart) return next(new ErrorHandler("Cart not found", 404));
+  if (!cart) return next(new ErrorHandler('Cart not found', 404));
 
   cart.items = cart.items.filter((item) => item.part.toString() !== partId);
   cart.total = cart.items.reduce((sum, item) => sum + item.price, 0);
@@ -254,17 +258,19 @@ export const removeFromCart = catchAsyncErrors(async (req, res, next) => {
   res.status(200).json({ success: true, cart });
 });
 
-
 export const clearCart = catchAsyncErrors(async (req, res, next) => {
   const cart = await Cart.findOne({ user: req.user._id });
-  if (!cart) return next(new ErrorHandler("Cart not found", 404));
+  if (!cart) return next(new ErrorHandler('Cart not found', 404));
 
   console.log('Before clearing cart:', JSON.stringify(cart, null, 2));
   cart.items = [];
   cart.total = 0;
 
   await cart.save();
-  const clearedCart = await Cart.findOne({ user: req.user._id }).populate("items.part", "name price images stock");
+  const clearedCart = await Cart.findOne({ user: req.user._id }).populate(
+    'items.part',
+    'name price images stock'
+  );
   console.log('Cleared cart:', JSON.stringify(clearedCart, null, 2));
   res.status(200).json({ success: true, cart: clearedCart });
 });

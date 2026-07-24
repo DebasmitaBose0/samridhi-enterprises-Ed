@@ -1,10 +1,10 @@
 // eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import { getCompareBadge } from "@/utils/stockStatus";
+import { motion } from 'framer-motion';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { getCompareBadge } from '@/utils/stockStatus';
 import {
   Scale,
   ArrowLeft,
@@ -12,24 +12,21 @@ import {
   X,
   Share2,
   ShoppingCart,
-} from "lucide-react";
-import {
-  removeFromCompare,
-  clearCompare,
-} from "@/store/product/compareSlice";
+} from 'lucide-react';
+import { removeFromCompare, clearCompare } from '@/store/product/compareSlice';
 
 const ComparePage = () => {
   const dispatch = useDispatch();
   const { items } = useSelector((state) => state.compare);
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
 
   const handleShare = async () => {
-    const names = items.map((p) => p.name).join(" vs ");
+    const names = items.map((p) => p.name).join(' vs ');
     const shareData = {
-      title: "Product Comparison — Samridhi Enterprises",
+      title: 'Product Comparison — Samridhi Enterprises',
       text: `Compare: ${names}`,
       url: window.location.href,
     };
@@ -38,7 +35,7 @@ const ComparePage = () => {
         await navigator.share(shareData);
       } else {
         await navigator.clipboard.writeText(window.location.href);
-        toast.success("Comparison link copied to clipboard");
+        toast.success('Comparison link copied to clipboard');
       }
     } catch {
       // User dismissed the share sheet, or clipboard was blocked — no-op.
@@ -49,7 +46,7 @@ const ComparePage = () => {
   // of the part so the table stays in one place and is easy to extend.
   const SPEC_ROWS = [
     {
-      label: "Price",
+      label: 'Price',
       render: (p) => (
         <span className="text-lg font-bold text-gray-900">
           ₹{Number(p.price).toLocaleString()}
@@ -57,32 +54,34 @@ const ComparePage = () => {
       ),
     },
     {
-      label: "Product ID",
+      label: 'Product ID',
       render: (p) => <span className="font-mono text-sm">{p.product_id}</span>,
     },
     {
-      label: "Category",
-      render: (p) => <span className="capitalize">{p.category || "—"}</span>,
+      label: 'Category',
+      render: (p) => <span className="capitalize">{p.category || '—'}</span>,
     },
     {
-      label: "Availability",
+      label: 'Availability',
       render: (p) => {
         const s = getCompareBadge(p.stock);
         return <span className={`font-medium ${s.cls}`}>{s.text}</span>;
       },
     },
     {
-      label: "Units in stock",
-      render: (p) => <span>{p.stock ?? "—"}</span>,
+      label: 'Units in stock',
+      render: (p) => <span>{p.stock ?? '—'}</span>,
     },
     {
-      label: "Rating",
+      label: 'Rating',
       render: (p) => (
-        <span>{p.ratings ? `${Number(p.ratings).toFixed(1)} / 5` : "No ratings"}</span>
+        <span>
+          {p.ratings ? `${Number(p.ratings).toFixed(1)} / 5` : 'No ratings'}
+        </span>
       ),
     },
     {
-      label: "Bestseller",
+      label: 'Bestseller',
       render: (p) =>
         p.bestseller ? (
           <span className="text-blue-700 font-medium">Yes</span>
@@ -101,7 +100,8 @@ const ComparePage = () => {
             No products to compare
           </h2>
           <p className="text-gray-600 mb-8">
-            Browse the catalogue and tap “Compare” on any product to add it here.
+            Browse the catalogue and tap “Compare” on any product to add it
+            here.
           </p>
           <Link
             to="/products"
@@ -131,7 +131,7 @@ const ComparePage = () => {
                 Compare Products
               </h1>
               <p className="text-gray-600">
-                Comparing {items.length} product{items.length > 1 ? "s" : ""}
+                Comparing {items.length} product{items.length > 1 ? 's' : ''}
               </p>
             </div>
           </div>
@@ -171,7 +171,7 @@ const ComparePage = () => {
                       </button>
                       <Link to={`/products/${p._id}`}>
                         <img
-                          src={p.image || "https://via.placeholder.com/150"}
+                          src={p.image || 'https://via.placeholder.com/150'}
                           alt={p.name}
                           className="w-24 h-24 object-cover rounded-xl bg-gray-50 mb-2"
                         />
@@ -191,7 +191,7 @@ const ComparePage = () => {
               {SPEC_ROWS.map((row, idx) => (
                 <tr
                   key={row.label}
-                  className={idx % 2 === 0 ? "bg-white/60" : "bg-gray-50/60"}
+                  className={idx % 2 === 0 ? 'bg-white/60' : 'bg-gray-50/60'}
                 >
                   <td className="sticky left-0 bg-inherit z-10 text-sm font-medium text-gray-600 px-4 py-3">
                     {row.label}

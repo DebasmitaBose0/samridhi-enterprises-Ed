@@ -1,15 +1,15 @@
 // eslint-disable-next-line no-unused-vars
-import { motion, AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import { Scale, X, GitCompare } from "lucide-react";
+import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { Scale, X, GitCompare } from 'lucide-react';
 import {
   removeFromCompare,
   clearCompare,
   clearCompareNotice,
-} from "@/store/product/compareSlice";
+} from '@/store/product/compareSlice';
 
 // A sticky bottom tray that surfaces the current compare selection from any
 // page. Hidden entirely when nothing is selected.
@@ -32,7 +32,7 @@ const CompareTray = () => {
           initial={{ y: 120, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 120, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 260, damping: 26 }}
+          transition={{ type: 'spring', stiffness: 260, damping: 26 }}
           className="fixed bottom-0 inset-x-0 z-40 px-3 pb-3 pointer-events-none"
         >
           <div className="pointer-events-auto max-w-5xl mx-auto bg-white/95 backdrop-blur border border-gray-200 shadow-2xl rounded-2xl p-3 sm:p-4">
@@ -54,7 +54,7 @@ const CompareTray = () => {
                     title={p.name}
                   >
                     <img
-                      src={p.image || "https://via.placeholder.com/80"}
+                      src={p.image || 'https://via.placeholder.com/80'}
                       alt={p.name}
                       className="w-full h-full object-cover"
                     />
@@ -77,12 +77,12 @@ const CompareTray = () => {
                   Clear
                 </button>
                 <button
-                  onClick={() => navigate("/compare")}
+                  onClick={() => navigate('/compare')}
                   disabled={items.length < 2}
                   className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition"
                 >
                   <GitCompare className="w-4 h-4" />
-                  {items.length < 2 ? "Add 1 more" : "Compare"}
+                  {items.length < 2 ? 'Add 1 more' : 'Compare'}
                 </button>
               </div>
             </div>
