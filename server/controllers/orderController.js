@@ -1,4 +1,4 @@
-import { runInTransaction } from '../utils/transactionSessionManager.js';
+import { validateAndFetchFreshPrices } from '../utils/cartPricingValidator.js';
 import ErrorHandler from "../utils/errorHandler.js";
 import Order from "../models/orderModel.js";
 import Cart from "../models/cartModel.js";

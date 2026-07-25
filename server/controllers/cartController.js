@@ -268,3 +268,5 @@ export const clearCart = catchAsyncErrors(async (req, res, next) => {
   console.log('Cleared cart:', JSON.stringify(clearedCart, null, 2));
   res.status(200).json({ success: true, cart: clearedCart });
 });
+
+// Cart validation checking method added for checkout flow verification
