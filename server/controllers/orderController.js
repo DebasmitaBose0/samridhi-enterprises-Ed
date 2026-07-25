@@ -1,4 +1,4 @@
-import { runInTransaction } from '../utils/transactionSessionManager.js';
+import { validateAndFetchFreshPrices } from '../utils/cartPricingValidator.js';
 import ErrorHandler from "../utils/errorHandler.js";
 import Order from "../models/orderModel.js";
 import Cart from "../models/cartModel.js";
@@ -601,50 +601,15 @@ export const adminUpdateOrderStatus = catchAsyncErrors(
   }
 );
 
-// Added for #348: RMA Request initiation endpoint
-import RMA from "../models/rmaModel.js";
-export const requestRMA = catchAsyncErrors(async (req, res, next) => {
+// Added for #343: Update refund status for cancelled paid orders
+export const updateRefundStatus = catchAsyncErrors(async (req, res, next) => {
   const order = await Order.findById(req.params.id);
   if (!order) return next(new ErrorHandler("Order not found", 404));
 
-  const { reason, items } = req.body;
-  const rma = await RMA.create({ order: order._id, user: req.user._id, reason, items });
-  order.rmaRequested = true;
+  const { refundStatus, refundTransactionId } = req.body;
+  if (refundStatus) order.refundStatus = refundStatus;
+  if (refundTransactionId) order.refundTransactionId = refundTransactionId;
+
   await order.save();
-
-  res.status(201).json({ success: true, rma });
+  res.status(200).json({ success: true, order });
 });
-
-// GET /api/orders/:id/invoice
-export const getOrderInvoice = catchAsyncErrors(async (req, res, next) => {
-  const order = await Order.findById(req.params.id).populate("user", "name email");
-  if (!order) {
-    return next(new ErrorHandler("Order not found", 404));
-  }
-
-  const isOwner = order.user && order.user._id.toString() === req.user._id.toString();
-  const isAdminOrManager = req.user.role === "ADMIN" || req.user.role === "MANAGER";
-
-  if (!isOwner && !isAdminOrManager) {
-    return next(new ErrorHandler("Not authorized to view this invoice", 403));
-  }
-
-  const html = generateReceiptHTML(order);
-  res.setHeader("Content-Type", "text/html");
-  res.setHeader("Content-Disposition", `inline; filename="invoice-${order._id}.html"`);
-  return res.status(200).send(html);
-});
-
-// GET /api/orders/admin/:id/invoice
-export const getAdminOrderInvoice = catchAsyncErrors(async (req, res, next) => {
-  const order = await Order.findById(req.params.id).populate("user", "name email");
-  if (!order) {
-    return next(new ErrorHandler("Order not found", 404));
-  }
-
-  const html = generateReceiptHTML(order);
-  res.setHeader("Content-Type", "text/html");
-  res.setHeader("Content-Disposition", `inline; filename="invoice-${order._id}.html"`);
-  return res.status(200).send(html);
-});
-

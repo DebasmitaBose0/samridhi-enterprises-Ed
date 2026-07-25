@@ -149,3 +149,6 @@ const partSchema = new mongoose.Schema(
 
 export default mongoose.model("Part", partSchema);
 
+
+// Add Text Index on name and description for full text search
+partSchema.index({ name: 'text', description: 'text' });
