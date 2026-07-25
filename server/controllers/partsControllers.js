@@ -653,11 +653,11 @@ export const deleteReview = catchAsyncErrors(async (req, res, next) => {
 res.status(200).json({ success: true, message: "Review removed", part });
 });
 
-// Added for #351: Faceted Search aggregation
-import { buildSearchAggregation } from "../utils/searchQueryBuilder.js";
-export const getFacetedSearch = catchAsyncErrors(async (req, res, next) => {
-  const { q, category, minPrice, maxPrice } = req.query;
-  const pipeline = buildSearchAggregation(q, { category, minPrice, maxPrice });
-  const result = await Part.aggregate(pipeline);
-  res.status(200).json({ success: true, searchData: result[0] });
+// Added for #341: Get low stock parts for administrators
+export const getLowStockParts = catchAsyncErrors(async (req, res, next) => {
+  const parts = await Part.find({ 
+    isDeleted: false,
+    $expr: { $lte: ["$stock", { $ifNull: ["$lowStockThreshold", 5] }] } 
+  });
+  res.status(200).json({ success: true, count: parts.length, parts });
 });
