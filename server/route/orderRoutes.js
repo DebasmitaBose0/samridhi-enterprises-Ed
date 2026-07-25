@@ -3,7 +3,7 @@ import auth from "../middleware/auth.js";
 import admin from "../middleware/Admin.js";
 import upload from "../middleware/multer.js";
 import {
-  updateRefundStatus,
+  reorderPastOrder,
   createOrder,
   getMyOrders,
   getOrderById,

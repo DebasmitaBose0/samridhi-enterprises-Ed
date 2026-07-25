@@ -601,15 +601,20 @@ export const adminUpdateOrderStatus = catchAsyncErrors(
   }
 );
 
-// Added for #343: Update refund status for cancelled paid orders
-export const updateRefundStatus = catchAsyncErrors(async (req, res, next) => {
-  const order = await Order.findById(req.params.id);
-  if (!order) return next(new ErrorHandler("Order not found", 404));
+// Added for #342: Reorder from a previous order
+import { validateReorderItems } from "../utils/reorderValidator.js";
 
-  const { refundStatus, refundTransactionId } = req.body;
-  if (refundStatus) order.refundStatus = refundStatus;
-  if (refundTransactionId) order.refundTransactionId = refundTransactionId;
+export const reorderPastOrder = catchAsyncErrors(async (req, res, next) => {
+  const pastOrder = await Order.findById(req.params.id);
+  if (!pastOrder) return next(new ErrorHandler("Past order not found", 404));
 
-  await order.save();
-  res.status(200).json({ success: true, order });
+  const validation = validateReorderItems(pastOrder.orderItems);
+  if (!validation.ok) return next(new ErrorHandler(validation.reason, 400));
+
+  res.status(200).json({
+    success: true,
+    message: "Past order items retrieved and validated for checkout",
+    items: pastOrder.orderItems,
+    isReordered: true
+  });
 });
