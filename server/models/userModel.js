@@ -92,8 +92,8 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
-    permissions: [{ type: String }],
-role: {
+    subscriptions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Subscription" }],
+    role: {
       type: String,
       enum: ROLES_ARRAY,
       default: ROLES.USER,
