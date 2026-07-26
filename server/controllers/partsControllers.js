@@ -38,7 +38,7 @@ export const addPart = catchAsyncErrors(async (req, res, next) => {
     bestseller: bestseller === "true" || bestseller === true,
   });
 
-  res.status(201).json({ success: true, part });
+  res.sendSuccess({ part }, 201);
 });
 
 // Get all parts
@@ -67,8 +67,7 @@ export const getAllParts = catchAsyncErrors(async (req, res) => {
   const hasNextPage = pageNum < totalPages;
   const hasPreviousPage = pageNum > 1;
 
-  res.status(200).json({
-    success: true,
+  res.sendSuccess({
     count: parts.length,
     total,
     page: pageNum,
@@ -94,7 +93,7 @@ export const getPartById = catchAsyncErrors(async (req, res, next) => {
   // counter update must never break the actual product response.
   Part.updateOne({ _id: part._id }, { $inc: { viewCount: 1 } }).catch(() => {});
 
-  res.status(200).json({ success: true, part });
+  res.sendSuccess({ part });
 });
 
 // Update part
@@ -140,7 +139,7 @@ export const updatePart = catchAsyncErrors(async (req, res, next) => {
     metadata: { updatedFields: fieldsToUpdate },
   }).catch(() => {});
 
-  res.status(200).json({ success: true, message: "Part updated", part });
+  res.sendSuccess({ message: "Part updated", part });
 
 });
 
@@ -170,7 +169,7 @@ export const deletePart = catchAsyncErrors(async (req, res, next) => {
     metadata: {},
   }).catch(() => {});
 
-  res.status(200).json({ success: true, message: "Part soft-deleted" });
+  res.sendSuccess({ message: "Part soft-deleted" });
 
 });
 
@@ -212,7 +211,7 @@ export const createOrUpdateReview = catchAsyncErrors(async (req, res, next) => {
     : 0;
 
   await part.save();
-  res.status(200).json({ success: true, message: "Review submitted", part });
+  res.sendSuccess({ message: "Review submitted", part });
 });
 
 // Get similar / recommended parts for a given part.
@@ -290,7 +289,7 @@ export const getSimilarParts = catchAsyncErrors(async (req, res, next) => {
 
   const parts = scored.slice(0, limit).map((s) => s.part);
 
-  res.status(200).json({ success: true, count: parts.length, parts });
+  res.sendSuccess({ count: parts.length, parts });
 });
 
 // Get "Frequently Bought Together" products for a given part.
@@ -380,8 +379,7 @@ export const getFrequentlyBoughtTogether = catchAsyncErrors(
         .limit(limit);
     }
 
-    res.status(200).json({
-      success: true,
+    res.sendSuccess({
       count: parts.length,
       parts,
       basedOn: rankedIds.length > 0 ? "purchase-history" : "category-fallback",
@@ -491,8 +489,7 @@ export const getRecommendedForYou = catchAsyncErrors(async (req, res, next) => {
     parts = parts.concat(filler);
   }
 
-  res.status(200).json({
-    success: true,
+  res.sendSuccess({
     count: parts.length,
     parts,
     personalized: preferredCategories.length > 0,
@@ -524,7 +521,7 @@ export const trackRecommendationImpressions = catchAsyncErrors(
       );
     }
 
-    res.status(200).json({ success: true, tracked: validIds.length });
+    res.sendSuccess({ tracked: validIds.length });
   }
 );
 
@@ -538,10 +535,10 @@ export const trackRecommendationClick = catchAsyncErrors(async (req, res) => {
       { _id: productId },
       { $inc: { recommendationClicks: 1 } }
     );
-    return res.status(200).json({ success: true, tracked: true });
+    return res.sendSuccess({ tracked: true });
   }
 
-  res.status(200).json({ success: true, tracked: false });
+  res.sendSuccess({ tracked: false });
 });
 
 // Admin — recommendation & engagement analytics.
@@ -620,8 +617,7 @@ export const adminGetRecommendationAnalytics = catchAsyncErrors(
       };
     });
 
-    res.status(200).json({
-      success: true,
+    res.sendSuccess({
       recommendationAnalytics: {
         mostViewed: mostViewedOut,
         mostRecommended: mostRecommendedOut,
@@ -650,7 +646,7 @@ export const deleteReview = catchAsyncErrors(async (req, res, next) => {
     : 0;
 
   await part.save();
-res.status(200).json({ success: true, message: "Review removed", part });
+res.sendSuccess({ message: "Review removed", part });
 });
 
 // Added for #341: Get low stock parts for administrators
@@ -659,5 +655,5 @@ export const getLowStockParts = catchAsyncErrors(async (req, res, next) => {
     isDeleted: false,
     $expr: { $lte: ["$stock", { $ifNull: ["$lowStockThreshold", 5] }] } 
   });
-  res.status(200).json({ success: true, count: parts.length, parts });
+  res.sendSuccess({ count: parts.length, parts });
 });
