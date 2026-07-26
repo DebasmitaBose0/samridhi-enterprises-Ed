@@ -1,6 +1,8 @@
+
 import ErrorHandler from "../utils/errorHandler.js";
 import UserModel from "../models/userModel.js";
 import bcryptjs from "bcryptjs";
+import { ROLES, ROLES_ARRAY, isStaff } from "../../shared/constants/permissions.js";
 import sendEmail from "../config/sendEmail.js";
 import verifyEmailTemplate from "../template/verifyEmailTemplate.js";
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
@@ -752,13 +754,13 @@ export const updateUserDetails = catchAsyncErrors(async (req, res, next) => {
 // Admin
 export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
   try {
-    if (req.user.role !== "ADMIN" && req.user.role !== "MANAGER") {
+    if (!isStaff(req.user)) {
       return next(new ErrorHandler("Access denied. Admins only.", 403));
     }
 
     // Non-admin flows should never expose soft-deleted users.
     // (Admin/Manager requests are handled here through their role.)
-    const includeDeleted = req.user.role === "ADMIN";
+    const includeDeleted = req.user.role === ROLES.ADMIN;
 
 
     const { page = 1, limit = 10, search = "" } = req.query;
@@ -797,7 +799,7 @@ export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
 // Admin
 export const getSingleUser = catchAsyncErrors(async (req, res, next) => {
   try {
-    if (req.user.role !== "ADMIN" && req.user.role !== "MANAGER") {
+    if (!isStaff(req.user)) {
       return next(new ErrorHandler("Permission denied. Admins only.", 403));
     }
 
@@ -805,7 +807,7 @@ export const getSingleUser = catchAsyncErrors(async (req, res, next) => {
 
     const user = await UserModel.findOne({
       _id: userId,
-      ...(req.user.role === "ADMIN" ? {} : { isDeleted: false }),
+      ...(req.user.role === ROLES.ADMIN ? {} : { isDeleted: false }),
     }).select("-password");
 
 
@@ -826,14 +828,14 @@ export const getSingleUser = catchAsyncErrors(async (req, res, next) => {
 
 // Admin
 export const updateUserRole = catchAsyncErrors(async (req, res, next) => {
-  try {
-    if (req.user.role !== "ADMIN") {
+try {
+    if (req.user.role !== ROLES.ADMIN) {
       return next(new ErrorHandler("Permission denied. Admins only.", 403));
     }
 
     const { email, role } = req.body;
 
-    if (!role || !["USER", "ADMIN", "MANAGER"].includes(role)) {
+    if (!role || !ROLES_ARRAY.includes(role)) {
       return next(
         new ErrorHandler(
           "Invalid role. Role must be either 'USER', 'MANAGER', or 'ADMIN'.",
@@ -878,18 +880,7 @@ export const updateUserRole = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-// Admin
-export const deleteUser = catchAsyncErrors(async (req, res, next) => {
-  try {
-    const userId = req.params.id;
 
-    if (req.user.role !== "ADMIN" && req.user.role !== "MANAGER") {
-      return next(new ErrorHandler("Permission denied. Admins only.", 403));
-    }
-
-    const user = await UserModel.findOne({
-      _id: userId,
-      ...(req.user.role === "ADMIN" ? {} : { isDeleted: false }),
     });
 
     if (!user) {
