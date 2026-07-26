@@ -17,146 +17,80 @@ const shouldLogOtp = isOtpDevMode();
 
 
 export const registerUser = catchAsyncErrors(async (req, res, next) => {
-  try {
-    const { name, email, password } = req.body;
+  const { name, email, password } = req.body;
 
-    if (!name || !email || !password) {
-      return next(new ErrorHandler("Please fill all required fields", 400));
-    }
-
-    const passwordValidation = validatePassword(password);
-    if (!passwordValidation.isValid) {
-      return next(new ErrorHandler(passwordValidation.message, 400));
-    }
-
-    const existingUser = await UserModel.findOne({ email });
-
-    if (existingUser) {
-      return next(new ErrorHandler("Email already exists", 400));
-    }
-
-    const otp = generatedOtp();
-    const otpExpiry = new Date();
-    otpExpiry.setMinutes(otpExpiry.getMinutes() + 15);
-
-    if (shouldLogOtp) {
-      console.log(`\n=== VERIFICATION OTP FOR ${email} IS: ${otp} ===\n`);
-    }
-
-    const emailResponse = await sendEmail({
-      sendTo: email,
-      subject: "Verify Your Email - Nandani Jewelllers",
-      html: verifyEmailTemplate({ name, otp }),
-    });
-
-    if (!emailResponse) {
-      return next(new ErrorHandler("Failed to send verification email", 500));
-    }
-
-    const otpHash = await bcryptjs.hash(String(otp), 12);
-
-    const newUser = new UserModel({
-      name,
-      email,
-      password,
-      verifyEmail: false,
-      login_otp: otpHash,
-      login_expiry: otpExpiry,
-      lastLogin: null,
-    });
-
-    const savedUser = await newUser.save();
-
-    if (!savedUser) {
-      return next(new ErrorHandler("Failed to create user", 500));
-    }
-
-    return res.status(201).json({
-      message:
-        "User registered successfully. Please check your email to verify your account.",
-      error: false,
-      success: true,
-      data: savedUser,
-    });
-  } catch (error) {
-    return next(new ErrorHandler("Server error. Please try again.", 500));
+  if (!name || !email || !password) {
+    return next(new ErrorHandler("Please fill all required fields", 400));
   }
+
+  const passwordValidation = validatePassword(password);
+  if (!passwordValidation.isValid) {
+    return next(new ErrorHandler(passwordValidation.message, 400));
+  }
+
+  const existingUser = await UserModel.findOne({ email });
+
+  if (existingUser) {
+    return next(new ErrorHandler("Email already exists", 400));
+  }
+
+  const otp = generatedOtp();
+  const otpExpiry = new Date();
+  otpExpiry.setMinutes(otpExpiry.getMinutes() + 15);
+
+  if (shouldLogOtp) {
+    console.log(`\n=== VERIFICATION OTP FOR ${email} IS: ${otp} ===\n`);
+  }
+
+  const emailResponse = await sendEmail({
+    sendTo: email,
+    subject: "Verify Your Email - Nandani Jewelllers",
+    html: verifyEmailTemplate({ name, otp }),
+  });
+
+  if (!emailResponse) {
+    return next(new ErrorHandler("Failed to send verification email", 500));
+  }
+
+  const otpHash = await bcryptjs.hash(String(otp), 12);
+
+  const newUser = new UserModel({
+    name,
+    email,
+    password,
+    verifyEmail: false,
+    login_otp: otpHash,
+    login_expiry: otpExpiry,
+    lastLogin: null,
+  });
+
+  const savedUser = await newUser.save();
+
+  if (!savedUser) {
+    return next(new ErrorHandler("Failed to create user", 500));
+  }
+
+  return res.status(201).json({
+    message:
+      "User registered successfully. Please check your email to verify your account.",
+    error: false,
+    success: true,
+    data: savedUser,
+  });
 });
 
 export const verifyEmailOtp = catchAsyncErrors(async (req, res, next) => {
-  try {
-    const { email, otp } = req.body;
+  const { email, otp } = req.body;
 
-    const user = await UserModel.findOne({ email });
+  const user = await UserModel.findOne({ email });
 
-    if (!user) {
-      return next(new ErrorHandler("Email not registered.", 400));
-    }
-    if (user.login_expiry < new Date()) {
-      const newOtp = generatedOtp();
-      const newExpiry = new Date();
-      newExpiry.setMinutes(newExpiry.getMinutes() + 15);
-
-      const emailResponse = await sendEmail({
-        sendTo: email,
-        subject: "New OTP for Email Verification - Samridhi Enterprises",
-        html: verifyEmailTemplate({ name: user.name, otp: newOtp }),
-      });
-
-      if (!emailResponse) {
-        return next(new ErrorHandler("Failed to resend OTP. Try again later.", 500));
-      }
-
-      const newOtpHash = await bcryptjs.hash(String(newOtp), 12);
-      user.login_otp = newOtpHash;
-      user.login_expiry = newExpiry;
-      await user.save();
-
-      return next(
-        new ErrorHandler("OTP expired. A new OTP has been sent to your email.", 410)
-      );
-    }
-
-    const isOtpValid = await bcryptjs.compare(String(otp), user.login_otp || "");
-    if (!isOtpValid) {
-      return next(new ErrorHandler("Invalid OTP", 401));
-    }
-
-    await UserModel.findByIdAndUpdate(user._id, {
-      verifyEmail: true,
-      login_otp: null,
-      login_expiry: null,
-    });
-
-    return res.json({
-      message: "Email verified successfully.",
-      error: false,
-      success: true,
-    });
-  } catch (error) {
-    return next(
-      new ErrorHandler(error.message || "An error occurred while verifying OTP.", 500)
-    );
+  if (!user) {
+    return next(new ErrorHandler("Email not registered.", 400));
   }
-});
-
-export const resendOtp = catchAsyncErrors(async (req, res, next) => {
-  try {
-    const { email } = req.body;
-
-    const user = await UserModel.findOne({ email });
-
-    if (!user) {
-      return next(new ErrorHandler("Email not registered.", 400));
-    }
-
+  if (user.login_expiry < new Date()) {
     const newOtp = generatedOtp();
     const newExpiry = new Date();
     newExpiry.setMinutes(newExpiry.getMinutes() + 15);
-
-    if (shouldLogOtp) {
-      console.log(`\n=== RESEND OTP FOR ${email} IS: ${newOtp} ===\n`);
-    }
 
     const emailResponse = await sendEmail({
       sendTo: email,
@@ -173,14 +107,66 @@ export const resendOtp = catchAsyncErrors(async (req, res, next) => {
     user.login_expiry = newExpiry;
     await user.save();
 
-    return res.status(200).json({
-      message: "A new OTP has been sent to your email.",
-      error: false,
-      success: true,
-    });
-  } catch (error) {
-    return next(new ErrorHandler(error.message || "Failed to resend OTP.", 500));
+    return next(
+      new ErrorHandler("OTP expired. A new OTP has been sent to your email.", 410)
+    );
   }
+
+  const isOtpValid = await bcryptjs.compare(String(otp), user.login_otp || "");
+  if (!isOtpValid) {
+    return next(new ErrorHandler("Invalid OTP", 401));
+  }
+
+  await UserModel.findByIdAndUpdate(user._id, {
+    verifyEmail: true,
+    login_otp: null,
+    login_expiry: null,
+  });
+
+  return res.json({
+    message: "Email verified successfully.",
+    error: false,
+    success: true,
+  });
+});
+
+export const resendOtp = catchAsyncErrors(async (req, res, next) => {
+  const { email } = req.body;
+
+  const user = await UserModel.findOne({ email });
+
+  if (!user) {
+    return next(new ErrorHandler("Email not registered.", 400));
+  }
+
+  const newOtp = generatedOtp();
+  const newExpiry = new Date();
+  newExpiry.setMinutes(newExpiry.getMinutes() + 15);
+
+  if (shouldLogOtp) {
+    console.log(`\n=== RESEND OTP FOR ${email} IS: ${newOtp} ===\n`);
+  }
+
+  const emailResponse = await sendEmail({
+    sendTo: email,
+    subject: "New OTP for Email Verification - Samridhi Enterprises",
+    html: verifyEmailTemplate({ name: user.name, otp: newOtp }),
+  });
+
+  if (!emailResponse) {
+    return next(new ErrorHandler("Failed to resend OTP. Try again later.", 500));
+  }
+
+  const newOtpHash = await bcryptjs.hash(String(newOtp), 12);
+  user.login_otp = newOtpHash;
+  user.login_expiry = newExpiry;
+  await user.save();
+
+  return res.status(200).json({
+    message: "A new OTP has been sent to your email.",
+    error: false,
+    success: true,
+  });
 });
 
 export const loginUser = catchAsyncErrors(async (req, res, next) => {
