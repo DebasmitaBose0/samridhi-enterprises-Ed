@@ -601,20 +601,20 @@ export const adminUpdateOrderStatus = catchAsyncErrors(
   }
 );
 
-// Added for #342: Reorder from a previous order
-import { validateReorderItems } from "../utils/reorderValidator.js";
+// Added for #352: Subscription Auto Reordering endpoints
+import Subscription from "../models/subscriptionModel.js";
+export const createPartSubscription = catchAsyncErrors(async (req, res, next) => {
+  const { partId, frequency } = req.body;
+  const nextOrderDate = new Date();
+  if (frequency === "weekly") nextOrderDate.setDate(nextOrderDate.getDate() + 7);
+  else if (frequency === "monthly") nextOrderDate.setMonth(nextOrderDate.getMonth() + 1);
 
-export const reorderPastOrder = catchAsyncErrors(async (req, res, next) => {
-  const pastOrder = await Order.findById(req.params.id);
-  if (!pastOrder) return next(new ErrorHandler("Past order not found", 404));
-
-  const validation = validateReorderItems(pastOrder.orderItems);
-  if (!validation.ok) return next(new ErrorHandler(validation.reason, 400));
-
-  res.status(200).json({
-    success: true,
-    message: "Past order items retrieved and validated for checkout",
-    items: pastOrder.orderItems,
-    isReordered: true
+  const subscription = await Subscription.create({
+    user: req.user._id,
+    part: partId,
+    frequency,
+    nextOrderDate
   });
+
+  res.status(201).json({ success: true, subscription });
 });
