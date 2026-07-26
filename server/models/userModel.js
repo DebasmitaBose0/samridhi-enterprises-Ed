@@ -132,15 +132,17 @@ userSchema.pre("findOneAndUpdate", async function () {
   this.setUpdate(update);
 });
 
+import config from "../config/index.js";
+
 userSchema.methods.getJWTToken = function () {
   return jwt.sign(
     {
       id: this._id,
       role: this.role,
     },
-    process.env.JWT_SECRET,
+    config.jwt.secret || process.env.JWT_SECRET,
     {
-      expiresIn: process.env.JWT_EXPIRE,
+      expiresIn: config.jwt.expire || process.env.JWT_EXPIRE,
     }
   );
 };

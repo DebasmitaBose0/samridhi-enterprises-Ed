@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
+import config from "../config/index.js";
 
 const admin = async (req, res, next) => {
   try {
@@ -22,7 +23,7 @@ const admin = async (req, res, next) => {
       });
     }
 
-    const decodedData = jwt.verify(token, process.env.JWT_SECRET);
+    const decodedData = jwt.verify(token, config.jwt.secret || process.env.JWT_SECRET);
 
     const user = await User.findById(decodedData.id);
     if (!user) {

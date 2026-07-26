@@ -9,6 +9,7 @@ import generatedOtp from "../utils/generatedOtp.js";
 import sendToken from "../utils/jwtToken.js";
 import forgotPasswordTemplate from "../template/forgotPasswordTemplate.js";
 import { logAudit } from "../utils/auditLogger.js";
+import config from "../config/index.js";
 import { isOtpDevMode } from "../utils/validateEnv.js";
 import validatePassword from "../utils/validatePassword.js";
 
@@ -203,8 +204,8 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
   }
 
   // Account lockout: configurable threshold + duration (defaults: 5 attempts, 15 min).
-  const maxAttempts = Number(process.env.LOGIN_MAX_ATTEMPTS) || 5;
-  const lockMinutes = Number(process.env.LOGIN_LOCK_MINUTES) || 15;
+  const maxAttempts = config.security.loginMaxAttempts || Number(process.env.LOGIN_MAX_ATTEMPTS) || 5;
+  const lockMinutes = config.security.loginLockMinutes || Number(process.env.LOGIN_LOCK_MINUTES) || 15;
 
   // If a lock is currently active, reject before checking the password so a
   // locked account cannot keep guessing.
@@ -434,9 +435,9 @@ export const verifyOtp = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Please provide both email and otp.", 400));
   }
 
-  const maxAttempts = Number(process.env.FORGOT_PASSWORD_MAX_ATTEMPTS) || 5;
+  const maxAttempts = config.security.forgotPasswordMaxAttempts || Number(process.env.FORGOT_PASSWORD_MAX_ATTEMPTS) || 5;
   const lockMinutes =
-    Number(process.env.FORGOT_PASSWORD_LOCK_MINUTES) || 15;
+    config.security.forgotPasswordLockMinutes || Number(process.env.FORGOT_PASSWORD_LOCK_MINUTES) || 15;
 
   const user = await UserModel.findOne({ email });
 
@@ -598,9 +599,9 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
 
     if (!isOtpValid) {
       const maxAttempts =
-        Number(process.env.FORGOT_PASSWORD_MAX_ATTEMPTS) || 5;
+        config.security.forgotPasswordMaxAttempts || Number(process.env.FORGOT_PASSWORD_MAX_ATTEMPTS) || 5;
       const lockMinutes =
-        Number(process.env.FORGOT_PASSWORD_LOCK_MINUTES) || 15;
+        config.security.forgotPasswordLockMinutes || Number(process.env.FORGOT_PASSWORD_LOCK_MINUTES) || 15;
 
       user.forgot_password_failedAttempts =
         (user.forgot_password_failedAttempts || 0) + 1;
