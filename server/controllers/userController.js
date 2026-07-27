@@ -78,13 +78,11 @@ export const registerUser = catchAsyncErrors(async (req, res, next) => {
       return next(new ErrorHandler("Failed to create user", 500));
     }
 
-    return res.status(201).json({
+    return res.sendSuccess({
       message:
         "User registered successfully. Please check your email to verify your account.",
-      error: false,
-      success: true,
       data: savedUser,
-    });
+    }, 201);
   } catch (error) {
     return next(new ErrorHandler("Server error. Please try again.", 500));
   }
@@ -143,11 +141,7 @@ export const verifyEmailOtp = catchAsyncErrors(async (req, res, next) => {
       login_expiry: null,
     });
 
-    return res.json({
-      message: "Email verified successfully.",
-      error: false,
-      success: true,
-    });
+    return res.sendSuccess({ message: "Email verified successfully." });
   } catch (error) {
     return next(
       new ErrorHandler(
@@ -193,11 +187,7 @@ export const resendOtp = catchAsyncErrors(async (req, res, next) => {
     user.login_expiry = newExpiry;
     await user.save();
 
-    return res.status(200).json({
-      message: "A new OTP has been sent to your email.",
-      error: false,
-      success: true,
-    });
+    return res.sendSuccess({ message: "A new OTP has been sent to your email." });
   } catch (error) {
     return next(
       new ErrorHandler(error.message || "Failed to resend OTP.", 500)
@@ -287,11 +277,7 @@ export const logoutUser = catchAsyncErrors(async (req, res, next) => {
       httpOnly: true,
     });
 
-    return res.status(200).json({
-      message: "Logout successful",
-      error: false,
-      success: true,
-    });
+    return res.sendSuccess({ message: "Logout successful" });
   } catch (error) {
     return next(
       new ErrorHandler(error.message || "Internal Server Error", 500)
@@ -342,10 +328,8 @@ export const uploadAvatar = catchAsyncErrors(async (req, res, next) => {
       return next(new ErrorHandler("User not found", 404));
     }
 
-    return res.json({
+    return res.sendSuccess({
       message: "Profile picture uploaded successfully",
-      success: true,
-      error: false,
       data: {
         _id: userId,
         avatar: upload.url,
@@ -383,11 +367,7 @@ export const updatePassword = catchAsyncErrors(async (req, res, next) => {
     user.hasWeakPassword = false;
     await user.save();
 
-    return res.json({
-      message: "Password updated successfully",
-      error: false,
-      success: true,
-    });
+    return res.sendSuccess({ message: "Password updated successfully" });
   } catch (error) {
     next(new ErrorHandler(error.message || "Error updating password", 500));
   }
@@ -400,11 +380,9 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
     const user = await UserModel.findOne({ email });
 
     if (!user) {
-      return res.json({
+      return res.sendSuccess({
         message:
           "If the email exists, a password reset OTP has been sent. Please check your inbox.",
-        error: false,
-        success: true,
       });
     }
 
@@ -437,11 +415,9 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
       }),
     });
 
-    return res.json({
+    return res.sendSuccess({
       message:
         "A password reset OTP has been sent to your email. Please check your inbox.",
-      error: false,
-      success: true,
     });
   } catch (error) {
     return next(new ErrorHandler(error.message || error, 500));
@@ -523,11 +499,7 @@ export const verifyOtp = catchAsyncErrors(async (req, res, next) => {
     forgot_password_lockUntil: null,
   });
 
-  return res.json({
-    message: "OTP verified successfully.",
-    error: false,
-    success: true,
-  });
+  return res.sendSuccess({ message: "OTP verified successfully." });
 });
 
 export const resetPassword = catchAsyncErrors(async (req, res, next) => {
@@ -645,11 +617,7 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
       );
     }
 
-    return res.json({
-      message: "Password updated successfully.",
-      error: false,
-      success: true,
-    });
+    return res.sendSuccess({ message: "Password updated successfully." });
   } catch (error) {
     return next(
       new ErrorHandler(
@@ -668,10 +636,7 @@ export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
       return next(new ErrorHandler("User not found", 404));
     }
 
-    res.status(200).json({
-      success: true,
-      user,
-    });
+    res.sendSuccess({ user });
   } catch (error) {
     return next(
       new ErrorHandler(
@@ -740,10 +705,8 @@ export const updateUserDetails = catchAsyncErrors(async (req, res, next) => {
       return next(new ErrorHandler("User not found", 404));
     }
 
-    return res.json({
+    return res.sendSuccess({
       message: "User details updated successfully",
-      error: false,
-      success: true,
       user: updateUser,
     });
   } catch (error) {
@@ -778,10 +741,8 @@ export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
       .skip(skip)
       .limit(Number(limit));
 
-    return res.json({
+    return res.sendSuccess({
       message: "Users fetched successfully",
-      error: false,
-      success: true,
       totalUsers,
       currentPage: Number(page),
       totalPages: Math.ceil(totalUsers / limit),
@@ -810,10 +771,8 @@ export const getSingleUser = catchAsyncErrors(async (req, res, next) => {
       return next(new ErrorHandler("User not found", 404));
     }
 
-    return res.json({
+    return res.sendSuccess({
       message: "User details fetched successfully",
-      error: false,
-      success: true,
       data: user,
     });
   } catch (error) {
@@ -1032,7 +991,7 @@ export const updateUserStatus = catchAsyncErrors(async (req, res, next) => {
       });
     }
 
-    res.status(200).json({ message: "User status updated successfully", user });
+    res.sendSuccess({ message: "User status updated successfully", user });
   } catch (error) {
     return next(new ErrorHandler("Server error", 500));
   }
