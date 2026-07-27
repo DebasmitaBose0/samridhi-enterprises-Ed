@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
-import config from "../config/index.js";
+import { isStaff } from "../../shared/constants/permissions.js";
 
 const admin = async (req, res, next) => {
   try {
@@ -37,8 +37,7 @@ const admin = async (req, res, next) => {
       });
     }
 
-    const isAdmin = user.role === "ADMIN" || user.role === "MANAGER";
-    if (!isAdmin) {
+    if (!isStaff(user)) {
       return res.status(403).json({
         success: false,
         message: "Forbidden: admin access revoked",

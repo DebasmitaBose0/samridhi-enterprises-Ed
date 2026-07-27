@@ -60,7 +60,7 @@ export const createTicket = catchAsyncErrors(async (req, res, next) => {
     html: generateAdminNewTicketEmail(ticket, req.user),
   });
 
-  res.status(201).json({ success: true, ticket });
+  res.sendSuccess({ ticket }, 201);
 });
 
 // ── User: list own tickets ────────────────────────────────────────────────
@@ -68,7 +68,7 @@ export const getMyTickets = catchAsyncErrors(async (req, res) => {
   const tickets = await SupportTicket.find({ user: req.user._id }).sort({
     lastActivityAt: -1,
   });
-  res.status(200).json({ success: true, tickets });
+  res.sendSuccess({ tickets });
 });
 
 // ── User: get a single own ticket (with full thread) ──────────────────────
@@ -81,7 +81,7 @@ export const getMyTicket = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Not authorized to view this ticket", 403));
   }
 
-  res.status(200).json({ success: true, ticket });
+  res.sendSuccess({ ticket });
 });
 
 // ── User: add a message to own ticket ─────────────────────────────────────
@@ -113,7 +113,7 @@ export const addMessage = catchAsyncErrors(async (req, res, next) => {
   ticket.lastActivityAt = new Date();
   await ticket.save();
 
-  res.status(200).json({ success: true, ticket });
+  res.sendSuccess({ ticket });
 });
 
 // ── Admin: list all tickets (optional status/category filter) ─────────────
@@ -130,7 +130,7 @@ export const getAllTickets = catchAsyncErrors(async (req, res) => {
     .populate("user", "name email")
     .sort({ lastActivityAt: -1 });
 
-  res.status(200).json({ success: true, tickets });
+  res.sendSuccess({ tickets });
 });
 
 // ── Admin: get a single ticket (with full thread) ─────────────────────────
@@ -140,7 +140,7 @@ export const getTicketById = catchAsyncErrors(async (req, res, next) => {
     "name email"
   );
   if (!ticket) return next(new ErrorHandler("Ticket not found", 404));
-  res.status(200).json({ success: true, ticket });
+  res.sendSuccess({ ticket });
 });
 
 // ── Admin: update ticket status ───────────────────────────────────────────
@@ -158,7 +158,7 @@ export const updateTicketStatus = catchAsyncErrors(async (req, res, next) => {
   await ticket.save();
 
   const populated = await ticket.populate("user", "name email");
-  res.status(200).json({ success: true, ticket: populated });
+  res.sendSuccess({ ticket: populated });
 });
 
 // ── Admin: reply to a ticket ──────────────────────────────────────────────
@@ -182,5 +182,5 @@ export const adminReply = catchAsyncErrors(async (req, res, next) => {
   await ticket.save();
 
   const populated = await ticket.populate("user", "name email");
-  res.status(200).json({ success: true, ticket: populated });
+  res.sendSuccess({ ticket: populated });
 });

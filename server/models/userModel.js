@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { ROLES, ROLES_ARRAY } from "../../shared/constants/permissions.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -94,8 +95,8 @@ const userSchema = new mongoose.Schema(
     subscriptions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Subscription" }],
     role: {
       type: String,
-      enum: ["ADMIN", "MANAGER", "USER"],
-      default: "USER",
+      enum: ROLES_ARRAY,
+      default: ROLES.USER,
     },
 
     // Soft delete / audit trail support

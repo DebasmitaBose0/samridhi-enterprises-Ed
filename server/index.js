@@ -57,9 +57,11 @@ app.use(
 
 import rateLimiter from "./middleware/rateLimiter.js";
 import { inputSanitizer } from "./middleware/inputSanitizer.js";
+import responseWrapper from "./middleware/responseWrapper.js";
 
 app.use(cookieParser());
 app.use(express.json());
+app.use(responseWrapper);
 app.use(inputSanitizer);
 app.use(requestLogger);
 
