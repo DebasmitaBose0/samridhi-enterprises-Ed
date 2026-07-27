@@ -15,7 +15,7 @@ export const getMyAddresses = catchAsyncErrors(async (req, res) => {
     isDefault: -1,
     createdAt: -1,
   });
-  res.status(200).json({ success: true, addresses });
+  res.sendSuccess({ addresses });
 });
 
 // ── Add a new address ─────────────────────────────────────────────────────
@@ -56,7 +56,7 @@ export const addAddress = catchAsyncErrors(async (req, res, next) => {
     $push: { addressDetails: address._id },
   });
 
-  res.status(201).json({ success: true, address });
+  res.sendSuccess({ address }, 201);
 });
 
 // ── Update an existing address ────────────────────────────────────────────
@@ -97,7 +97,7 @@ export const updateAddress = catchAsyncErrors(async (req, res, next) => {
   }
 
   await address.save();
-  res.status(200).json({ success: true, address });
+  res.sendSuccess({ address });
 });
 
 // ── Delete an address ─────────────────────────────────────────────────────
@@ -129,7 +129,7 @@ export const deleteAddress = catchAsyncErrors(async (req, res, next) => {
     }
   }
 
-  res.status(200).json({ success: true, message: "Address deleted" });
+  res.sendSuccess({ message: "Address deleted" });
 });
 
 // ── Set an address as the default ─────────────────────────────────────────
@@ -148,5 +148,5 @@ export const setDefaultAddress = catchAsyncErrors(async (req, res, next) => {
   address.isDefault = true;
   await address.save();
 
-  res.status(200).json({ success: true, address });
+  res.sendSuccess({ address });
 });

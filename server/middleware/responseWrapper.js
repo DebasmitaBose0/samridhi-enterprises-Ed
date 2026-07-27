@@ -4,6 +4,14 @@
  */
 
 const responseWrapper = (req, res, next) => {
+  /**
+   * Helper to send standardized success JSON responses.
+   *
+   * Signatures:
+   *   res.sendSuccess(data, statusCode)
+   *   res.sendSuccess(data, message, statusCode)
+   *   res.sendSuccess(message, statusCode)
+   */
   res.sendSuccess = (data = {}, messageOrStatus = 200, statusCode = 200) => {
     let message = null;
     let status = 200;
@@ -34,6 +42,12 @@ const responseWrapper = (req, res, next) => {
     return res.status(status).json(payload);
   };
 
+  /**
+   * Helper to send standardized error JSON responses.
+   *
+   * Signatures:
+   *   res.sendError(message, statusCode, errorDetails)
+   */
   res.sendError = (message = "Internal Server Error", statusCode = 500, error = null) => {
     let status = statusCode;
     let msg = message;
