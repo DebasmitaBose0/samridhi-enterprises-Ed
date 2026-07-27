@@ -53,17 +53,15 @@ export const addBikeModel = catchAsyncErrors(async (req, res, next) => {
     ],
   });
 
-  res.status(201).json({
-    success: true,
+  res.sendSuccess({
     message: "Bike model created successfully",
     bikeModel: newBikeModel,
-  });
+  }, 201);
 });
 
 export const getAllBikeModels = catchAsyncErrors(async (req, res, next) => {
   const models = await BikeModel.find().populate("brand", "name");
-  res.status(200).json({
-    success: true,
+  res.sendSuccess({
     count: models.length,
     bikeModels: models,
   });
@@ -131,8 +129,7 @@ export const updateBikeModel = catchAsyncErrors(async (req, res, next) => {
 
   await bikeModel.save();
 
-  res.status(200).json({
-    success: true,
+  res.sendSuccess({
     message: "Bike model updated successfully",
     bikeModel,
   });
@@ -154,8 +151,7 @@ export const deleteBikeModel = catchAsyncErrors(async (req, res, next) => {
 
   await bikeModel.deleteOne();
 
-  res.status(200).json({
-    success: true,
+  res.sendSuccess({
     message: "Bike model deleted successfully",
   });
 });
