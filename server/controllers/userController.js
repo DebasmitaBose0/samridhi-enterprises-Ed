@@ -1,6 +1,7 @@
 import ErrorHandler from "../utils/errorHandler.js";
 import UserModel from "../models/userModel.js";
 import bcryptjs from "bcryptjs";
+import { ROLES, ROLES_ARRAY, isStaff } from "../../shared/constants/permissions.js";
 import sendEmail from "../config/sendEmail.js";
 import verifyEmailTemplate from "../template/verifyEmailTemplate.js";
 import catchAsyncErrors from "../middleware/catchAsyncErrors.js";
@@ -12,9 +13,7 @@ import { logAudit } from "../utils/auditLogger.js";
 import { isOtpDevMode } from "../utils/validateEnv.js";
 import validatePassword from "../utils/validatePassword.js";
 
-
 const shouldLogOtp = isOtpDevMode();
-
 
 export const registerUser = catchAsyncErrors(async (req, res, next) => {
   try {
@@ -202,12 +201,9 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
     );
   }
 
-  // Account lockout: configurable threshold + duration (defaults: 5 attempts, 15 min).
   const maxAttempts = Number(process.env.LOGIN_MAX_ATTEMPTS) || 5;
   const lockMinutes = Number(process.env.LOGIN_LOCK_MINUTES) || 15;
 
-  // If a lock is currently active, reject before checking the password so a
-  // locked account cannot keep guessing.
   if (user.lockUntil && user.lockUntil.getTime() > Date.now()) {
     const minutesLeft = Math.ceil((user.lockUntil.getTime() - Date.now()) / 60000);
     return next(
@@ -218,7 +214,6 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
     );
   }
 
-  // A previously set lock has now expired — clear it before proceeding.
   if (user.lockUntil && user.lockUntil.getTime() <= Date.now()) {
     user.lockUntil = null;
     user.failedAttempts = 0;
@@ -229,7 +224,6 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
   if (!checkPassword) {
     user.failedAttempts = (user.failedAttempts || 0) + 1;
 
-    // Threshold reached — lock the account and reset the counter.
     if (user.failedAttempts >= maxAttempts) {
       user.lockUntil = new Date(Date.now() + lockMinutes * 60 * 1000);
       user.failedAttempts = 0;
@@ -246,12 +240,10 @@ export const loginUser = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Incorrect email or password", 400));
   }
 
-  // Successful login — clear any failed-attempt state.
   user.failedAttempts = 0;
   user.lockUntil = null;
   user.lastLogin = new Date();
 
-  // Check if current password meets password strength policy. If not, flag it.
   const passwordStrength = validatePassword(password);
   user.hasWeakPassword = !passwordStrength.isValid;
 
@@ -386,9 +378,8 @@ export const forgotPassword = catchAsyncErrors(async (req, res, next) => {
       });
     }
 
-
     const otp = generatedOtp();
-    const expireTime = new Date(new Date().getTime() + 10 * 60 * 1000);
+    const expireTime = new Date(Date.now() + 10 * 60 * 1000);
 
     if (shouldLogOtp) {
       console.log(`\n=== FORGOT PASSWORD OTP FOR ${email} IS: ${otp} ===\n`);
@@ -435,13 +426,10 @@ export const verifyOtp = catchAsyncErrors(async (req, res, next) => {
   }
 
   const maxAttempts = Number(process.env.FORGOT_PASSWORD_MAX_ATTEMPTS) || 5;
-  const lockMinutes =
-    Number(process.env.FORGOT_PASSWORD_LOCK_MINUTES) || 15;
+  const lockMinutes = Number(process.env.FORGOT_PASSWORD_LOCK_MINUTES) || 15;
 
   const user = await UserModel.findOne({ email });
 
-  // Generic error message to avoid leaking whether the email exists
-  // or whether the OTP is correct.
   const genericOtpError = new ErrorHandler(
     "Invalid or expired OTP. Please request a new one.",
     400
@@ -451,7 +439,6 @@ export const verifyOtp = catchAsyncErrors(async (req, res, next) => {
     return next(genericOtpError);
   }
 
-  // Lockout check
   if (
     user.forgot_password_lockUntil &&
     user.forgot_password_lockUntil.getTime() > Date.now()
@@ -461,7 +448,6 @@ export const verifyOtp = catchAsyncErrors(async (req, res, next) => {
     );
   }
 
-  // Expiry check
   if (!user.forgot_password_expiry) {
     return next(genericOtpError);
   }
@@ -469,7 +455,6 @@ export const verifyOtp = catchAsyncErrors(async (req, res, next) => {
   const expiry = new Date(user.forgot_password_expiry).getTime();
 
   if (Number.isNaN(expiry) || expiry < Date.now()) {
-    // OTP expired: reset attempt state to avoid keeping user locked forever.
     user.forgot_password_failedAttempts = 0;
     user.forgot_password_lockUntil = null;
     await user.save();
@@ -506,10 +491,6 @@ export const verifyOtp = catchAsyncErrors(async (req, res, next) => {
     return next(genericOtpError);
   }
 
-  // OTP is correct. Reset only the brute-force counters here; do NOT clear the
-  // OTP itself — it must survive so resetPassword can consume it (single-use)
-  // when the new password is submitted. verifyOtp is a UX correctness check;
-  // the real single-use consumption happens at reset-password.
   await UserModel.findByIdAndUpdate(user._id, {
     forgot_password_failedAttempts: 0,
     forgot_password_lockUntil: null,
@@ -522,9 +503,7 @@ export const verifyOtp = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-
 export const resetPassword = catchAsyncErrors(async (req, res, next) => {
-
   try {
     const { email, otp, newPassword, confirmPassword } = req.body;
 
@@ -553,8 +532,6 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
 
     const user = await UserModel.findOne({ email });
 
-    // Generic error to avoid leaking whether the email exists or whether the
-    // OTP is correct (mirrors verifyOtp's enumeration-safe messaging).
     const genericOtpError = new ErrorHandler(
       "Invalid or expired OTP. Please request a new one.",
       400
@@ -564,8 +541,6 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
       return next(genericOtpError);
     }
 
-    // Brute-force lockout, shared with verifyOtp via the same user fields so the
-    // reset endpoint cannot be used to bypass the verify-otp lockout.
     if (
       user.forgot_password_lockUntil &&
       user.forgot_password_lockUntil.getTime() > Date.now()
@@ -575,16 +550,12 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
       );
     }
 
-    // A reset OTP must have been requested and not yet consumed. verifyOtp no
-    // longer clears the OTP, so a verified-but-not-yet-reset OTP is still present
-    // here; it is consumed below only after a successful password reset.
     if (!user.forgot_password_otp || !user.forgot_password_expiry) {
       return next(genericOtpError);
     }
 
     const otpExpiry = new Date(user.forgot_password_expiry).getTime();
     if (Number.isNaN(otpExpiry) || otpExpiry < Date.now()) {
-      // Expired: clear attempt state so the user is not locked out forever.
       user.forgot_password_failedAttempts = 0;
       user.forgot_password_lockUntil = null;
       await user.save();
@@ -626,8 +597,6 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
     const salt = await bcryptjs.genSalt(12);
     const hashPassword = await bcryptjs.hash(newPassword, salt);
 
-    // OTP valid: update the password AND consume the OTP (single-use) together
-    // with any failed-attempt / lock state, in one atomic update.
     const updatedUser = await UserModel.findByIdAndUpdate(
       user._id,
       {
@@ -659,10 +628,6 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
 
 export const getUserDetails = catchAsyncErrors(async (req, res, next) => {
   try {
-    console.log("Checking User model:", UserModel);
-
-    console.log("User ID:", req.user?._id);
-
     const user = await UserModel.findById(req.user._id);
 
     if (!user) {
@@ -710,7 +675,7 @@ export const updateUserDetails = catchAsyncErrors(async (req, res, next) => {
 
       const user = await UserModel.findById(userId);
 
-      if (user.avatar) {
+      if (user && user.avatar) {
         const publicId = getPublicIdFromUrl(user.avatar);
         if (publicId) {
           try {
@@ -752,14 +717,11 @@ export const updateUserDetails = catchAsyncErrors(async (req, res, next) => {
 // Admin
 export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
   try {
-    if (req.user.role !== "ADMIN" && req.user.role !== "MANAGER") {
+    if (!isStaff(req.user)) {
       return next(new ErrorHandler("Access denied. Admins only.", 403));
     }
 
-    // Non-admin flows should never expose soft-deleted users.
-    // (Admin/Manager requests are handled here through their role.)
-    const includeDeleted = req.user.role === "ADMIN";
-
+    const includeDeleted = req.user.role === ROLES.ADMIN;
 
     const { page = 1, limit = 10, search = "" } = req.query;
     const skip = (page - 1) * limit;
@@ -771,7 +733,6 @@ export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
         { email: { $regex: search, $options: "i" } },
       ],
     };
-
 
     const totalUsers = await UserModel.countDocuments(query);
 
@@ -797,7 +758,7 @@ export const getAllUsers = catchAsyncErrors(async (req, res, next) => {
 // Admin
 export const getSingleUser = catchAsyncErrors(async (req, res, next) => {
   try {
-    if (req.user.role !== "ADMIN" && req.user.role !== "MANAGER") {
+    if (!isStaff(req.user)) {
       return next(new ErrorHandler("Permission denied. Admins only.", 403));
     }
 
@@ -805,9 +766,8 @@ export const getSingleUser = catchAsyncErrors(async (req, res, next) => {
 
     const user = await UserModel.findOne({
       _id: userId,
-      ...(req.user.role === "ADMIN" ? {} : { isDeleted: false }),
+      ...(req.user.role === ROLES.ADMIN ? {} : { isDeleted: false }),
     }).select("-password");
-
 
     if (!user) {
       return next(new ErrorHandler("User not found", 404));
@@ -827,13 +787,13 @@ export const getSingleUser = catchAsyncErrors(async (req, res, next) => {
 // Admin
 export const updateUserRole = catchAsyncErrors(async (req, res, next) => {
   try {
-    if (req.user.role !== "ADMIN") {
+    if (req.user.role !== ROLES.ADMIN) {
       return next(new ErrorHandler("Permission denied. Admins only.", 403));
     }
 
     const { email, role } = req.body;
 
-    if (!role || !["USER", "ADMIN", "MANAGER"].includes(role)) {
+    if (!role || !ROLES_ARRAY.includes(role)) {
       return next(
         new ErrorHandler(
           "Invalid role. Role must be either 'USER', 'MANAGER', or 'ADMIN'.",
@@ -844,7 +804,7 @@ export const updateUserRole = catchAsyncErrors(async (req, res, next) => {
 
     const user = await UserModel.findOne({
       email,
-      ...(req.user.role === "ADMIN" ? {} : { isDeleted: false }),
+      ...(req.user.role === ROLES.ADMIN ? {} : { isDeleted: false }),
     });
 
     if (!user) {
@@ -855,7 +815,6 @@ export const updateUserRole = catchAsyncErrors(async (req, res, next) => {
     user.role = role;
     const updatedUser = await user.save();
 
-    // Audit trail (best-effort).
     logAudit({
       actorId: req.user._id,
       actorRole: req.user.role,
@@ -866,9 +825,7 @@ export const updateUserRole = catchAsyncErrors(async (req, res, next) => {
     }).catch(() => {});
 
     return res.json({
-
       message: "User role updated successfully",
-
       error: false,
       success: true,
       data: updatedUser,
@@ -881,16 +838,12 @@ export const updateUserRole = catchAsyncErrors(async (req, res, next) => {
 // Admin
 export const deleteUser = catchAsyncErrors(async (req, res, next) => {
   try {
-    const userId = req.params.id;
-
-    if (req.user.role !== "ADMIN" && req.user.role !== "MANAGER") {
+    if (!isStaff(req.user)) {
       return next(new ErrorHandler("Permission denied. Admins only.", 403));
     }
 
-    const user = await UserModel.findOne({
-      _id: userId,
-      ...(req.user.role === "ADMIN" ? {} : { isDeleted: false }),
-    });
+    const userId = req.params.id;
+    const user = await UserModel.findById(userId);
 
     if (!user) {
       return next(new ErrorHandler("User not found", 404));
@@ -907,12 +860,10 @@ export const deleteUser = catchAsyncErrors(async (req, res, next) => {
       }
     }
 
-    // Soft delete user instead of hard delete to preserve audit/order history.
     await UserModel.findByIdAndUpdate(userId, {
       $set: { isDeleted: true, deletedAt: new Date() },
     });
 
-    // Best-effort audit trail.
     await logAudit({
       actorId: req.user._id,
       actorRole: req.user.role,
@@ -922,10 +873,8 @@ export const deleteUser = catchAsyncErrors(async (req, res, next) => {
       metadata: { previousRole: user.role, previousStatus: user.status },
     }).catch(() => {});
 
-
     return res.json({
       message: "User soft-deleted successfully",
-
       success: true,
       error: false,
     });
@@ -937,7 +886,7 @@ export const deleteUser = catchAsyncErrors(async (req, res, next) => {
 // Admin
 export const updateUserStatus = catchAsyncErrors(async (req, res, next) => {
   try {
-    if (req.user.role !== "ADMIN" && req.user.role !== "MANAGER") {
+    if (req.user.role !== ROLES.ADMIN && req.user.role !== ROLES.MANAGER) {
       return next(new ErrorHandler("Permission denied. Admins only.", 403));
     }
 
@@ -951,8 +900,9 @@ export const updateUserStatus = catchAsyncErrors(async (req, res, next) => {
 
     const user = await UserModel.findOne({
       _id: id,
-      ...(req.user.role === "ADMIN" ? {} : { isDeleted: false }),
+      ...(req.user.role === ROLES.ADMIN ? {} : { isDeleted: false }),
     });
+
     if (!user) {
       return next(new ErrorHandler("User not found", 404));
     }
@@ -961,17 +911,14 @@ export const updateUserStatus = catchAsyncErrors(async (req, res, next) => {
     user.status = status;
     await user.save();
 
-    // Audit trail (best-effort).
     logAudit({
       actorId: req.user._id,
       actorRole: req.user.role,
-
       action: "USER_STATUS_UPDATE",
       entityType: "User",
       entityId: user._id.toString(),
       metadata: { previousStatus, nextStatus: status },
     }).catch(() => {});
-
 
     if (status === "Warning") {
       await sendEmail({
@@ -1052,10 +999,9 @@ export const updateUserStatus = catchAsyncErrors(async (req, res, next) => {
   }
 });
 
-
 // Added for #350: Assign granular permissions to users
 export const assignUserPermissions = catchAsyncErrors(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
+  const user = await UserModel.findById(req.params.id);
   if (!user) return next(new ErrorHandler("User not found", 404));
 
   const { permissions } = req.body;

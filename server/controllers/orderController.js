@@ -62,23 +62,14 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
   // Re-validate and deduct stock to prevent overselling
   for (const item of cart.items) {
     if (!item.part) {
-      return res.status(400).json({
-        success: false,
-        message: "A product in your cart is no longer available",
-      });
+      return res.sendError("A product in your cart is no longer available", 400);
     }
     const part = await Part.findById(item.part._id);
     if (!part) {
-      return res.status(400).json({
-        success: false,
-        message: `Product ${item.name || "Item"} is no longer available`,
-      });
+      return res.sendError(`Product ${item.name || "Item"} is no longer available`, 400);
     }
     if (part.stock < item.quantity) {
-      return res.status(400).json({
-        success: false,
-        message: `Insufficient stock for ${part.name}`,
-      });
+      return res.sendError(`Insufficient stock for ${part.name}`, 400);
     }
   }
 
@@ -275,14 +266,13 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
     html: generateAdminNewOrderEmail(order, req.user),
   });
 
-    res.status(201).json({
-      success: true,
+    res.sendSuccess({
       message:
         paymentMethod === "COD"
           ? "Order placed successfully"
           : "Order placed. Payment is pending verification.",
       order,
-    });
+    }, 201);
   } catch (error) {
     // Rollback any stocks we already successfully deducted
     for (const updated of updatedParts) {
@@ -301,7 +291,7 @@ export const getMyOrders = catchAsyncErrors(async (req, res, next) => {
   const orders = await Order.find({ user: req.user._id }).sort({
     createdAt: -1,
   });
-  res.status(200).json({ success: true, count: orders.length, orders });
+  res.sendSuccess({ count: orders.length, orders });
 });
 
 // GET /api/orders/:id  (auth, owner only)
@@ -313,7 +303,7 @@ export const getOrderById = catchAsyncErrors(async (req, res, next) => {
   if (order.user.toString() !== req.user._id.toString()) {
     return next(new ErrorHandler("Not authorized to view this order", 403));
   }
-  res.status(200).json({ success: true, order });
+  res.sendSuccess({ order });
 });
 
 // A customer may cancel their own order only while it is still in an early,
@@ -391,8 +381,7 @@ export const cancelMyOrder = catchAsyncErrors(async (req, res, next) => {
     console.error("Cancellation email failed:", mailErr.message);
   }
 
-  res.status(200).json({
-    success: true,
+  res.sendSuccess({
     message: "Order cancelled successfully",
     order,
   });
@@ -407,7 +396,7 @@ export const adminGetAllOrders = catchAsyncErrors(async (req, res, next) => {
   const orders = await Order.find(filter)
     .populate("user", "name email")
     .sort({ createdAt: -1 });
-  res.status(200).json({ success: true, count: orders.length, orders });
+  res.sendSuccess({ count: orders.length, orders });
 });
 
 // PUT /api/orders/admin/verify/:id  (auth, admin)  body: { action, rejectionReason }
@@ -449,8 +438,7 @@ export const adminVerifyPayment = catchAsyncErrors(async (req, res, next) => {
       console.error("Receipt email failed:", mailErr.message);
     }
 
-    return res.status(200).json({
-      success: true,
+    return res.sendSuccess({
       message: "Payment approved and order confirmed",
       order,
     });
@@ -489,8 +477,7 @@ export const adminVerifyPayment = catchAsyncErrors(async (req, res, next) => {
     console.error("Rejection email failed:", mailErr.message);
   }
 
-  res.status(200).json({
-    success: true,
+  res.sendSuccess({
     message: "Payment rejected and order cancelled",
     order,
   });
@@ -593,8 +580,7 @@ export const adminUpdateOrderStatus = catchAsyncErrors(
       }
     }
 
-    res.status(200).json({
-      success: true,
+    res.sendSuccess({
       message: `Order status updated to ${targetStatus}`,
       order,
     });
@@ -616,5 +602,5 @@ export const createPartSubscription = catchAsyncErrors(async (req, res, next) =>
     nextOrderDate
   });
 
-  res.status(201).json({ success: true, subscription });
+  res.sendSuccess({ subscription }, 201);
 });
