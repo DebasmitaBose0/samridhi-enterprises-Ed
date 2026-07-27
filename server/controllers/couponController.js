@@ -67,13 +67,13 @@ export const createCoupon = catchAsyncErrors(async (req, res, next) => {
     isActive: isActive ?? true,
   });
 
-  res.status(201).json({ success: true, coupon });
+  res.sendSuccess({ coupon }, 201);
 });
 
 // ── Admin: list all coupons ───────────────────────────────────────────────
 export const getAllCoupons = catchAsyncErrors(async (req, res) => {
   const coupons = await Coupon.find().sort({ createdAt: -1 });
-  res.status(200).json({ success: true, coupons });
+  res.sendSuccess({ coupons });
 });
 
 // ── Admin: update a coupon ────────────────────────────────────────────────
@@ -123,7 +123,7 @@ export const updateCoupon = catchAsyncErrors(async (req, res, next) => {
   if (isActive !== undefined) coupon.isActive = isActive;
 
   await coupon.save();
-  res.status(200).json({ success: true, coupon });
+  res.sendSuccess({ coupon });
 });
 
 // ── Admin: delete a coupon ────────────────────────────────────────────────
@@ -131,7 +131,7 @@ export const deleteCoupon = catchAsyncErrors(async (req, res, next) => {
   const coupon = await Coupon.findById(req.params.id);
   if (!coupon) return next(new ErrorHandler("Coupon not found", 404));
   await coupon.deleteOne();
-  res.status(200).json({ success: true, message: "Coupon deleted" });
+  res.sendSuccess({ message: "Coupon deleted" });
 });
 
 // ── User: validate a coupon against the current cart ──────────────────────
@@ -176,8 +176,7 @@ export const validateCoupon = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("This coupon does not apply to your cart", 400));
   }
 
-  res.status(200).json({
-    success: true,
+  res.sendSuccess({
     coupon: {
       code: coupon.code,
       description: coupon.description,
@@ -198,5 +197,5 @@ export const validateCouponAtomic = catchAsyncErrors(async (req, res, next) => {
   if (!coupon) {
     return next(new ErrorHandler("Coupon invalid or usage limit reached", 400));
   }
-  res.status(200).json({ success: true, message: "Coupon applied successfully", coupon });
+  res.sendSuccess({ message: "Coupon applied successfully", coupon });
 });
