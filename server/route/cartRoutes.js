@@ -19,6 +19,9 @@ cartRouter
   .put(auth, updateCartItem)
   .delete(auth, removeFromCart);
 
-export default cartRouter;
+import admin from "../middleware/Admin.js";
+import { cleanupStaleCarts } from "../controllers/cartController.js";
 
-// Expose checkout pre-validation route
+cartRouter.delete("/admin/cleanup", auth, admin, cleanupStaleCarts);
+
+export default cartRouter;
