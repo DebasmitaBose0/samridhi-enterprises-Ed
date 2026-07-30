@@ -649,6 +649,20 @@ export const deleteReview = catchAsyncErrors(async (req, res, next) => {
 res.sendSuccess({ message: "Review removed", part });
 });
 
+import { buildDynamicSearchFilters, getSidebarFacets } from "../utils/dynamicSearchAggregator.js";
+
+export const getFacetedSearchResults = catchAsyncErrors(async (req, res, next) => {
+  const filter = buildDynamicSearchFilters(req.query);
+  const parts = await Part.find(filter);
+  const facets = await getSidebarFacets();
+
+  res.sendSuccess({
+    count: parts.length,
+    parts,
+    facets,
+  });
+});
+
 // Added for #341: Get low stock parts for administrators
 export const getLowStockParts = catchAsyncErrors(async (req, res, next) => {
   const parts = await Part.find({ 

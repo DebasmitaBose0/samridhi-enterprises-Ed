@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import catchAsyncErrors from "./catchAsyncErrors.js";
 import ErrorHandler from "../utils/errorHandler.js";
+import config from "../config/index.js";
 
 // In-memory cache fallback for IP request tracking.
 const ipRequestStore = new Map();
@@ -180,7 +181,7 @@ const createAuthOtpLimiter = (options = {}) => {
 
     if (ipDoc.count > maxByIp) {
       res.setHeader("Retry-After", Math.ceil((ipResetTimeMs - now) / 1000));
-      if (logInDev && process.env.NODE_ENV === "development") {
+      if (logInDev && config.isDevelopment) {
         console.warn("[rate-limit] ip", { endpoint: req.originalUrl, ip });
       }
       return next(new ErrorHandler(message, 429));
@@ -213,7 +214,7 @@ const createAuthOtpLimiter = (options = {}) => {
       if (emailDoc.count > maxEmail) {
         const emailResetTimeMs = new Date(emailDoc.resetTime).getTime();
         res.setHeader("Retry-After", Math.ceil((emailResetTimeMs - now) / 1000));
-        if (logInDev && process.env.NODE_ENV === "development") {
+        if (logInDev && config.isDevelopment) {
           console.warn("[rate-limit] email", {
             endpoint: req.originalUrl,
             email: email.trim().toLowerCase(),
