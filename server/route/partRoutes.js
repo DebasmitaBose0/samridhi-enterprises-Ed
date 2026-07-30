@@ -49,11 +49,13 @@ const recommendLimiter = rateLimit({
 
 const partRouter = express.Router();
 
+import { getFacetedSearchResults } from "../controllers/partsControllers.js";
+
 partRouter.get("/admin/low-stock", auth, admin, getLowStockParts);
 partRouter.post("/add", upload.array("images", 5), auth, admin, addPart);
 // partRouter.post("/warehouse-stock/:id", auth, admin, addWarehouseStock);
 partRouter.get("/get", browseLimiter, getAllParts);
-// partRouter.get("/search/faceted", browseLimiter, getFacetedSearch);
+partRouter.get("/search/faceted", browseLimiter, getFacetedSearchResults);
 partRouter.get("/get/:id", browseLimiter, getPartById);
 partRouter.get("/get/:id/similar", browseLimiter, getSimilarParts);
 partRouter.get(

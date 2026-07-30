@@ -10,6 +10,7 @@ import generatedOtp from "../utils/generatedOtp.js";
 import sendToken from "../utils/jwtToken.js";
 import forgotPasswordTemplate from "../template/forgotPasswordTemplate.js";
 import { logAudit } from "../utils/auditLogger.js";
+import config from "../config/index.js";
 import { isOtpDevMode } from "../utils/validateEnv.js";
 import validatePassword from "../utils/validatePassword.js";
 
@@ -569,9 +570,9 @@ export const resetPassword = catchAsyncErrors(async (req, res, next) => {
 
     if (!isOtpValid) {
       const maxAttempts =
-        Number(process.env.FORGOT_PASSWORD_MAX_ATTEMPTS) || 5;
+        config.security.forgotPasswordMaxAttempts || Number(process.env.FORGOT_PASSWORD_MAX_ATTEMPTS) || 5;
       const lockMinutes =
-        Number(process.env.FORGOT_PASSWORD_LOCK_MINUTES) || 15;
+        config.security.forgotPasswordLockMinutes || Number(process.env.FORGOT_PASSWORD_LOCK_MINUTES) || 15;
 
       user.forgot_password_failedAttempts =
         (user.forgot_password_failedAttempts || 0) + 1;
