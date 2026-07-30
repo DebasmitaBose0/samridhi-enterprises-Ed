@@ -1,16 +1,14 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import { MongoMemoryServer } from "mongodb-memory-server";
-
-dotenv.config();
+import config from "./index.js";
 
 let mongoServer;
 
 async function connectDB() {
   try {
-    if (process.env.MONGODB_URL) {
+    if (config.mongodbUrl) {
       try {
-        await mongoose.connect(process.env.MONGODB_URL);
+        await mongoose.connect(config.mongodbUrl);
         console.log("connect DB");
         return;
       } catch (atlasError) {
