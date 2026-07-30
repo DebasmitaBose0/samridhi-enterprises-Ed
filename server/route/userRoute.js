@@ -22,6 +22,18 @@ import auth from "../middleware/auth.js";
 import upload from "../middleware/multer.js";
 import admin from "../middleware/Admin.js";
 import { createAuthOtpLimiter } from "../middleware/rateLimiter.js";
+import validateSchema from "../middleware/validateSchema.js";
+import {
+  registerSchema,
+  loginSchema,
+  otpVerifySchema,
+  resendOtpSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+  updatePasswordSchema,
+  updateUserRoleSchema,
+  updateUserStatusSchema,
+} from "../validators/authSchemas.js";
 
 const userRouter = express.Router();
 
@@ -35,28 +47,25 @@ const authOtpIpLimit = createAuthOtpLimiter({
   message: "Too many requests. Please try again later.",
 });
 
-userRouter.post("/register", authOtpIpLimit, registerUser);
+userRouter.post("/register", authOtpIpLimit, validateSchema(registerSchema), registerUser);
 
+userRouter.post("/verify-email", authOtpIpLimit, validateSchema(otpVerifySchema), verifyEmailOtp);
 
-userRouter.post("/verify-email", authOtpIpLimit, verifyEmailOtp);
+userRouter.post("/resend-otp", authOtpIpLimit, validateSchema(resendOtpSchema), resendOtp);
 
-userRouter.post("/resend-otp", authOtpIpLimit, resendOtp);
-
-userRouter.post("/login", authOtpIpLimit, loginUser);
-
+userRouter.post("/login", authOtpIpLimit, validateSchema(loginSchema), loginUser);
 
 userRouter.get("/logout", logoutUser);
 
 userRouter.put("/upload-avatar", auth, upload.single("avatar"), uploadAvatar);
 
-userRouter.put("/update/password", auth, updatePassword);
+userRouter.put("/update/password", auth, validateSchema(updatePasswordSchema), updatePassword);
 
-userRouter.put("/forgot-password", authOtpIpLimit, forgotPassword);
+userRouter.put("/forgot-password", authOtpIpLimit, validateSchema(forgotPasswordSchema), forgotPassword);
 
-userRouter.put("/verify-otp", authOtpIpLimit, verifyOtp);
+userRouter.put("/verify-otp", authOtpIpLimit, validateSchema(otpVerifySchema), verifyOtp);
 
-
-userRouter.put("/reset-password", authOtpIpLimit, resetPassword);
+userRouter.put("/reset-password", authOtpIpLimit, validateSchema(resetPasswordSchema), resetPassword);
 
 userRouter.get("/me", auth, getUserDetails);
 
