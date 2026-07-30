@@ -17,6 +17,8 @@ const VALID_PRIORITIES = ["Low", "Medium", "High"];
 
 // ── User: create a ticket ─────────────────────────────────────────────────
 // The opening description becomes the first message in the thread.
+import { TicketPriorityCalculator } from "../utils/ticketPriorityCalculator.js";
+
 export const createTicket = catchAsyncErrors(async (req, res, next) => {
   const { subject, category, priority, message } = req.body;
 
@@ -33,11 +35,19 @@ export const createTicket = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Invalid priority", 400));
   }
 
+  const effectivePriority =
+    priority ||
+    TicketPriorityCalculator.calculateSuggestedPriority(
+      category || "Other",
+      subject,
+      message
+    );
+
   const ticket = await SupportTicket.create({
     user: req.user._id,
     subject: String(subject).trim(),
     category: category || "Other",
-    priority: priority || "Medium",
+    priority: effectivePriority,
     messages: [
       {
         sender: "USER",

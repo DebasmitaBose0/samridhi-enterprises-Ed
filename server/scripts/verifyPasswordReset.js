@@ -6,6 +6,8 @@ import userRouter from "../route/userRoute.js";
 import UserModel from "../models/userModel.js";
 import ErrorHandler from "../utils/errorHandler.js";
 
+import responseWrapper from "../middleware/responseWrapper.js";
+
 // Helper to call controller and return a promise that resolves when next or res.json is called
 const callController = (controller, req) => {
   return new Promise((resolve) => {
@@ -22,6 +24,7 @@ const callController = (controller, req) => {
         return this;
       },
     };
+    responseWrapper(req, res, () => {});
     const next = (err) => {
       resolve({ res, err });
     };
