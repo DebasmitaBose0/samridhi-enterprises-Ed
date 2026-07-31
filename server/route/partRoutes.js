@@ -49,9 +49,10 @@ const recommendLimiter = rateLimit({
 
 const partRouter = express.Router();
 
-import { getFacetedSearchResults } from "../controllers/partsControllers.js";
+import { bulkUpdateStock } from "../controllers/partsControllers.js";
 
 partRouter.get("/admin/low-stock", auth, admin, getLowStockParts);
+partRouter.put("/admin/bulk-stock", auth, admin, bulkUpdateStock);
 partRouter.post("/add", upload.array("images", 5), auth, admin, addPart);
 // partRouter.post("/warehouse-stock/:id", auth, admin, addWarehouseStock);
 partRouter.get("/get", browseLimiter, getAllParts);
