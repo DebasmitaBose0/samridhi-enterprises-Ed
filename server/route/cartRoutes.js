@@ -20,4 +20,9 @@ cartRouter.put("/update/:partId", auth, validateSchema(updateCartItemSchema), up
 cartRouter.delete("/remove/:partId", auth, removeFromCart);
 cartRouter.delete("/clear", auth, clearCart);
 
+import admin from "../middleware/Admin.js";
+import { cleanupStaleCarts } from "../controllers/cartController.js";
+
+cartRouter.delete("/admin/cleanup", auth, admin, cleanupStaleCarts);
+
 export default cartRouter;

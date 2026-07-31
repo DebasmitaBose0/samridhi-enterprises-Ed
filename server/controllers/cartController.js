@@ -268,4 +268,15 @@ export const clearCart = catchAsyncErrors(async (req, res, next) => {
   res.sendSuccess({ cart: clearedCart });
 });
 
-// Cart validation checking method added for checkout flow verification
+import { purgeAbandonedCarts } from "../utils/staleCartCleaner.js";
+
+export const cleanupStaleCarts = catchAsyncErrors(async (req, res, next) => {
+  const days = req.query.days ? parseInt(req.query.days, 10) : 30;
+  const result = await purgeAbandonedCarts(days);
+
+  res.sendSuccess({
+    message: `Successfully purged abandoned carts inactive for over ${days} days.`,
+    ...result,
+  });
+});
+
