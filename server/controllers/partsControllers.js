@@ -674,12 +674,12 @@ export const getLowStockParts = catchAsyncErrors(async (req, res, next) => {
 
 // Bulk update inventory stock with atomic safety
 import { processBulkStockAdjustment } from "../utils/bulkInventoryManager.js";
-import { executeInTransaction } from "../utils/transactionSessionManager.js";
+import { runInTransaction } from "../utils/transactionSessionManager.js";
 
 export const bulkUpdateStock = catchAsyncErrors(async (req, res, next) => {
   const { updates } = req.body;
 
-  const result = await executeInTransaction(async (session) => {
+  const result = await runInTransaction(async (session) => {
     return await processBulkStockAdjustment(updates, req.user, session);
   });
 
