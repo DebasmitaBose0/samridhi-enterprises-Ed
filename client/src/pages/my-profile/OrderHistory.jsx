@@ -12,6 +12,7 @@ import {
 } from "../../store/order/orderSlice";
 import Loader from "../../extras/Loader";
 import ConfirmationModal from "../../extras/ConfirmationModal";
+import { generateOrderInvoicePDF } from "../../utils/invoicePDFGenerator.js";
 
 // The fulfilment stages a normal order moves through, in order. Used by the
 // customer-facing tracker so a buyer can see how far along their order is.

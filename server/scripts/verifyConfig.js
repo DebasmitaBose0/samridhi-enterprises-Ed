@@ -11,6 +11,7 @@ function testConfigModule() {
   assert.strictEqual(typeof config.isTest, "boolean", "config.isTest should be boolean");
   assert.strictEqual(typeof config.isDevelopment, "boolean", "config.isDevelopment should be boolean");
 
+  // Check sub-configs
   assert.ok(config.jwt, "config.jwt should exist");
   assert.strictEqual(typeof config.jwt.expire, "string", "config.jwt.expire should be string");
   assert.strictEqual(typeof config.jwt.cookieExpire, "number", "config.jwt.cookieExpire should be number");
