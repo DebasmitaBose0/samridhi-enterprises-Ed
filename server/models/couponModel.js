@@ -76,6 +76,8 @@ const couponSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+couponSchema.index({ discountType: 1, isActive: 1 });
+
 // Compute the rupee discount this coupon grants for a given order subtotal.
 // Returns 0 when the coupon does not apply to that subtotal. This is the single
 // source of truth for discount math, used by both validate and order creation.
