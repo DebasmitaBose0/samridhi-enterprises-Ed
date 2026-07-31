@@ -4,6 +4,7 @@ import { registerSchema, loginSchema } from "../validators/authSchemas.js";
 import { addAddressSchema } from "../validators/addressSchemas.js";
 import ErrorHandler from "../utils/errorHandler.js";
 
+// Helper to run middleware
 function runMiddleware(middleware, req) {
   return new Promise((resolve) => {
     const res = {};
@@ -17,6 +18,7 @@ function runMiddleware(middleware, req) {
 async function testRequestValidation() {
   console.log("Running Request Payload Validation Tests...");
 
+  // Test 1: Valid registration payload
   const validRegisterReq = {
     body: {
       name: "Test User",
@@ -27,6 +29,7 @@ async function testRequestValidation() {
   const { err: err1 } = await runMiddleware(validateSchema(registerSchema), validRegisterReq);
   assert.strictEqual(err1, undefined, "Valid registration should pass without error");
 
+  // Test 2: Invalid registration payload (missing special char)
   const invalidRegisterReq = {
     body: {
       name: "Test User",
@@ -39,6 +42,7 @@ async function testRequestValidation() {
   assert.strictEqual(err2.statusCode, 400, "Should return HTTP 400");
   assert.ok(err2.message.includes("special character"), "Should contain validation error details");
 
+  // Test 3: Invalid login payload (invalid email format)
   const invalidLoginReq = {
     body: {
       email: "not-an-email",
@@ -49,6 +53,7 @@ async function testRequestValidation() {
   assert.ok(err3 instanceof ErrorHandler, "Invalid login should trigger ErrorHandler");
   assert.strictEqual(err3.statusCode, 400);
 
+  // Test 4: Valid address payload
   const validAddressReq = {
     body: {
       fullName: "Jane Doe",
