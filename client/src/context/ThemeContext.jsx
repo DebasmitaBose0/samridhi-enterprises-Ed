@@ -46,7 +46,7 @@ export const ThemeProvider = ({ children }) => {
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     const handler = (e) => {
-      let // ignore
+      let stored = null;
       try {
         stored = localStorage.getItem("theme");
       } catch (err) {
