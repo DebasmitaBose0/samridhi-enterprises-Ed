@@ -17,7 +17,7 @@ const getInitialTheme = () => {
     return window.matchMedia("(prefers-color-scheme: dark)").matches
       ? "dark"
       : "light";
-  } catch {
+  } catch (err) {
     return "light";
   }
 };
@@ -34,7 +34,7 @@ export const ThemeProvider = ({ children }) => {
   const setTheme = (next) => {
     try {
       localStorage.setItem("theme", next);
-    } catch {
+    } catch (err) {
       // storage unavailable (private mode / quota) — in-memory state still works
     }
     setThemeState(next);
@@ -49,7 +49,7 @@ export const ThemeProvider = ({ children }) => {
       let // ignore
       try {
         stored = localStorage.getItem("theme");
-      } catch {
+      } catch (err) {
         // ignore
       }
       if (!stored) setThemeState(e.matches ? "dark" : "light");
