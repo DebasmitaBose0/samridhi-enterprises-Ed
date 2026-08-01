@@ -340,6 +340,8 @@ function App() {
 
       {/* Site-wide session inactivity timeout handler */}
       <SessionTimeoutHandler />
+      </main>
+      </Suspense>
     </div>
   );
 }
