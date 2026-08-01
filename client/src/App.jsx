@@ -1,15 +1,14 @@
 import React, { Suspense, lazy, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
+import MainLayout from "./layouts/MainLayout";
+import AuthLayout from "./layouts/AuthLayout";
+import AdminLayout from "./layouts/AdminLayout";
 import { ToastContainer } from "react-toastify";
 import ProtectedRoute from "./extras/ProtectedRoute";
 import { useDispatch } from "react-redux";
 import { fetchCart } from "./store/cart/cartSlice";
 import { fetchWishlist } from "./store/wishlist/wishlistSlice";
 import { getSingleDetail } from "./store/auth-slice/user";
-import SupportAssistant from "./components/SupportAssistant";
-import CompareTray from "./components/CompareTray";
 import Loader from "./extras/Loader";
 import SessionTimeoutHandler from "./components/SessionTimeoutHandler";
 
@@ -73,176 +72,172 @@ function App() {
         draggable
         pauseOnHover
       />
-      <Header />
-
-      <main id="main-content" tabIndex={-1}>
       <Suspense fallback={<div className="h-screen flex items-center justify-center"><Loader /></div>}>
         <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/verify-email" element={<VerifyEmail />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/verify-otp" element={<VerifyOtp />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-         <Route path="/products" element={<ProductsPage />} />
-        <Route path="/products/:id" element={<SingleProductPage />} />
-        <Route path="/compare" element={<ComparePage />} />
-        <Route
-          path="/my-profile"
-          element={
-            <ProtectedRoute>
-              <MyProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/update-password"
-          element={
-            <ProtectedRoute>
-              <UpdatePassword />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/update-profile"
-          element={
-            <ProtectedRoute>
-              <UpdateProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/cart"
-          element={<Cart />}
-        />
-        <Route
-          path="/wishlist"
-          element={<WishlistPage />}
-        />
-        <Route
-          path="/checkout"
-          element={
-            <ProtectedRoute>
-              <Checkout />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/my-orders"
-          element={
-            <ProtectedRoute>
-              <OrderHistory />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/support"
-          element={
-            <ProtectedRoute>
-              <SupportTickets />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/my-addresses"
-          element={
-            <ProtectedRoute>
-              <MyAddresses />
-            </ProtectedRoute>
-          }
-        />
+          {/* Main Layout Routes */}
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/products" element={<ProductsPage />} />
+            <Route path="/products/:id" element={<SingleProductPage />} />
+            <Route path="/compare" element={<ComparePage />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/wishlist" element={<WishlistPage />} />
+            <Route
+              path="/my-profile"
+              element={
+                <ProtectedRoute>
+                  <MyProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/update-password"
+              element={
+                <ProtectedRoute>
+                  <UpdatePassword />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/update-profile"
+              element={
+                <ProtectedRoute>
+                  <UpdateProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/checkout"
+              element={
+                <ProtectedRoute>
+                  <Checkout />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-orders"
+              element={
+                <ProtectedRoute>
+                  <OrderHistory />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/support"
+              element={
+                <ProtectedRoute>
+                  <SupportTickets />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/my-addresses"
+              element={
+                <ProtectedRoute>
+                  <MyAddresses />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
 
-        <Route
-          path="/admin/dashboard"
-          element={
-            <ProtectedRoute isAdmin={true}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/brands"
-          element={
-            <ProtectedRoute isAdmin={true}>
-              <AdminBrandPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/bikes"
-          element={
-            <ProtectedRoute isAdmin={true}>
-              <AdminBikeModelPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/parts"
-          element={
-            <ProtectedRoute isAdmin={true}>
-              <AdminPartPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/orders"
-          element={
-            <ProtectedRoute isAdmin={true}>
-              <AdminOrders />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/payment-settings"
-          element={
-            <ProtectedRoute isAdmin={true}>
-              <AdminPaymentSettings />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/inventory"
-          element={
-            <ProtectedRoute isAdmin={true}>
-              <InventoryPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/customers"
-          element={
-            <ProtectedRoute isAdmin={true}>
-              <CustomerPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/coupons"
-          element={
-            <ProtectedRoute isAdmin={true}>
-              <AdminCoupons />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin/support"
-          element={
-            <ProtectedRoute isAdmin={true}>
-              <AdminSupportTickets />
-            </ProtectedRoute>
-          }
-        />
+          {/* Auth Layout Routes */}
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/verify-otp" element={<VerifyOtp />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+          </Route>
+
+          {/* Admin Layout Routes */}
+          <Route element={<AdminLayout />}>
+            <Route
+              path="/admin/dashboard"
+              element={
+                <ProtectedRoute isAdmin={true}>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/brands"
+              element={
+                <ProtectedRoute isAdmin={true}>
+                  <AdminBrandPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/bikes"
+              element={
+                <ProtectedRoute isAdmin={true}>
+                  <AdminBikeModelPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/parts"
+              element={
+                <ProtectedRoute isAdmin={true}>
+                  <AdminPartPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/orders"
+              element={
+                <ProtectedRoute isAdmin={true}>
+                  <AdminOrders />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/payment-settings"
+              element={
+                <ProtectedRoute isAdmin={true}>
+                  <AdminPaymentSettings />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/inventory"
+              element={
+                <ProtectedRoute isAdmin={true}>
+                  <InventoryPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/customers"
+              element={
+                <ProtectedRoute isAdmin={true}>
+                  <CustomerPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/coupons"
+              element={
+                <ProtectedRoute isAdmin={true}>
+                  <AdminCoupons />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/support"
+              element={
+                <ProtectedRoute isAdmin={true}>
+                  <AdminSupportTickets />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
         </Routes>
       </Suspense>
-      </main>
-
-      <Footer />
 
       {/* Site-wide session inactivity timeout handler */}
       <SessionTimeoutHandler />
-      <SupportAssistant />
-      <CompareTray />
     </div>
   );
 }
