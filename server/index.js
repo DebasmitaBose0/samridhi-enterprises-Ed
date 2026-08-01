@@ -58,10 +58,14 @@ app.use(
 
 import rateLimiter from "./middleware/rateLimiter.js";
 
+import webhookRouter from "./route/webhookRoute.js";
+
 app.use(cookieParser());
+// Webhook route must be registered BEFORE express.json() so it can process the raw body
+app.use("/api/webhook", webhookRouter);
+
 app.use(express.json());
 app.use(requestLogger);
-
 // Apply rate limiter to all API endpoints
 app.use("/api", rateLimiter({ max: 200, windowMs: 15 * 60 * 1000 }));
 

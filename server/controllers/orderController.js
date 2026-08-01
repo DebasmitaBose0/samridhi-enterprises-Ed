@@ -10,6 +10,7 @@ import sendEmail from "../config/sendEmail.js";
 import orderReceiptHtml from "../template/orderReceiptTemplate.js";
 import generateAdminNewOrderEmail from "../template/adminNewOrderTemplate.js";
 import notifyAdmins from "../utils/adminNotifier.js";
+import Stripe from "stripe";
 
 const REQUIRED_ADDRESS_FIELDS = [
   "fullName",
@@ -183,20 +184,10 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
     let paymentScreenshot = { public_id: "", url: "" };
     let paymentStatus;
     let orderStatus;
+    let clientSecret = null;
 
     if (paymentMethod === "Online") {
-      if (!req.file) {
-        throw new ErrorHandler("A payment screenshot is required for online payments", 400);
-      }
-      const uploaded = await uploadImage(req.file);
-      if (!uploaded || !uploaded.secure_url) {
-        throw new ErrorHandler("Payment screenshot upload failed. Please try again.", 500);
-      }
-      paymentScreenshot = {
-        public_id: uploaded.public_id,
-        url: uploaded.secure_url,
-      };
-      paymentStatus = "Pending Verification";
+      paymentStatus = "Pending";
       orderStatus = "Pending Verification";
     } else {
       // COD
@@ -218,6 +209,18 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
       paymentScreenshot,
       upiReference: upiReference || "",
     });
+
+    if (paymentMethod === "Online") {
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(grandTotal * 100), // amount in paise/cents
+        currency: "inr",
+        metadata: {
+          orderId: order._id.toString(),
+        },
+      });
+      clientSecret = paymentIntent.client_secret;
+    }
 
     // Link the order to the user's history WITHOUT calling user.save(), which
     // would trigger the model's pre-save hook and re-hash the password.
@@ -244,8 +247,8 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
         subject: `Order Received - Pending Payment Verification`,
         html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:20px;">
           <h2 style="color:#111827;">Thank you for your order!</h2>
-          <p style="color:#555;">We have received your order <strong>${order._id}</strong> and your payment screenshot.</p>
-          <p style="color:#555;">Our team will verify your payment shortly. You will receive a confirmation email with your receipt once it is approved.</p>
+          <p style="color:#555;">We have received your order <strong>${order._id}</strong>.</p>
+          <p style="color:#555;">Please complete your payment. You will receive a confirmation email with your receipt once it is approved.</p>
           ${discount > 0
             ? `<p style="color:#555;">Subtotal: Rs. ${Number(itemsTotal).toLocaleString("en-IN")}</p>
           <p style="color:#16a34a;">Discount (${appliedCouponCode}): -Rs. ${Number(discount).toLocaleString("en-IN")}</p>`
@@ -277,8 +280,9 @@ export const createOrder = catchAsyncErrors(async (req, res, next) => {
       message:
         paymentMethod === "COD"
           ? "Order placed successfully"
-          : "Order placed. Payment is pending verification.",
+          : "Order placed. Payment is pending.",
       order,
+      clientSecret,
     });
   } catch (error) {
     // Rollback any stocks we already successfully deducted
