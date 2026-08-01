@@ -1,5 +1,7 @@
 import express from "express";
 import auth from "../middleware/auth.js";
+import validateSchema from "../middleware/validateSchema.js";
+import { addVehicleSchema, updateVehicleSchema } from "../validators/garageSchemas.js";
 
 import {
   addVehicle,
@@ -11,15 +13,10 @@ import {
 
 const router = express.Router();
 
-router.route("/")
-  .post(auth, addVehicle)
-  .get(auth, getVehicles);
-
-router.route("/:id")
-  .put(auth, updateVehicle)
-  .delete(auth, deleteVehicle);
-
-router.route("/:id/default")
-  .patch(auth, setDefaultVehicle);
+router.post("/", auth, validateSchema(addVehicleSchema), addVehicle);
+router.get("/", auth, getVehicles);
+router.put("/:id", auth, validateSchema(updateVehicleSchema), updateVehicle);
+router.delete("/:id", auth, deleteVehicle);
+router.patch("/:id/default", auth, setDefaultVehicle);
 
 export default router;

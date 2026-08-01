@@ -217,6 +217,22 @@ the rupee discount (`0` = no cap). `usageLimit` `0` = unlimited.
 
 ---
 
+### Garage (`/api/garage`)
+
+Manage the user's personal vehicle garage for compatibility lookups.
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| POST | `/` | 🔐 | Add a vehicle to garage. Body: `{ bikeModel, year, variant?, features?, isDefault? }`. |
+| GET | `/` | 🔐 | List all vehicles for the logged-in user. Default vehicle first. |
+| PUT | `/:id` | 🔐 | Update a vehicle. Body fields same as POST. |
+| DELETE | `/:id` | 🔐 | Remove a vehicle. Promotes next-oldest to default if deleted was default. |
+| PATCH | `/:id/default` | 🔐 | Set a vehicle as the default. |
+
+Vehicles are scoped per user (max 10). The `bikeModel` field references a `BikeModel` document by ObjectId.
+
+---
+
 ## Conventions & error shape
 
 - Successful responses are JSON and typically include `success: true` plus the

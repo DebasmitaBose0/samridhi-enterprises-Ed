@@ -71,7 +71,7 @@ const ForgotPassword = () => {
 
   return (
     <>
-      <MetaData title="Forgot Password - Samridhi Enterprises" />
+      <MetaData title="Forgot Password | Samridhi Enterprises" description="Reset your Samridhi Enterprises account password securely. Enter your registered email to receive a password reset OTP." keywords="forgot password, reset password, bike parts account recovery, Samridhi Enterprises password" />
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-100 via-white to-blue-100 px-4 sm:px-6 lg:px-8">
         <AnimatePresence>
           <motion.div
@@ -102,8 +102,13 @@ const ForgotPassword = () => {
               >
                 <Mail className="w-5 h-5 sm:w-6 sm:h-6" />
               </motion.div>
+              <label htmlFor="forgot-email" className="sr-only">
+                Email
+              </label>
               <motion.input
+                id="forgot-email"
                 type="email"
+                autoComplete="email"
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}

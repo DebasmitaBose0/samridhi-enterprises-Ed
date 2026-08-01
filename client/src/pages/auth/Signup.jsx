@@ -110,7 +110,11 @@ const SignUp = () => {
             >
               <User className="w-5 h-5 sm:w-6 sm:h-6" />
             </motion.div>
+            <label htmlFor="signup-name" className="sr-only">
+              Full Name
+            </label>
             <motion.input
+              id="signup-name"
               variants={itemVariants}
               type="text"
               placeholder="Your Full Name"
@@ -129,9 +133,14 @@ const SignUp = () => {
             >
               <Mail className="w-5 h-5 sm:w-6 sm:h-6" />
             </motion.div>
+            <label htmlFor="signup-email" className="sr-only">
+              Email
+            </label>
             <motion.input
+              id="signup-email"
               variants={itemVariants}
               type="email"
+              autoComplete="email"
               placeholder="Your Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -148,9 +157,14 @@ const SignUp = () => {
             >
               <Lock className="w-5 h-5 sm:w-6 sm:h-6" />
             </motion.div>
+            <label htmlFor="signup-password" className="sr-only">
+              Password
+            </label>
             <motion.input
+              id="signup-password"
               variants={itemVariants}
               type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
               placeholder="Create Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

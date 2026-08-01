@@ -24,6 +24,7 @@ Image fields are stored as **Cloudinary** references:
 | Address | `addressModel.js` | User shipping addresses |
 | PaymentSettings | `paymentSettingsModel.js` | Store UPI id + QR image (singleton) |
 | SupportTicket | `supportTicketModel.js` | Support tickets + message threads |
+| Garage | `garageModel.js` | User vehicle garage for compatibility lookups |
 
 ---
 
@@ -255,6 +256,27 @@ Registered as model `SupportTicket`, with an embedded message sub-schema.
 | `sender` | String enum | `USER` \| `ADMIN` (required) |
 | `senderName` | String | Display name captured at post time |
 | `body` | String | Required |
+
+---
+
+---
+
+## Garage
+
+Registered as model `Garage`, holding vehicles a user has added for quick
+compatibility lookups.
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `user` | ObjectId → `User` | Required, indexed |
+| `bikeModel` | ObjectId → `BikeModel` | Required |
+| `year` | Number | Required, 1980–2030 |
+| `variant` | String | Optional, max 100 chars |
+| `features` | String | Optional, max 500 chars |
+| `isDefault` | Boolean | Default `false` — exactly one default per user (enforced by the controller) |
+
+Indexes: `{ user: 1, isDefault: 1 }`, `{ user: 1, bikeModel: 1 }`. Maximum 10
+vehicles per user (enforced by the controller).
 
 ---
 

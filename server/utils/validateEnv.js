@@ -1,3 +1,5 @@
+import config from "../config/index.js";
+
 const MANDATORY = [
   "MONGODB_URL",
   "JWT_SECRET",
@@ -13,12 +15,17 @@ const OPTIONAL = [
   "FRONTEND_URL",
   "FRONTEND_WWW_URL",
   "BREVO_API_KEY",
+  "BREVO_SENDER_EMAIL",
+  "BREVO_SENDER_NAME",
+  "OTP_MODE",
   "NODE_ENV",
 ];
 
+const isOtpDevMode = () => config.security.otpMode === "dev" || process.env.OTP_MODE === "dev";
+
 const validateEnv = () => {
   const missing = MANDATORY.filter((key) => !process.env[key]);
-  const isProduction = process.env.NODE_ENV === "production";
+  const isProduction = config.isProduction;
 
   if (missing.length > 0) {
     console.error("\n\x1b[31m[ENV] Missing required environment variables:\x1b[0m");
@@ -27,9 +34,13 @@ const validateEnv = () => {
     process.exit(1);
   }
 
+  if (isOtpDevMode()) {
+    console.warn("\n\x1b[33m[ENV] OTP_MODE=dev — OTPs will be logged to console instead of sent via email.\x1b[0m");
+  }
+
   if (isProduction) {
     const missingOptional = OPTIONAL.filter(
-      (key) => !process.env[key] && key !== "PORT" && key !== "NODE_ENV"
+      (key) => !process.env[key] && key !== "PORT" && key !== "NODE_ENV" && key !== "OTP_MODE"
     );
     if (missingOptional.length > 0) {
       console.error("\n\x1b[31m[ENV] Production requires these variables:\x1b[0m");
@@ -48,5 +59,7 @@ const validateEnv = () => {
 
   console.log("\x1b[32m[ENV] All required variables present ✓\x1b[0m");
 };
+
+export { isOtpDevMode };
 
 export default validateEnv;

@@ -11,6 +11,9 @@ import { fetchWishlist } from "./store/wishlist/wishlistSlice";
 import { getSingleDetail } from "./store/auth-slice/user";
 import Loader from "./extras/Loader";
 import SessionTimeoutHandler from "./components/SessionTimeoutHandler";
+import ScrollToTop from "./extras/ScrollToTop";
+import ScrollRestoration from "./extras/ScrollRestoration";
+import WhatsAppButton from "./extras/Whatsapp";
 
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/auth/Login"));
@@ -42,13 +45,15 @@ const AdminPaymentSettings = lazy(() => import("./pages/admin/AdminPaymentSettin
 const InventoryPage = lazy(() => import("./pages/admin/InventoryPage"));
 const CustomerPage = lazy(() => import("./pages/admin/CustomerPage"));
 const AdminCoupons = lazy(() => import("./pages/admin/AdminCoupons"));
+const DesignSystemPreview = lazy(() => import("./pages/DesignSystemPreview"));
+const NotFoundPage = lazy(() => import("./extras/NotFoundPage"));
 
 function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchCart());
-    if (localStorage.getItem("token")) {
+    if (localStorage.getItem("user")) {
       dispatch(getSingleDetail());
       dispatch(fetchWishlist());
     }
@@ -73,6 +78,13 @@ function App() {
         pauseOnHover
       />
       <Suspense fallback={<div className="h-screen flex items-center justify-center"><Loader /></div>}>
+      <Header />
+      <ScrollRestoration />
+      <ScrollToTop />
+      <WhatsAppButton />
+
+      <main id="main-content" tabIndex={-1}>
+      <Suspense fallback={<div className="h-screen flex items-center justify-center"><Loader fullScreen={false} /></div>}>
         <Routes>
           {/* Main Layout Routes */}
           <Route element={<MainLayout />}>
@@ -233,6 +245,96 @@ function App() {
               }
             />
           </Route>
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute isAdmin={true}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/brands"
+          element={
+            <ProtectedRoute isAdmin={true}>
+              <AdminBrandPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/bikes"
+          element={
+            <ProtectedRoute isAdmin={true}>
+              <AdminBikeModelPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/parts"
+          element={
+            <ProtectedRoute isAdmin={true}>
+              <AdminPartPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/orders"
+          element={
+            <ProtectedRoute isAdmin={true}>
+              <AdminOrders />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/payment-settings"
+          element={
+            <ProtectedRoute isAdmin={true}>
+              <AdminPaymentSettings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/inventory"
+          element={
+            <ProtectedRoute isAdmin={true}>
+              <InventoryPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/customers"
+          element={
+            <ProtectedRoute isAdmin={true}>
+              <CustomerPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/coupons"
+          element={
+            <ProtectedRoute isAdmin={true}>
+              <AdminCoupons />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/support"
+          element={
+            <ProtectedRoute isAdmin={true}>
+              <AdminSupportTickets />
+            </ProtectedRoute>
+          }
+        />  
+          <Route path="/" element={<Home />} />
+          <Route path="/" element={<DesignSystemPreview />} />
+        <Route
+          path="/design-system"
+          element={
+            <DesignSystemPreview />
+          }
+          />
+
+        <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Suspense>
 

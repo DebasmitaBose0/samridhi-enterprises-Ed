@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { ROLES, ROLES_ARRAY } from "../../shared/constants/permissions.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -91,10 +92,11 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    subscriptions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Subscription" }],
     role: {
       type: String,
-      enum: ["ADMIN", "MANAGER", "USER"],
-      default: "USER",
+      enum: ROLES_ARRAY,
+      default: ROLES.USER,
     },
 
     // Soft delete / audit trail support
@@ -114,12 +116,24 @@ const userSchema = new mongoose.Schema(
 );
 
 
-// Hash password before saving
+// Hash password before saving (on .save() calls)
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
 
-  this.password = await bcrypt.hash(this.password, 10);
+  this.password = await bcrypt.hash(this.password, 12);
 });
+
+// Safety net: hash password if updated via findOneAndUpdate / findByIdAndUpdate.
+// This prevents future changes that bypass .save() from persisting plaintext passwords.
+userSchema.pre("findOneAndUpdate", async function () {
+  const update = this.getUpdate();
+  if (!update || !update.password) return;
+
+  update.password = await bcrypt.hash(update.password, 12);
+  this.setUpdate(update);
+});
+
+import config from "../config/index.js";
 
 userSchema.methods.getJWTToken = function () {
   return jwt.sign(
@@ -127,9 +141,9 @@ userSchema.methods.getJWTToken = function () {
       id: this._id,
       role: this.role,
     },
-    process.env.JWT_SECRET,
+    config.jwt.secret || process.env.JWT_SECRET,
     {
-      expiresIn: process.env.JWT_EXPIRE,
+      expiresIn: config.jwt.expire || process.env.JWT_EXPIRE,
     }
   );
 };

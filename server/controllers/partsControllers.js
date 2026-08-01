@@ -38,12 +38,12 @@ export const addPart = catchAsyncErrors(async (req, res, next) => {
     bestseller: bestseller === "true" || bestseller === true,
   });
 
-  res.status(201).json({ success: true, part });
+  res.sendSuccess({ part }, 201);
 });
 
 // Get all parts
 export const getAllParts = catchAsyncErrors(async (req, res) => {
-  const { vehicleId } = req.query;
+  const { vehicleId, page, limit } = req.query;
 
   const filter = { isDeleted: false };
 
@@ -51,18 +51,34 @@ export const getAllParts = catchAsyncErrors(async (req, res) => {
     filter.vehicleCompatibility = vehicleId;
   }
 
-  const parts = await Part.find(filter).populate(
-    "vehicleCompatibility",
-    "name"
-  );
+  const total = await Part.countDocuments(filter);
 
-  res.status(200).json({
+  const isPaginated = page !== undefined || limit !== undefined;
+  const pageNum = parseInt(page, 10) > 0 ? parseInt(page, 10) : 1;
+  const limitNum = limit !== undefined ? Math.max(1, parseInt(limit, 10) || 10) : (isPaginated ? 10 : (total || 10));
+  const skip = (pageNum - 1) * limitNum;
 
-    success: true,
+  const parts = await Part.find(filter)
+    .populate("vehicleCompatibility", "name")
+    .skip(skip)
+    .limit(limitNum);
+
+  const totalPages = Math.ceil(total / limitNum) || 1;
+  const hasNextPage = pageNum < totalPages;
+  const hasPreviousPage = pageNum > 1;
+
+  res.sendSuccess({
     count: parts.length,
+    total,
+    page: pageNum,
+    limit: limitNum,
+    totalPages,
+    hasNextPage,
+    hasPreviousPage,
     parts,
   });
 });
+
 
 // Get single part
 export const getPartById = catchAsyncErrors(async (req, res, next) => {
@@ -77,7 +93,7 @@ export const getPartById = catchAsyncErrors(async (req, res, next) => {
   // counter update must never break the actual product response.
   Part.updateOne({ _id: part._id }, { $inc: { viewCount: 1 } }).catch(() => {});
 
-  res.status(200).json({ success: true, part });
+  res.sendSuccess({ part });
 });
 
 // Update part
@@ -123,7 +139,7 @@ export const updatePart = catchAsyncErrors(async (req, res, next) => {
     metadata: { updatedFields: fieldsToUpdate },
   }).catch(() => {});
 
-  res.status(200).json({ success: true, message: "Part updated", part });
+  res.sendSuccess({ message: "Part updated", part });
 
 });
 
@@ -153,7 +169,7 @@ export const deletePart = catchAsyncErrors(async (req, res, next) => {
     metadata: {},
   }).catch(() => {});
 
-  res.status(200).json({ success: true, message: "Part soft-deleted" });
+  res.sendSuccess({ message: "Part soft-deleted" });
 
 });
 
@@ -164,6 +180,12 @@ export const createOrUpdateReview = catchAsyncErrors(async (req, res, next) => {
 
   if (!part) return next(new ErrorHandler("Part not found", 404));
 
+  const hasPurchased = await Order.exists({
+    user: req.user._id,
+    "items.part": part._id,
+    orderStatus: "Delivered",
+  });
+  const verifiedPurchase = Boolean(hasPurchased);
 
   const existingReviewIndex = part.reviews.findIndex(
     (r) => r.user.toString() === req.user._id.toString()
@@ -172,8 +194,15 @@ export const createOrUpdateReview = catchAsyncErrors(async (req, res, next) => {
   if (existingReviewIndex !== -1) {
     part.reviews[existingReviewIndex].comment = comment;
     part.reviews[existingReviewIndex].rating = Number(rating);
+    part.reviews[existingReviewIndex].verifiedPurchase = verifiedPurchase;
   } else {
-    part.reviews.push({ user: req.user._id, name: req.user.name, rating: Number(rating), comment });
+    part.reviews.push({
+      user: req.user._id,
+      name: req.user.name,
+      rating: Number(rating),
+      comment,
+      verifiedPurchase,
+    });
   }
 
   part.numOfReviews = part.reviews.length;
@@ -182,7 +211,7 @@ export const createOrUpdateReview = catchAsyncErrors(async (req, res, next) => {
     : 0;
 
   await part.save();
-  res.status(200).json({ success: true, message: "Review submitted", part });
+  res.sendSuccess({ message: "Review submitted", part });
 });
 
 // Get similar / recommended parts for a given part.
@@ -260,7 +289,7 @@ export const getSimilarParts = catchAsyncErrors(async (req, res, next) => {
 
   const parts = scored.slice(0, limit).map((s) => s.part);
 
-  res.status(200).json({ success: true, count: parts.length, parts });
+  res.sendSuccess({ count: parts.length, parts });
 });
 
 // Get "Frequently Bought Together" products for a given part.
@@ -350,8 +379,7 @@ export const getFrequentlyBoughtTogether = catchAsyncErrors(
         .limit(limit);
     }
 
-    res.status(200).json({
-      success: true,
+    res.sendSuccess({
       count: parts.length,
       parts,
       basedOn: rankedIds.length > 0 ? "purchase-history" : "category-fallback",
@@ -461,8 +489,7 @@ export const getRecommendedForYou = catchAsyncErrors(async (req, res, next) => {
     parts = parts.concat(filler);
   }
 
-  res.status(200).json({
-    success: true,
+  res.sendSuccess({
     count: parts.length,
     parts,
     personalized: preferredCategories.length > 0,
@@ -494,7 +521,7 @@ export const trackRecommendationImpressions = catchAsyncErrors(
       );
     }
 
-    res.status(200).json({ success: true, tracked: validIds.length });
+    res.sendSuccess({ tracked: validIds.length });
   }
 );
 
@@ -508,10 +535,10 @@ export const trackRecommendationClick = catchAsyncErrors(async (req, res) => {
       { _id: productId },
       { $inc: { recommendationClicks: 1 } }
     );
-    return res.status(200).json({ success: true, tracked: true });
+    return res.sendSuccess({ tracked: true });
   }
 
-  res.status(200).json({ success: true, tracked: false });
+  res.sendSuccess({ tracked: false });
 });
 
 // Admin — recommendation & engagement analytics.
@@ -590,8 +617,7 @@ export const adminGetRecommendationAnalytics = catchAsyncErrors(
       };
     });
 
-    res.status(200).json({
-      success: true,
+    res.sendSuccess({
       recommendationAnalytics: {
         mostViewed: mostViewedOut,
         mostRecommended: mostRecommendedOut,
@@ -620,5 +646,47 @@ export const deleteReview = catchAsyncErrors(async (req, res, next) => {
     : 0;
 
   await part.save();
-res.status(200).json({ success: true, message: "Review removed", part });
+res.sendSuccess({ message: "Review removed", part });
 });
+
+import { buildDynamicSearchFilters, getSidebarFacets } from "../utils/dynamicSearchAggregator.js";
+
+export const getFacetedSearchResults = catchAsyncErrors(async (req, res, next) => {
+  const filter = buildDynamicSearchFilters(req.query);
+  const parts = await Part.find(filter);
+  const facets = await getSidebarFacets();
+
+  res.sendSuccess({
+    count: parts.length,
+    parts,
+    facets,
+  });
+});
+
+// Added for #341: Get low stock parts for administrators
+export const getLowStockParts = catchAsyncErrors(async (req, res, next) => {
+  const parts = await Part.find({ 
+    isDeleted: false,
+    $expr: { $lte: ["$stock", { $ifNull: ["$lowStockThreshold", 5] }] } 
+  });
+  res.sendSuccess({ count: parts.length, parts });
+});
+
+// Bulk update inventory stock with atomic safety
+import { processBulkStockAdjustment } from "../utils/bulkInventoryManager.js";
+import { runInTransaction } from "../utils/transactionSessionManager.js";
+
+export const bulkUpdateStock = catchAsyncErrors(async (req, res, next) => {
+  const { updates } = req.body;
+
+  const result = await runInTransaction(async (session) => {
+    return await processBulkStockAdjustment(updates, req.user, session);
+  });
+
+  res.sendSuccess({
+    message: "Bulk inventory stock updated successfully",
+    updatedItemsCount: result.length,
+    details: result,
+  });
+});
+

@@ -1,5 +1,4 @@
 import express from "express";
-import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import cloudinary from "cloudinary";
@@ -7,8 +6,8 @@ import connectDB from "./config/connectDB.js";
 import errorMiddleware from "./middleware/error.js";
 import requestLogger from "./middleware/requestLogger.js";
 import validateEnv from "./utils/validateEnv.js";
+import config from "./config/index.js";
 
-dotenv.config();
 validateEnv();
 
 process.on("uncaughtException", (err) => {
@@ -18,13 +17,13 @@ process.on("uncaughtException", (err) => {
 });
 
 cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  cloud_name: config.cloudinary.name,
+  api_key: config.cloudinary.apiKey,
+  api_secret: config.cloudinary.apiSecret,
 });
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = config.port;
 
 const getTrustProxyConfig = (value) => {
   if (value === "true") return true;
@@ -34,12 +33,12 @@ const getTrustProxyConfig = (value) => {
 
 // Set TRUST_PROXY when deployed behind a trusted reverse proxy/load balancer so
 // req.ip reflects the client IP used by the rate limiter.
-if (process.env.TRUST_PROXY) {
-  app.set("trust proxy", getTrustProxyConfig(process.env.TRUST_PROXY));
+if (config.trustProxy) {
+  app.set("trust proxy", getTrustProxyConfig(config.trustProxy));
 }
 
 const allowedOrigins = [
-  process.env.FRONTEND_URL,
+  config.frontendUrl,
   "http://localhost:5173",
 ];
 
@@ -57,6 +56,8 @@ app.use(
 );
 
 import rateLimiter from "./middleware/rateLimiter.js";
+import { inputSanitizer } from "./middleware/inputSanitizer.js";
+import responseWrapper from "./middleware/responseWrapper.js";
 
 import webhookRouter from "./route/webhookRoute.js";
 
@@ -65,7 +66,11 @@ app.use(cookieParser());
 app.use("/api/webhook", webhookRouter);
 
 app.use(express.json());
+app.use(responseWrapper);
+app.use(inputSanitizer);
 app.use(requestLogger);
+
+
 // Apply rate limiter to all API endpoints
 app.use("/api", rateLimiter({ max: 200, windowMs: 15 * 60 * 1000 }));
 
@@ -85,6 +90,7 @@ import paymentSettingsRouter from "./route/paymentSettingsRoutes.js";
 import couponRouter from "./route/couponRoutes.js";
 import supportTicketRouter from "./route/supportTicketRoutes.js";
 import addressRouter from "./route/addressRoutes.js";
+import garageRouter from "./route/garageroutes.js";
 
 app.use("/api/user", userRouter);
 app.use("/api/brand", brandRouter);
@@ -97,6 +103,7 @@ app.use("/api/payment-settings", paymentSettingsRouter)
 app.use("/api/coupon", couponRouter)
 app.use("/api/support", supportTicketRouter)
 app.use("/api/address", addressRouter)
+app.use("/api/garage", garageRouter)
 
 // Error middleware should be registered AFTER routes so it can catch downstream errors.
 app.use(errorMiddleware);

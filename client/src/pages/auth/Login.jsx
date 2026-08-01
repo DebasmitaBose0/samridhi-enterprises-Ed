@@ -90,9 +90,9 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50 p-4">
       <MetaData
-        title="Login | Samridhi Enterprises - Elegant Access"
-        description="Sign in to your Samridhi Enterprises account with elegance. Track your precious orders and unlock exclusive collections."
-        keywords="Samridhi Enterprises login, luxury login, premium account access, secure shopping"
+        title="Login | Samridhi Enterprises"
+        description="Sign in to your Samridhi Enterprises account to track orders, manage your garage, and shop for premium bike parts."
+        keywords="Samridhi Enterprises login, bike parts account, motorcycle parts sign in, auto parts login"
       />
 
       <motion.div
@@ -111,8 +111,13 @@ const Login = () => {
         <motion.form variants={itemVariants} onSubmit={loginSubmit} className="space-y-6">
           <motion.div variants={inputVariants} className="relative group">
             <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400 group-hover:text-blue-500 transition-colors duration-300" size={20} />
+            <label htmlFor="login-email" className="sr-only">
+              Email
+            </label>
             <input
+              id="login-email"
               type="email"
+              autoComplete="username"
               placeholder="Your Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -122,8 +127,13 @@ const Login = () => {
 
           <motion.div variants={inputVariants} className="relative group">
             <LockIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-400 group-hover:text-blue-500 transition-colors duration-300" size={20} />
+            <label htmlFor="login-password" className="sr-only">
+              Password
+            </label>
             <input
+              id="login-password"
               type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
               placeholder="Your Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}

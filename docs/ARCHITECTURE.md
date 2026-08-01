@@ -64,6 +64,7 @@ All routers are mounted under `/api` in `server/index.js`:
 | `/api/coupon` | `couponRoutes.js` |
 | `/api/support` | `supportTicketRoutes.js` |
 | `/api/address` | `addressRoutes.js` |
+| `/api/garage` | `garageroutes.js` |
 
 ### Global middleware stack
 
