@@ -172,6 +172,25 @@ export const updateTicketStatus = catchAsyncErrors(async (req, res, next) => {
 });
 
 // ── Admin: reply to a ticket ──────────────────────────────────────────────
+export const checkAndEscalateSLA = catchAsyncErrors(async (req, res, next) => {
+  const tickets = await SupportTicket.find({ status: { $in: ["Open", "In Progress"] }, priority: { $ne: "High" } });
+  let escalatedCount = 0;
+
+  for (const ticket of tickets) {
+    if (TicketPriorityCalculator.shouldEscalatePriority(ticket, 24)) {
+      ticket.priority = "High";
+      await ticket.save();
+      escalatedCount++;
+    }
+  }
+
+  res.status(200).json({
+    success: true,
+    message: `SLA escalation evaluation completed. ${escalatedCount} ticket(s) escalated to High priority.`,
+    escalatedCount,
+  });
+});
+
 export const adminReply = catchAsyncErrors(async (req, res, next) => {
   const { body } = req.body;
   if (!body || !String(body).trim()) {
