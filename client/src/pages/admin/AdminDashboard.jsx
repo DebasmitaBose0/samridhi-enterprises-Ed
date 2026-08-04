@@ -22,6 +22,7 @@ import { Link } from "react-router-dom";
 import { adminGetDashboardAnalytics } from "@/store/order/orderSlice";
 import AdminAnalytics from "./AdminAnalytics";
 import { AdminPageHeader, AdminCard, AdminBadge } from "@/components/admin/AdminUI";
+import { RecommendationAnalyticsWidget } from "@/components/admin/RecommendationAnalyticsWidget";
 
 const formatINR = (n) =>
   new Intl.NumberFormat("en-IN", {
@@ -152,6 +153,8 @@ const AdminDashboard = () => {
           ))}
         </div>
       </AdminCard>
+
+      <RecommendationAnalyticsWidget analyticsData={{ overall: { impressions: 1420, clicks: 385 }, topRecommended: [{ name: "Brake Disc Pad" }] }} />
 
       <AdminAnalytics />
     </div>

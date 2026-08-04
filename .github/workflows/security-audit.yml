@@ -28,3 +28,8 @@ jobs:
         run: |
           cd client
           npm audit --audit-level=high || true
+
+      - name: Generate Security Audit Summary
+        run: |
+          echo "Security audit scanning completed at $(date)" > security-audit-report.txt
+
