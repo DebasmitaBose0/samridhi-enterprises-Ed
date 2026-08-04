@@ -14,6 +14,7 @@ import SessionTimeoutHandler from "./components/SessionTimeoutHandler";
 import ScrollToTop from "./extras/ScrollToTop";
 import ScrollRestoration from "./extras/ScrollRestoration";
 import WhatsAppButton from "./extras/Whatsapp";
+import Header from "./components/Header";
 
 const Home = lazy(() => import("./pages/Home"));
 const Login = lazy(() => import("./pages/auth/Login"));

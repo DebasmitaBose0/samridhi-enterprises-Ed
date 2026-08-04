@@ -8,10 +8,18 @@ import ErrorHandler from "../utils/errorHandler.js";
 import { uploadImage, deleteImage } from "../utils/cloudinary.js";
 import { logAudit } from "../utils/auditLogger.js";
 
-
 // Create a new part
 export const addPart = catchAsyncErrors(async (req, res, next) => {
-  const { product_id, name, description, price, stock, vehicleCompatibility, category, bestseller } = req.body;
+  const {
+    product_id,
+    name,
+    description,
+    price,
+    stock,
+    vehicleCompatibility,
+    category,
+    bestseller,
+  } = req.body;
 
   if (!req.files || req.files.length === 0) {
     return next(new ErrorHandler("At least one image is required", 400));
@@ -55,7 +63,12 @@ export const getAllParts = catchAsyncErrors(async (req, res) => {
 
   const isPaginated = page !== undefined || limit !== undefined;
   const pageNum = parseInt(page, 10) > 0 ? parseInt(page, 10) : 1;
-  const limitNum = limit !== undefined ? Math.max(1, parseInt(limit, 10) || 10) : (isPaginated ? 10 : (total || 10));
+  const limitNum =
+    limit !== undefined
+      ? Math.max(1, parseInt(limit, 10) || 10)
+      : isPaginated
+      ? 10
+      : total || 10;
   const skip = (pageNum - 1) * limitNum;
 
   const parts = await Part.find(filter)
@@ -79,7 +92,6 @@ export const getAllParts = catchAsyncErrors(async (req, res) => {
   });
 });
 
-
 // Get single part
 export const getPartById = catchAsyncErrors(async (req, res, next) => {
   const part = await Part.findOne({
@@ -101,11 +113,22 @@ export const updatePart = catchAsyncErrors(async (req, res, next) => {
   const part = await Part.findOne({ _id: req.params.id, isDeleted: false });
   if (!part) return next(new ErrorHandler("Part not found", 404));
 
-
-  const fieldsToUpdate = ["product_id", "name", "description", "price", "stock", "category", "vehicleCompatibility", "bestseller"];
+  const fieldsToUpdate = [
+    "product_id",
+    "name",
+    "description",
+    "price",
+    "stock",
+    "category",
+    "vehicleCompatibility",
+    "bestseller",
+  ];
   fieldsToUpdate.forEach((field) => {
     if (req.body[field] !== undefined) {
-      part[field] = field === "bestseller" ? req.body[field] === "true" || req.body[field] === true : req.body[field];
+      part[field] =
+        field === "bestseller"
+          ? req.body[field] === "true" || req.body[field] === true
+          : req.body[field];
     }
   });
 
@@ -140,15 +163,13 @@ export const updatePart = catchAsyncErrors(async (req, res, next) => {
   }).catch(() => {});
 
   res.sendSuccess({ message: "Part updated", part });
-
 });
 
 // Delete part
 export const deletePart = catchAsyncErrors(async (req, res, next) => {
   const part = await Part.findById(req.params.id);
-  if (!part || part.isDeleted) return next(new ErrorHandler("Part not found", 404));
-
-
+  if (!part || part.isDeleted)
+    return next(new ErrorHandler("Part not found", 404));
 
   for (const img of part.images) {
     await deleteImage(img.public_id);
@@ -170,7 +191,6 @@ export const deletePart = catchAsyncErrors(async (req, res, next) => {
   }).catch(() => {});
 
   res.sendSuccess({ message: "Part soft-deleted" });
-
 });
 
 // Add or update review
@@ -227,7 +247,6 @@ export const getSimilarParts = catchAsyncErrors(async (req, res, next) => {
   });
   if (!current) return next(new ErrorHandler("Part not found", 404));
 
-
   const compatibilityIds = (current.vehicleCompatibility || []).map((v) =>
     v.toString()
   );
@@ -262,12 +281,11 @@ export const getSimilarParts = catchAsyncErrors(async (req, res, next) => {
     // Shared compatible vehicles (same fitment / brand). Capped so a part that
     // fits many vehicles can't dominate purely on overlap count.
     if (compatibilityIds.length > 0) {
-      const shared = (part.vehicleCompatibility || [])
-        .filter((v) => v && v._id && compatibilityIds.includes(v._id.toString()))
-        .length;
+      const shared = (part.vehicleCompatibility || []).filter(
+        (v) => v && v._id && compatibilityIds.includes(v._id.toString())
+      ).length;
       score += Math.min(shared, 3) * 2;
     }
-
 
     // Similar price range relative to the current product.
     if (price > 0) {
@@ -308,15 +326,11 @@ export const getSimilarParts = catchAsyncErrors(async (req, res, next) => {
 // something relevant instead of being empty.
 export const getFrequentlyBoughtTogether = catchAsyncErrors(
   async (req, res, next) => {
-    const limit = Math.min(
-      Math.max(parseInt(req.query.limit, 10) || 6, 1),
-      20
-    );
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 6, 1), 20);
 
     const targetId = req.params.id;
     const current = await Part.findOne({ _id: targetId, isDeleted: false });
     if (!current) return next(new ErrorHandler("Part not found", 404));
-
 
     // All non-cancelled orders that include the target part.
     const orders = await Order.find({
@@ -354,7 +368,6 @@ export const getFrequentlyBoughtTogether = catchAsyncErrors(
       }).select(
         "product_id name price stock category images ratings numOfReviews bestseller"
       );
-
 
       // Preserve the co-occurrence ranking order (Mongo doesn't guarantee it).
       const byId = new Map(found.map((p) => [p._id.toString(), p]));
@@ -430,7 +443,9 @@ export const getRecommendedForYou = catchAsyncErrors(async (req, res, next) => {
 
   (cart?.items || []).forEach((i) => addPart(i.part));
   (wishlist?.items || []).forEach((i) => addPart(i.part));
-  (orders || []).forEach((o) => (o.items || []).forEach((i) => addPart(i.part)));
+  (orders || []).forEach((o) =>
+    (o.items || []).forEach((i) => addPart(i.part))
+  );
 
   // Resolve the signal parts to learn their categories and weight them.
   const categoryWeights = new Map();
@@ -638,7 +653,9 @@ export const deleteReview = catchAsyncErrors(async (req, res, next) => {
 
   if (!part) return next(new ErrorHandler("Part not found", 404));
 
-  part.reviews = part.reviews.filter((r) => r.user.toString() !== req.user._id.toString());
+  part.reviews = part.reviews.filter(
+    (r) => r.user.toString() !== req.user._id.toString()
+  );
 
   part.numOfReviews = part.reviews.length;
   part.ratings = part.reviews.length
@@ -646,40 +663,45 @@ export const deleteReview = catchAsyncErrors(async (req, res, next) => {
     : 0;
 
   await part.save();
-res.sendSuccess({ message: "Review removed", part });
+  res.sendSuccess({ message: "Review removed", part });
 });
 
-import { buildDynamicSearchFilters, getSidebarFacets } from "../utils/dynamicSearchAggregator.js";
+import {
+  buildDynamicSearchFilters,
+  getSidebarFacets,
+} from "../utils/dynamicSearchAggregator.js";
 
-export const getFacetedSearchResults = catchAsyncErrors(async (req, res, next) => {
-  const filter = buildDynamicSearchFilters(req.query);
-  const parts = await Part.find(filter);
-  const facets = await getSidebarFacets();
+export const getFacetedSearchResults = catchAsyncErrors(
+  async (req, res, next) => {
+    const filter = buildDynamicSearchFilters(req.query);
+    const parts = await Part.find(filter);
+    const facets = await getSidebarFacets();
 
-  res.sendSuccess({
-    count: parts.length,
-    parts,
-    facets,
-  });
-});
+    res.sendSuccess({
+      count: parts.length,
+      parts,
+      facets,
+    });
+  }
+);
 
 // Added for #341: Get low stock parts for administrators
 export const getLowStockParts = catchAsyncErrors(async (req, res, next) => {
-  const parts = await Part.find({ 
+  const parts = await Part.find({
     isDeleted: false,
-    $expr: { $lte: ["$stock", { $ifNull: ["$lowStockThreshold", 5] }] } 
+    $expr: { $lte: ["$stock", { $ifNull: ["$lowStockThreshold", 5] }] },
   });
   res.sendSuccess({ count: parts.length, parts });
 });
 
 // Bulk update inventory stock with atomic safety
 import { processBulkStockAdjustment } from "../utils/bulkInventoryManager.js";
-import { executeInTransaction } from "../utils/transactionSessionManager.js";
+import { runInTransaction } from "../utils/transactionSessionManager.js";
 
 export const bulkUpdateStock = catchAsyncErrors(async (req, res, next) => {
   const { updates } = req.body;
 
-  const result = await executeInTransaction(async (session) => {
+  const result = await runInTransaction(async (session) => {
     return await processBulkStockAdjustment(updates, req.user, session);
   });
 
@@ -689,4 +711,3 @@ export const bulkUpdateStock = catchAsyncErrors(async (req, res, next) => {
     details: result,
   });
 });
-
