@@ -190,6 +190,7 @@ const orderSlice = createSlice({
     loading: false,
     error: null,
     success: false,
+    clientSecret: null,
   },
   reducers: {
     clearOrderError: (state) => {
@@ -198,6 +199,7 @@ const orderSlice = createSlice({
     clearOrderSuccess: (state) => {
       state.success = false;
       state.lastCreatedOrder = null;
+      state.clientSecret = null;
     },
   },
   extraReducers: (builder) => {
@@ -212,6 +214,7 @@ const orderSlice = createSlice({
         state.loading = false;
         state.success = true;
         state.lastCreatedOrder = action.payload.order;
+        state.clientSecret = action.payload.clientSecret || null;
       })
       .addCase(createOrder.rejected, (state, action) => {
         state.loading = false;

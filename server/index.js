@@ -59,7 +59,12 @@ import rateLimiter from "./middleware/rateLimiter.js";
 import { inputSanitizer } from "./middleware/inputSanitizer.js";
 import responseWrapper from "./middleware/responseWrapper.js";
 
+import webhookRouter from "./route/webhookRoute.js";
+
 app.use(cookieParser());
+// Webhook route must be registered BEFORE express.json() so it can process the raw body
+app.use("/api/webhook", webhookRouter);
+
 app.use(express.json());
 app.use(responseWrapper);
 app.use(inputSanitizer);
